@@ -1,13 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.resqnow">
 
-    <!-- ✅ Added to allow direct phone calling -->
+    <!-- Required to allow emergency calls -->
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:label="resqnow"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+android:label="resqnow"
+    android:name="${applicationName}"
+    android:icon="@mipmap/ic_launcher"
+    android:usesCleartextTraffic="true"
+    android:theme="@style/LaunchTheme">
         
         <activity
             android:name=".MainActivity"
