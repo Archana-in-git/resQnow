@@ -1,64 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:resqnow/features/emergency/presentation/controllers/emergency_controller.dart';
 
-class AnimatedSOSButton extends StatefulWidget {
-  const AnimatedSOSButton({super.key});
+class EmergencyButton extends StatefulWidget {
+  const EmergencyButton({super.key});
 
   @override
-  State<AnimatedSOSButton> createState() => _AnimatedSOSButtonState();
+  State<EmergencyButton> createState() => _EmergencyButtonState();
 }
 
-class _AnimatedSOSButtonState extends State<AnimatedSOSButton>
+class _EmergencyButtonState extends State<EmergencyButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  late AnimationController _rippleController;
+  late Animation<double> _rippleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _rippleController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: false);
+      duration: const Duration(seconds: 2),
+    )..repeat();
 
-    _animation = Tween<double>(
+    _rippleAnimation = Tween<double>(
       begin: 1.0,
       end: 1.5,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(_rippleController);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _animation,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.red.shade700,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.red.withOpacity(0.6),
-              spreadRadius: 12,
-              blurRadius: 20,
+    return AnimatedBuilder(
+      animation: _rippleController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _rippleAnimation.value,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red.withOpacity(0.1),
             ),
-          ],
-        ),
-        child: const Text(
-          "SOS",
-          style: TextStyle(
-            fontSize: 36,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+            child: GestureDetector(
+              onTap: () => EmergencyController.handleEmergencyCall(),
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.red,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.6),
+                      spreadRadius: 8,
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'SOS',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

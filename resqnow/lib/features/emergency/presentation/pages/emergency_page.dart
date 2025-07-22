@@ -1,37 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../widgets/emergency_button.dart';
+import 'package:resqnow/features/emergency/presentation/widgets/emergency_button.dart';
 
-class EmergencyButtonPage extends StatelessWidget {
-  const EmergencyButtonPage({super.key});
-
-  final String emergencyNumber = "108";
-
-  Future<void> _makeEmergencyCall() async {
-    final status = await Permission.phone.request();
-
-    if (status.isGranted) {
-      final Uri phoneUri = Uri(scheme: 'tel', path: emergencyNumber);
-      if (await canLaunchUrl(phoneUri)) {
-        await launchUrl(phoneUri);
-      } else {
-        debugPrint("Could not launch dialer");
-      }
-    } else {
-      // Optional: Show an alert/snackbar
-      debugPrint("Call permission denied");
-    }
-  }
+class EmergencyPage extends StatelessWidget {
+  const EmergencyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black, // Blackish background
       body: SafeArea(
         child: Stack(
           children: [
-            // Exit Button
+            const Center(child: EmergencyButton()),
             Positioned(
               top: 16,
               right: 16,
@@ -40,25 +20,31 @@ class EmergencyButtonPage extends StatelessWidget {
                 child: const Icon(Icons.close, color: Colors.white, size: 28),
               ),
             ),
-
-            // Center SOS Button
-            Center(
-              child: GestureDetector(
-                onTap: _makeEmergencyCall,
-                child: const AnimatedSOSButton(),
-              ),
-            ),
-
-            // Bottom Text
             const Positioned(
-              bottom: 32,
+              top: 24,
               left: 0,
               right: 0,
               child: Center(
                 child: Text(
-                  "Please standby, we are currently\nrequesting for help.",
+                  'EMERGENCY',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ),
+            const Positioned(
+              bottom: 40,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Text(
+                  'Please standby, we are currently\nrequesting for help.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ),
             ),
