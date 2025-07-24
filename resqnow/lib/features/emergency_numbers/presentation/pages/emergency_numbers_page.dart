@@ -36,7 +36,7 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Emergency Numbers'),
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.accent,
       ),
       body: FutureBuilder<List<EmergencyNumberModel>>(
         future: _emergencyNumbersFuture,
