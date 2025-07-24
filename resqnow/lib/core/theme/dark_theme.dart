@@ -9,10 +9,9 @@ final ThemeData darkTheme = ThemeData(
   colorScheme: ColorScheme.dark(
     primary: AppColors.secondary,
     secondary: AppColors.accent,
-    background: Colors.black,
+    surface: Colors.grey[900]!,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    surface: Colors.grey[900]!,
     onSurface: Colors.white,
     error: AppColors.warning,
     onError: Colors.white,
@@ -46,7 +45,7 @@ final ThemeData darkTheme = ThemeData(
   ),
   iconTheme: IconThemeData(color: Colors.white, size: 24),
   dividerTheme: DividerThemeData(
-    color: Colors.white.withOpacity(0.3),
+    color: Colors.white.withValues(alpha: 0.3),
     thickness: 1,
   ),
 );

@@ -8,32 +8,32 @@ class AdminInputField extends StatelessWidget {
   final TextInputType keyboardType;
 
   const AdminInputField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.label,
     this.keyboardType = TextInputType.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: AppTextStyles.bodyLarge,
+      style: AppTextStyles.bodyText,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTextStyles.bodyMedium,
+        labelStyle: AppTextStyles.caption,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 12,
           horizontal: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.borderColor),
+          borderSide: BorderSide(color: AppColors.textSecondary),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
     );
