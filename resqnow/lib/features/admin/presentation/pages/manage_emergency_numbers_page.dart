@@ -3,8 +3,8 @@ import 'package:resqnow/data/models/emergency_number_model.dart';
 import 'package:resqnow/features/emergency_numbers/data/services/emergency_number_service.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/core/constants/app_text_styles.dart';
-import 'package:resqnow/features/admin/widgets/admin_input_field.dart';
-import 'package:resqnow/features/admin/widgets/admin_section_title.dart';
+import 'package:resqnow/features/admin/presentation/widgets/admin_input_field.dart';
+import 'package:resqnow/features/admin/presentation/widgets/admin_section_title.dart';
 
 class ManageEmergencyNumbersPage extends StatefulWidget {
   const ManageEmergencyNumbersPage({super.key});
@@ -76,7 +76,7 @@ class _ManageEmergencyNumbersPageState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Emergency Numbers'),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.primary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -98,11 +98,11 @@ class _ManageEmergencyNumbersPageState
             Expanded(
               child: ListView.separated(
                 itemCount: _numbers.length,
-                separatorBuilder: (_, __) => const Divider(),
+                separatorBuilder: (_, _) => const Divider(),
                 itemBuilder: (context, index) {
                   final item = _numbers[index];
                   return ListTile(
-                    title: Text(item.name, style: AppTextStyles.bodyLarge),
+                    title: Text(item.name, style: AppTextStyles.bodyText),
                     subtitle: Text(item.number),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/core/constants/app_text_styles.dart';
-import 'package:resqnow/core/constants/app_strings.dart';
 import 'package:resqnow/data/models/emergency_number_model.dart';
 import 'package:resqnow/features/emergency_numbers/data/services/emergency_number_service.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class EmergencyNumbersPage extends StatefulWidget {
-  const EmergencyNumbersPage({Key? key}) : super(key: key);
+  const EmergencyNumbersPage({super.key});
 
   @override
   State<EmergencyNumbersPage> createState() => _EmergencyNumbersPageState();
@@ -25,10 +24,10 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
 
   Future<void> _makePhoneCall(String number) async {
     bool? res = await FlutterPhoneDirectCaller.callNumber(number);
-    if (res == false) {
+    if (res == false && mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(AppStrings.callLaunchError)));
+      ).showSnackBar(const SnackBar(content: Text('Failed to make call')));
     }
   }
 
@@ -55,12 +54,12 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
           return ListView.separated(
             padding: const EdgeInsets.all(16.0),
             itemCount: numbers.length,
-            separatorBuilder: (_, __) => const Divider(),
+            separatorBuilder: (_, _) => const Divider(),
             itemBuilder: (context, index) {
               final item = numbers[index];
               return ListTile(
-                title: Text(item.name, style: AppTextStyles.bodyText1),
-                subtitle: Text(item.number, style: AppTextStyles.bodyText2),
+                title: Text(item.name, style: AppTextStyles.bodyText),
+                subtitle: Text(item.number, style: AppTextStyles.caption),
                 trailing: IconButton(
                   icon: const Icon(Icons.call, color: Colors.green),
                   onPressed: () => _makePhoneCall(item.number),
