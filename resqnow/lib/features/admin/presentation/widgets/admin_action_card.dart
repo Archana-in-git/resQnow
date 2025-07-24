@@ -8,11 +8,11 @@ class AdminActionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const AdminActionCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +22,11 @@ class AdminActionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.cardColor,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowColor.withOpacity(0.1),
+              color: AppColors.cardShadow,
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -34,12 +34,12 @@ class AdminActionCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 28, color: AppColors.primaryColor),
+            Icon(icon, size: 28, color: AppColors.primary),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
-                style: AppTextStyles.bodyLarge.copyWith(
+                style: AppTextStyles.bodyText.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
