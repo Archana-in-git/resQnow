@@ -9,10 +9,9 @@ final ThemeData lightTheme = ThemeData(
   colorScheme: ColorScheme.light(
     primary: AppColors.primary,
     secondary: AppColors.accent,
-    background: AppColors.background,
+    surface: Colors.white,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    surface: Colors.white,
     onSurface: AppColors.textPrimary,
     error: AppColors.warning,
     onError: Colors.white,
@@ -46,7 +45,7 @@ final ThemeData lightTheme = ThemeData(
   ),
   iconTheme: IconThemeData(color: AppColors.textPrimary, size: 24),
   dividerTheme: DividerThemeData(
-    color: AppColors.textSecondary.withOpacity(0.3),
+    color: AppColors.textSecondary.withValues(alpha: 0.3),
     thickness: 1,
   ),
 );

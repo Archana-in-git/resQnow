@@ -44,7 +44,7 @@ class _EmergencyButtonState extends State<EmergencyButton>
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
             ),
             child: GestureDetector(
               onTap: () => EmergencyController.handleEmergencyCall(),
@@ -56,7 +56,7 @@ class _EmergencyButtonState extends State<EmergencyButton>
                   color: Colors.red,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.red.withOpacity(0.6),
+                      color: Colors.red.withValues(alpha: 0.6),
                       spreadRadius: 8,
                       blurRadius: 20,
                     ),
