@@ -25,4 +25,10 @@ class UIConstants {
 
   // Bottom Navigation Bar
   static const double bottomNavHeight = 56.0;
+
+  // Map UI
+  static const double mapZoomLevel = 14.0;
+  static const double mapMarkerSize = 40.0;
+  static const double mapBottomCardHeight = 160.0;
+  static const double mapCardElevation = 4.0;
 }

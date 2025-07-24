@@ -20,4 +20,9 @@ class AppStrings {
   static const String submit = 'Submit';
   static const String retry = 'Retry';
   static const String learnMore = 'Learn More';
+
+  // Hospital Map
+  static const String hospitalMapTitle = 'Nearby Hospitals';
+  static const String getDirections = 'Get Directions';
+  static const String openMap = 'Open in Google Maps';
 }

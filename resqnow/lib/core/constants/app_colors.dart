@@ -17,4 +17,11 @@ class AppColors {
   // Status indicators
   static const Color success = Color(0xFF388E3C); // Green
   static const Color warning = Color(0xFFFFA000); // Amber
+
+  // Map-related (new additions)
+  static const Color mapPin = Color(0xFF00796B); // same as primary
+  static const Color mapPinSelected = Color(0xFFD32F2F); // accent/red
+  static const Color userLocationCircle = Color(
+    0x3300796B,
+  ); // semi-transparent teal
 }
