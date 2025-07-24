@@ -11,13 +11,11 @@ final ThemeData darkTheme = ThemeData(
     primary: AppColors.primary,
     secondary: AppColors.accent,
     surface: Color(0xFF121212),
-    background: Colors.black,
     error: AppColors.warning,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.white,
     onError: Colors.white,
-    onBackground: Colors.white,
   ),
   appBarTheme: AppBarTheme(
     color: AppColors.secondary,
@@ -49,8 +47,8 @@ final ThemeData darkTheme = ThemeData(
     ),
   ),
   iconTheme: const IconThemeData(color: Colors.white, size: 24),
-  dividerTheme: DividerThemeData(
-    color: Colors.white.withOpacity(0.3),
+  dividerTheme: const DividerThemeData(
+    color: Color.fromRGBO(255, 255, 255, 0.3), // White with 30% opacity
     thickness: 1,
   ),
 );
