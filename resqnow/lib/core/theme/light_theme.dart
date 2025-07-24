@@ -3,36 +3,41 @@ import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 
 final ThemeData lightTheme = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.light,
   scaffoldBackgroundColor: AppColors.background,
   primaryColor: AppColors.primary,
-  colorScheme: ColorScheme.light(
+  colorScheme: const ColorScheme.light(
     primary: AppColors.primary,
     secondary: AppColors.accent,
     surface: Colors.white,
+    background: AppColors.background,
+    error: AppColors.warning,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: AppColors.textPrimary,
-    error: AppColors.warning,
     onError: Colors.white,
+    onBackground: AppColors.textPrimary,
   ),
   appBarTheme: AppBarTheme(
     color: AppColors.primary,
-    iconTheme: IconThemeData(color: Colors.white),
+    iconTheme: const IconThemeData(color: Colors.white),
     elevation: 0,
     centerTitle: true,
     titleTextStyle: AppTextStyles.appTitle.copyWith(color: Colors.white),
   ),
   textTheme: TextTheme(
-    titleLarge: AppTextStyles.appTitle,
-    titleMedium: AppTextStyles.sectionTitle,
-    bodyLarge: AppTextStyles.bodyText,
-    bodyMedium: AppTextStyles.bodyText,
-    labelLarge: AppTextStyles.buttonText,
-    labelSmall: AppTextStyles.caption,
+    titleLarge: AppTextStyles.appTitle.copyWith(color: AppColors.textPrimary),
+    titleMedium: AppTextStyles.sectionTitle.copyWith(
+      color: AppColors.textPrimary,
+    ),
+    bodyLarge: AppTextStyles.bodyText.copyWith(color: AppColors.textSecondary),
+    bodyMedium: AppTextStyles.bodyText.copyWith(color: AppColors.textSecondary),
+    labelLarge: AppTextStyles.buttonText.copyWith(color: Colors.white),
+    labelSmall: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: AppColors.primary,
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: AppColors.accent,
     foregroundColor: Colors.white,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -43,9 +48,9 @@ final ThemeData lightTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   ),
-  iconTheme: IconThemeData(color: AppColors.textPrimary, size: 24),
-  dividerTheme: DividerThemeData(
-    color: AppColors.textSecondary.withValues(alpha: 0.3),
+  iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 24),
+  dividerTheme: const DividerThemeData(
+    color: Color.fromRGBO(117, 117, 117, 0.3), // Muted Gray with 30% opacity
     thickness: 1,
   ),
 );
