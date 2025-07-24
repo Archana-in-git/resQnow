@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:provider/provider.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/core/constants/app_text_styles.dart';
+import 'package:resqnow/core/constants/app_strings.dart';
+import 'package:resqnow/data/models/emergency_number_model.dart';
 import 'package:resqnow/features/emergency_numbers/data/services/emergency_number_service.dart';
-import 'package:resqnow/data/models/emergency_contact_model.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class EmergencyNumbersPage extends StatefulWidget {
   const EmergencyNumbersPage({Key? key}) : super(key: key);
@@ -14,67 +14,56 @@ class EmergencyNumbersPage extends StatefulWidget {
 }
 
 class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
-  late Future<List<EmergencyContact>> _emergencyNumbers;
+  final EmergencyNumberService _service = EmergencyNumberService();
+  late Future<List<EmergencyNumberModel>> _emergencyNumbersFuture;
 
   @override
   void initState() {
     super.initState();
-    _emergencyNumbers = EmergencyNumberService().fetchEmergencyNumbers();
+    _emergencyNumbersFuture = _service.fetchEmergencyNumbers();
   }
 
-  Future<void> _callNumber(String number) async {
-    await FlutterPhoneDirectCaller.callNumber(number);
+  Future<void> _makePhoneCall(String number) async {
+    bool? res = await FlutterPhoneDirectCaller.callNumber(number);
+    if (res == false) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(AppStrings.callLaunchError)));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Emergency Numbers")),
-      body: FutureBuilder<List<EmergencyContact>>(
-        future: _emergencyNumbers,
+      appBar: AppBar(
+        title: const Text('Emergency Numbers'),
+        backgroundColor: AppColors.primary,
+      ),
+      body: FutureBuilder<List<EmergencyNumberModel>>(
+        future: _emergencyNumbersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error loading numbers"));
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text("No emergency numbers available."));
+            return const Center(child: Text('No emergency numbers found.'));
           }
 
           final numbers = snapshot.data!;
+
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16.0),
             itemCount: numbers.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
-              final contact = numbers[index];
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.lightGray,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(contact.name, style: AppTextStyles.bodyLarge),
-                          const SizedBox(height: 4),
-                          Text(contact.number, style: AppTextStyles.bodyMedium),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.call, color: AppColors.primary),
-                      onPressed: () => _callNumber(contact.number),
-                    ),
-                  ],
+              final item = numbers[index];
+              return ListTile(
+                title: Text(item.name, style: AppTextStyles.bodyText1),
+                subtitle: Text(item.number, style: AppTextStyles.bodyText2),
+                trailing: IconButton(
+                  icon: const Icon(Icons.call, color: Colors.green),
+                  onPressed: () => _makePhoneCall(item.number),
                 ),
               );
             },

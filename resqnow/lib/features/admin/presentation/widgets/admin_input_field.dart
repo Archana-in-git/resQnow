@@ -6,37 +6,34 @@ class AdminInputField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final TextInputType keyboardType;
-  final String? Function(String?)? validator;
 
   const AdminInputField({
-    super.key,
+    Key? key,
     required this.controller,
     required this.label,
     this.keyboardType = TextInputType.text,
-    this.validator,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      validator: validator,
-      style: AppTextStyles.bodyMedium,
+      style: AppTextStyles.bodyLarge,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary),
+        labelStyle: AppTextStyles.bodyMedium,
         contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
           horizontal: 16,
-          vertical: 14,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary),
+          borderSide: const BorderSide(color: AppColors.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
         ),
       ),
     );

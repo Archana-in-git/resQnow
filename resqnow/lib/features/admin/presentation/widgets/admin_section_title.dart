@@ -5,15 +5,18 @@ import 'package:resqnow/core/constants/app_colors.dart';
 class AdminSectionTitle extends StatelessWidget {
   final String title;
 
-  const AdminSectionTitle({super.key, required this.title});
+  const AdminSectionTitle({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: AppTextStyles.headingMedium.copyWith(color: AppColors.primary),
+        style: AppTextStyles.headingSmall.copyWith(
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
