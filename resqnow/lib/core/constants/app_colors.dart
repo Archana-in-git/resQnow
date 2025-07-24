@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary colors
+  static const Color primary = Color(0xFF00796B); // Teal
   static const Color accent = Color(0xFFD32F2F); // Red Alert
   static const Color secondary = Color(0xFFB71C1C); // Emergency Dark
-  static const Color primary = Color(0xFF00796B); // Teal
 
   // Background and surface
   static const Color background = Color(0xFFFAFAFA); // Soft White
