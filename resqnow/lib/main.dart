@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart'; // ✅ Add this package
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'features/presentation/navigation/app_router.dart';
-import 'core/theme/theme_manager.dart'; // ✅ Your theme manager
+import 'core/theme/theme_manager.dart';
 import 'core/theme/light_theme.dart';
 import 'core/theme/dark_theme.dart';
 
