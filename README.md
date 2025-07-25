@@ -14,7 +14,7 @@
 - **📇 User Medical Profile** – Store blood group, allergies, chronic illnesses, and emergency contacts.
 - **🌐 Offline Support** – Access to saved emergency data even without internet.
 - **🧠 Smart Filtering** – Filter by injury type, body part, or urgency.
-- **📌 Favorites** – Save frequently used aid guides or hospitals.
+- **📌 Favourites** – Save frequently used aid guides or hospitals.
 
 ### 🌟 Planned Features (Future)
 - **🎙️ Voice Commands** – Hands-free emergency access.
@@ -65,3 +65,39 @@ dependencies:
   geolocator: ^14.0.2
   flutter_phone_direct_caller: ^...
   provider: ^6.1.2
+```
+## 👩‍💻 Contributors
+
+- **Archana** – Developer & Project Lead
+- **Aaman** - Developer & Co-Contributor
+
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for more information.
+
+---
+
+## 🙏 Acknowledgements
+
+- [Flutter](https://flutter.dev/)
+- [Firebase](https://firebase.google.com/)
+- [Google Maps API](https://developers.google.com/maps)
+- [GitHub Student Developer Pack](https://education.github.com/pack)
+- [Material Design 3](https://m3.material.io/)
+
+---
+
+## 🔗 Project Links
+
+- 📱 **App Design System (Material 3)** – *[Available soon]*
+- 📊 **Feature Comparison Report** – *[Available soon]*
+- 📌 **Tech Stack Documentation** – *[Available soon]*
+
+---
+
+> _"Your first response can save a life. ResQNow helps you make it count."_ 🚑
+
