@@ -17,6 +17,14 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Logo
+              Image.asset(
+                'lib/assets/images/logo.png',
+                height: 160,
+              ),
+              const SizedBox(height: 16),
+
+              // Heading
               const Text(
                 "ResQnow",
                 style: TextStyle(
@@ -26,6 +34,8 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+
+              // Welcome Text
               const Text(
                 "Welcome Back!",
                 style: TextStyle(
