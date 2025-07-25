@@ -1,4 +1,4 @@
-# Miscellaneous
+# ───────────── Miscellaneous ─────────────
 *.class
 *.log
 *.pyc
@@ -12,34 +12,65 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# ───────────── IDEs ─────────────
 *.iml
 *.ipr
 *.iws
 .idea/
+.vscode/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# ───────────── Flutter / Dart / Pub ─────────────
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
+build/
+**/doc/api/
+**/ios/Flutter/.last_build_id
 
-# Symbolication related
+# ───────────── Firebase Functions (if using) ─────────────
+functions/node_modules/
+
+# ───────────── Android ─────────────
+android/app/debug/
+android/app/profile/
+android/app/release/
+**/*.keystore
+*.jks
+
+# ───────────── iOS/macOS (not used, but ignore anyway) ─────────────
+ios/
+macos/
+
+# ───────────── Linux ─────────────
+linux/
+
+# ───────────── Web ─────────────
+web/
+
+# ───────────── Windows ─────────────
+windows/
+windows/flutter/ephemeral/
+windows/**/*.vcxproj.user
+windows/**/*.exe
+windows/**/*.obj
+windows/**/*.pdb
+windows/**/*.log
+
+# ───────────── Symbolication / Obfuscation ─────────────
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# ───────────── Firebase CLI / Web related ─────────────
+firebase-debug.log
+firebase.json
+
+# ───────────── Environment / Secrets ─────────────
+.env
+.env.*
+.env.local
+
+# ───────────── Google Services ─────────────
+android/app/google-services.json
