@@ -13,11 +13,13 @@
 migrate_working_dir/
 
 # ───────────── IDEs ─────────────
-.iml
-.ipr
-.iws
+*.iml
+*.ipr
+*.iws
 .idea/
 .vscode/
+../.idea/
+../.vscode/
 
 # ───────────── Flutter / Dart / Pub ─────────────
 .dart_tool/
