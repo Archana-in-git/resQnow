@@ -35,13 +35,6 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Image.asset(
-                    'lib/assets/images/logo.png',
-                    height: 160,
-                  ),
-                ),
-                const SizedBox(height: 16),
                 const Center(
                   child: Text(
                     "ResQnow",
@@ -72,29 +65,28 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
 
-                IntlPhoneField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    labelStyle: const TextStyle(color: Colors.black87),
-                    prefixIcon: const Icon(Icons.phone, color: Colors.teal),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  initialCountryCode: 'IN',
-                  dropdownIcon:
-                      const Icon(Icons.arrow_drop_down, color: Colors.teal),
-                  style: const TextStyle(color: Colors.black87),
-                  flagsButtonMargin: const EdgeInsets.only(left: 8),
-                  dropdownTextStyle: const TextStyle(color: Colors.black87),
-                  onChanged: (phone) {
-                    phoneController.text = phone.completeNumber;
-                    selectedCountryCode = phone.countryCode;
-                  },
-                ),
+IntlPhoneField(
+  controller: phoneController,
+  decoration: InputDecoration(
+    labelText: 'Phone Number',
+    labelStyle: const TextStyle(color: Colors.black87),
+    prefixIcon: const Icon(Icons.phone, color: Colors.teal),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    filled: true,
+    fillColor: Colors.grey[100],
+  ),
+  initialCountryCode: 'IN',
+  dropdownIcon: const Icon(Icons.arrow_drop_down, color: Colors.teal),
+  style: const TextStyle(color: Colors.black87),
+  flagsButtonMargin: const EdgeInsets.only(left: 8),
+  dropdownTextStyle: const TextStyle(color: Colors.black87),
+  onChanged: (phone) {
+    phoneController.text = phone.completeNumber;
+    selectedCountryCode = phone.countryCode;
+  },
+),
 
                 TextFormField(
                   controller: dobController,
@@ -102,8 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(
                     labelText: "Date of Birth (DD/MM/YYYY)",
                     labelStyle: const TextStyle(color: Colors.black87),
-                    prefixIcon:
-                        const Icon(Icons.calendar_today, color: Colors.teal),
+                    prefixIcon: const Icon(Icons.calendar_today, color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -118,8 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       lastDate: DateTime.now(),
                     );
                     if (pickedDate != null) {
-                      dobController.text =
-                          DateFormat('dd/MM/yyyy').format(pickedDate);
+                      dobController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
                     }
                   },
                   validator: (value) =>
@@ -132,8 +122,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(
                     labelText: "Gender",
                     labelStyle: const TextStyle(color: Colors.black87),
-                    prefixIcon:
-                        const Icon(Icons.transgender, color: Colors.teal),
+                    prefixIcon: const Icon(Icons.transgender, color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -168,9 +157,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     prefixIcon: const Icon(Icons.lock, color: Colors.teal),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                         color: Colors.teal,
                       ),
                       onPressed: () {

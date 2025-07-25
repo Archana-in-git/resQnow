@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  font_awesome_flutter: ^10.6.0
 
   # --- Core Utilities ---
   provider: ^6.1.2
@@ -34,6 +35,8 @@ dependencies:
   image_picker: ^1.1.1
   geolocator: ^14.0.2
   google_maps_flutter: ^2.5.3
+  intl: ^0.20.2
+  intl_phone_field: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -45,11 +48,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Uncomment and add your custom assets when ready
-  # assets:
-  #   - assets/images/
-  #   - assets/icons/
+  assets:
+    - lib/assets/animation/success_check.json
+    - lib/assets/images/logo.png 
 
+  
   # Uncomment and add your custom fonts when needed
   # fonts:
   #   - family: Poppins
