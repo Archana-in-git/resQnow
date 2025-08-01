@@ -76,3 +76,5 @@ firebase.json
 
 # ───────────── Google Services ─────────────
 android/app/google-services.json
+
+scripts/serviceAccountKey.json
