@@ -77,4 +77,5 @@ firebase.json
 # ───────────── Google Services ─────────────
 android/app/google-services.json
 
-scripts/serviceAccountKey.json
+# Ignore the entire scripts folder
+/scripts/
