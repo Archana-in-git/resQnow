@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqnow/features/emergency/presentation/widgets/emergency_button.dart';
 
 class EmergencyPage extends StatelessWidget {
@@ -37,7 +38,7 @@ class EmergencyPage extends StatelessWidget {
               ),
             ),
             const Positioned(
-              bottom: 40,
+              bottom: 100,
               left: 0,
               right: 0,
               child: Center(
@@ -45,6 +46,28 @@ class EmergencyPage extends StatelessWidget {
                   'Please standby, we are currently\nrequesting for help.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ),
+            ),
+            // Add navigation button to categories
+            Positioned(
+              bottom: 40,
+              left: 32,
+              right: 32,
+              child: ElevatedButton(
+                onPressed: () => context.go('/categories'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: const BorderSide(color: Colors.white30),
+                  ),
+                ),
+                child: const Text(
+                  'Get First Aid Help',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
