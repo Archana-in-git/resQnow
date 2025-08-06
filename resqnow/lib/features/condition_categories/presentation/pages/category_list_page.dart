@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:resqnow/features/condition_categories/controllers/category_controller.dart';
-import 'package:resqnow/features/condition_categories/presentation/widgets/search_bar_widget.dart';
-import 'package:resqnow/features/condition_categories/presentation/widgets/category_tile.dart'; // CategoryTile widget
-import 'package:resqnow/domain/entities/category.dart'; // Your real model
+import 'package:resqnow/features/condition_categories/presentation/widgets/category_card.dart';
+import '../controllers/category_controller.dart';
+import 'package:resqnow/features/condition_categories/data/services/category_service.dart';
+import 'package:resqnow/features/categories/widgets/expandable_search_bar.dart';
 
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
@@ -13,76 +12,102 @@ class CategoryListPage extends StatefulWidget {
 }
 
 class _CategoryListPageState extends State<CategoryListPage> {
-  List<Category> filteredCategories = [];
+  late final CategoryController _controller;
+  final CategoryService _categoryService = CategoryService();
 
   @override
   void initState() {
     super.initState();
-    final controller = Provider.of<CategoryController>(context, listen: false);
-    controller.loadCategories().then((_) {
-      setState(() {
-        filteredCategories = controller.categories;
-      });
-    });
+    _controller = CategoryController(_categoryService);
+    _controller.loadCategories();
   }
 
-  void _onSearchChanged(String query) {
-    final controller = Provider.of<CategoryController>(context, listen: false);
-    setState(() {
-      filteredCategories = query.isEmpty
-          ? controller.categories
-          : controller.categories
-                .where(
-                  (category) =>
-                      category.name.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
-    });
-  }
-
-  void _onSearchClosed() {
-    final controller = Provider.of<CategoryController>(context, listen: false);
-    setState(() => filteredCategories = controller.categories);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<CategoryController>(context);
-
     return Scaffold(
-      appBar: AppBar(title: const Text("Explore Categories")),
-      body: controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : controller.error != null
-          ? Center(child: Text("Error: ${controller.error}"))
-          : Column(
-              children: [
-                AnimatedSearchBar(
-                  onChanged: _onSearchChanged,
-                  onClosed: _onSearchClosed,
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: filteredCategories.isEmpty
-                      ? const Center(child: Text("No categories found."))
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(12),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 1,
-                              ),
-                          itemCount: filteredCategories.length,
-                          itemBuilder: (context, index) {
-                            final category = filteredCategories[index];
-                            return CategoryTile(category: category);
-                          },
-                        ),
-                ),
-              ],
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text("Explore Conditions"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // You can still use this if you want full-page search later
+              // context.push('/category-search');
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 8.0,
             ),
+            child: ExpandableSearchBar(onSearch: _controller.filterCategories),
+          ),
+          Expanded(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                if (_controller.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (_controller.error != null) {
+                  return Center(
+                    child: Text(
+                      'Something went wrong!\n${_controller.error}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+
+                final categoryList = _controller.categories;
+
+                if (categoryList.isEmpty) {
+                  return const Center(child: Text("No categories found."));
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: GridView.builder(
+                    itemCount: categoryList.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.85,
+                        ),
+                    itemBuilder: (context, index) {
+                      final category = categoryList[index];
+                      return CategoryCard(
+                        category: category,
+                        onTap: () {
+                          // TODO: Navigate to CategoryDetailPage using category.id
+                          // context.push('/category/${category.id}');
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
