@@ -17,7 +17,7 @@ class EmergencyPage extends StatelessWidget {
               top: 16,
               right: 16,
               child: GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () => context.go('/categories'), // ✅ FIXED
                 child: const Icon(Icons.close, color: Colors.white, size: 28),
               ),
             ),
@@ -49,7 +49,6 @@ class EmergencyPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Add navigation button to categories
             Positioned(
               bottom: 40,
               left: 32,
@@ -57,7 +56,7 @@ class EmergencyPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => context.go('/categories'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  backgroundColor: Colors.white.withAlpha(40),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

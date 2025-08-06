@@ -4,20 +4,12 @@ import 'package:resqnow/features/condition_categories/presentation/pages/categor
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/categories',
+    initialLocation: '/emergency',
     routes: [
+      GoRoute(path: '/emergency', builder: (context, state) => EmergencyPage()),
       GoRoute(
         path: '/categories',
         builder: (context, state) => const CategoryListPage(),
-      ),
-      GoRoute(
-        path: '/emergency',
-        builder: (context, state) => const EmergencyPage(),
-      ),
-      // Route for emergency -> categories flow
-      GoRoute(
-        path: '/emergency-to-categories',
-        redirect: (context, state) => '/categories',
       ),
     ],
   );
