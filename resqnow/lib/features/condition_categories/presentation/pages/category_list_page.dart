@@ -3,6 +3,7 @@ import 'package:resqnow/features/condition_categories/presentation/widgets/categ
 import '../controllers/category_controller.dart';
 import 'package:resqnow/features/condition_categories/data/services/category_service.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
@@ -240,11 +241,10 @@ class _CategoryListPageState extends State<CategoryListPage>
                 return CategoryCard(
                   category: categories[index],
                   onTap: () {
-                    // Handle category tap
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Selected: ${categories[index].name}'),
-                      ),
+                    context.go(
+                      '/category/${categories[index].id}',
+                      extra:
+                          categories[index], // if you want to pass the whole object
                     );
                   },
                 );

@@ -24,4 +24,8 @@ class AppColors {
   static const Color userLocationCircle = Color(
     0x3300796B,
   ); // semi-transparent teal
+
+  // Additional colors
+  static const Color white = Colors.white;
+  static const Color primaryColor = Color(0xFF2196F3); // Adjust color as needed
 }
