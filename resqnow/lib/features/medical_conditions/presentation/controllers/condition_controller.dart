@@ -14,15 +14,19 @@ class ConditionController extends GetxController {
   final RxnString _errorMessage = RxnString();
   RxnString get errorMessage => _errorMessage;
 
-  /// Fetch a condition by ID
+  /// Fetch a condition by its `id` field in Firestore
   Future<void> fetchCondition(String id) async {
     _isLoading.value = true;
     _errorMessage.value = null;
+    _condition.value = null; // ensure old data is cleared
 
     try {
-      _condition.value = await _conditionService.getConditionById(id);
+      final fetchedCondition = await _conditionService.getConditionById(id);
+      _condition.value = fetchedCondition;
     } catch (e) {
-      _errorMessage.value = e.toString();
+      // Store a user-friendly error message but also useful for debugging
+      _errorMessage.value = 'Error fetching condition: $e';
+      _condition.value = null;
     } finally {
       _isLoading.value = false;
     }

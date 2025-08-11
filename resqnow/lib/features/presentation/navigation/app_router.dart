@@ -5,18 +5,43 @@ import 'package:resqnow/features/medical_conditions/presentation/pages/condition
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/emergency',
+    initialLocation: '/categories',
     routes: [
-      GoRoute(path: '/emergency', builder: (context, state) => EmergencyPage()),
+      GoRoute(
+        path: '/emergency',
+        name: 'emergency',
+        builder: (context, state) => const EmergencyPage(),
+      ),
       GoRoute(
         path: '/categories',
+        name: 'categories',
         builder: (context, state) => const CategoryListPage(),
+        routes: [
+          // Nested route - this ensures categories is the parent
+          GoRoute(
+            path: 'condition/:conditionId',
+            name: 'conditionDetail',
+            builder: (context, state) {
+              final conditionId = state.pathParameters['conditionId']!;
+              return ConditionDetailPage(conditionId: conditionId);
+            },
+          ),
+        ],
+      ),
+
+      // ✅ Optional: redirect legacy paths
+      GoRoute(
+        path: '/condition/:conditionId',
+        redirect: (context, state) {
+          final conditionId = state.pathParameters['conditionId']!;
+          return '/categories/condition/$conditionId';
+        },
       ),
       GoRoute(
         path: '/category/:id',
-        builder: (context, state) {
-          final conditionId = state.pathParameters['id']!;
-          return ConditionDetailPage(conditionId: conditionId);
+        redirect: (context, state) {
+          final id = state.pathParameters['id']!;
+          return '/categories/condition/$id';
         },
       ),
     ],

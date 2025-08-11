@@ -16,13 +16,16 @@ class ConditionService {
     }
   }
 
-  /// Fetch single condition by ID
+  /// Fetch single condition by its `id` field in Firestore
   Future<ConditionModel> getConditionById(String id) async {
     try {
-      final doc = await _firestore.collection('conditions').doc(id).get();
+      final doc = await _firestore
+          .collection('medical_conditions')
+          .doc(id)
+          .get();
 
       if (!doc.exists) {
-        throw Exception('Condition not found');
+        throw Exception('Condition not found for id: $id');
       }
 
       return ConditionModel.fromFirestore(doc);
