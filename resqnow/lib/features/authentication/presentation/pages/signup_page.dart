@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -22,6 +26,48 @@ class _SignUpPageState extends State<SignUpPage> {
   String? selectedGender;
   String selectedCountryCode = '+91';
   bool isPasswordVisible = false;
+  bool isLoading = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      // Create Firebase Auth account
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      // Save extra data in Firestore
+      await _firestore.collection("users").doc(userCredential.user!.uid).set({
+        "name": nameController.text.trim(),
+        "email": emailController.text.trim(),
+        "phone": "$selectedCountryCode${phoneController.text.trim()}",
+        "dob": dobController.text.trim(),
+        "gender": selectedGender,
+        "address": addressController.text.trim(),
+        "createdAt": FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created successfully!")),
+      );
+
+      Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Signup failed")),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +118,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
 
+                // ✅ Fixed phone field so it doesn't duplicate +91
                 IntlPhoneField(
-                  controller: phoneController,
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     labelStyle: const TextStyle(color: Colors.black87),
@@ -91,8 +137,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   flagsButtonMargin: const EdgeInsets.only(left: 8),
                   dropdownTextStyle: const TextStyle(color: Colors.black87),
                   onChanged: (phone) {
-                    phoneController.text = phone.completeNumber;
-                    selectedCountryCode = phone.countryCode;
+                    phoneController.text = phone.number; // Only store number
+                    selectedCountryCode = phone.countryCode; // Store code separately
                   },
                 ),
 
@@ -154,10 +200,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                _buildTextField(addressController, "Address", Icons.home,
-                    maxLines: 2),
-                const SizedBox(height: 16),
-
                 TextFormField(
                   controller: passwordController,
                   obscureText: !isPasswordVisible,
@@ -193,11 +235,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Handle signup
-                      }
-                    },
+                    onPressed: isLoading ? null : _signUp,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -205,33 +243,37 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      "Sign Up",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Sign Up",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Already have an account? ",
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, '/login'),
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    const Text(
+      "Already have an account? ",
+      style: TextStyle(color: Colors.black87),
+    ),
+    GestureDetector(
+      onTap: () => context.go('/login'),  // Changed here to use go_router
+      child: const Text(
+        "Login",
+        style: TextStyle(
+          color: Colors.teal,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  ],
+),
+
               ],
             ),
           ),

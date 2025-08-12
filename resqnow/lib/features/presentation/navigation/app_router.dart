@@ -3,11 +3,26 @@ import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dar
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
 import 'package:resqnow/features/medical_conditions/presentation/pages/condition_detail_page.dart';
+import 'package:resqnow/features/authentication/presentation/pages/login_page.dart';
+import 'package:resqnow/features/authentication/presentation/pages/signup_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/categories',
+    initialLocation: '/login',
     routes: [
+      // Auth routes
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignUpPage(),
+      ),
+
+      // Emergency routes
       GoRoute(
         path: '/emergency',
         name: 'emergency',
@@ -18,6 +33,8 @@ class AppRouter {
         name: 'emergencyNumbers',
         builder: (context, state) => const EmergencyNumbersPage(),
       ),
+
+      // Category and condition routes
       GoRoute(
         path: '/categories',
         name: 'categories',
@@ -33,6 +50,8 @@ class AppRouter {
           ),
         ],
       ),
+
+      // Redirects for condition and category paths to nested routes
       GoRoute(
         path: '/condition/:conditionId',
         redirect: (context, state) {

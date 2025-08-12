@@ -1,14 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+  State<LoginPage> createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Email & Password login
+  Future<void> _loginWithEmail() async {
+    setState(() => _isLoading = true);
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (mounted) context.go('/home');
+    } on FirebaseAuthException catch (e) {
+      _showError(e.message ?? 'Login failed');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  // Google Sign-In
+  Future<void> _loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return;
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await _auth.signInWithCredential(credential);
+      if (mounted) context.go('/home');
+    } catch (e) {
+      _showError('Google sign-in failed');
+    }
+  }
+
+  // Phone login
+  Future<void> _loginWithPhone() async {
+    String phoneNumber = '';
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Phone Login'),
+        content: TextField(
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(
+            hintText: '+91 9876543210',
+          ),
+          onChanged: (value) => phoneNumber = value,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _auth.verifyPhoneNumber(
+                phoneNumber: phoneNumber,
+                verificationCompleted: (credential) async {
+                  await _auth.signInWithCredential(credential);
+                  if (mounted) context.go('/home');
+                },
+                verificationFailed: (error) =>
+                    _showError(error.message ?? 'Phone verification failed'),
+                codeSent: (verificationId, _) {
+                  _showOtpDialog(verificationId);
+                },
+                codeAutoRetrievalTimeout: (_) {},
+              );
+            },
+            child: const Text('Send OTP'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // OTP Dialog
+  Future<void> _showOtpDialog(String verificationId) async {
+    String smsCode = '';
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter OTP'),
+        content: TextField(
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(hintText: '6-digit code'),
+          onChanged: (value) => smsCode = value,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final credential = PhoneAuthProvider.credential(
+                verificationId: verificationId,
+                smsCode: smsCode,
+              );
+              await _auth.signInWithCredential(credential);
+              if (mounted) context.go('/home');
+            },
+            child: const Text('Verify'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -46,17 +168,16 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              _buildTextField(emailController, "Email", Icons.email),
+              _buildTextField(_emailController, "Email", Icons.email),
               const SizedBox(height: 16),
-              _buildTextField(passwordController, "Password", Icons.lock, isPassword: true),
+              _buildTextField(_passwordController, "Password", Icons.lock,
+                  isPassword: true),
               const SizedBox(height: 20),
 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle login logic
-                  },
+                  onPressed: _isLoading ? null : _loginWithEmail,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -64,15 +185,18 @@ class LoginPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          "Login",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                 ),
               ),
               const SizedBox(height: 24),
 
-              const Text("Or sign in with", style: TextStyle(color: Colors.black54)),
+              const Text("Or sign in with",
+                  style: TextStyle(color: Colors.black54)),
               const SizedBox(height: 16),
 
               Row(
@@ -83,21 +207,14 @@ class LoginPage extends StatelessWidget {
                     label: "Google",
                     color: Colors.white,
                     textColor: Colors.black87,
-                    onPressed: () {},
+                    onPressed: _loginWithGoogle,
                   ),
                   _socialButton(
-                    icon: FontAwesomeIcons.facebookF,
-                    label: "Facebook",
-                    color: const Color(0xFF1877F2),
-                    textColor: Colors.white,
-                    onPressed: () {},
-                  ),
-                  _socialButton(
-                    icon: FontAwesomeIcons.apple,
-                    label: "Apple",
-                    color: Colors.black,
-                    textColor: Colors.white,
-                    onPressed: () {},
+                    icon: FontAwesomeIcons.phone,
+                    label: "Phone",
+                    color: Colors.teal.shade50,
+                    textColor: Colors.teal,
+                    onPressed: _loginWithPhone,
                   ),
                 ],
               ),
@@ -106,9 +223,10 @@ class LoginPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?", style: TextStyle(color: Colors.black87)),
+                  const Text("Don't have an account?",
+                      style: TextStyle(color: Colors.black87)),
                   TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/signup'),
+                    onPressed: () => context.go('/signup'),
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(
