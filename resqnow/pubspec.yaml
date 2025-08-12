@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   font_awesome_flutter: ^10.6.0
-  get: ^4.6.6
 
   # --- Core Utilities ---
   provider: ^6.1.2
@@ -40,6 +39,7 @@ dependencies:
   intl_phone_field: ^3.2.0
   youtube_player_flutter: ^9.1.2
   flutter_inappwebview: ^6.0.0
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +55,8 @@ flutter:
     - lib/assets/animation/success_check.json
     - lib/assets/images/logo.png
     - lib/assets/images/icons/
+    - lib/assets/images/firstaid_images/
+    - lib/assets/images/kits/
 
   # Uncomment and add your custom fonts when needed
   # fonts:

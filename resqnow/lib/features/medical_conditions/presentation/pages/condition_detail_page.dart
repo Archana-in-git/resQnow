@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/condition_model.dart';
 import '../controllers/condition_controller.dart';
 import '../widgets/severity_indicator.dart';
@@ -9,178 +11,280 @@ import '../widgets/faq_accordion.dart';
 import '../widgets/video_player_widget.dart';
 import '../../../../core/constants/app_text_styles.dart';
 
-class ConditionDetailPage extends StatelessWidget {
+class ConditionDetailPage extends StatefulWidget {
   final String conditionId;
 
-  ConditionDetailPage({super.key, required this.conditionId});
+  const ConditionDetailPage({super.key, required this.conditionId});
 
-  final ConditionController controller = Get.put(ConditionController());
+  @override
+  State<ConditionDetailPage> createState() => _ConditionDetailPageState();
+}
+
+class _ConditionDetailPageState extends State<ConditionDetailPage>
+    with AutomaticKeepAliveClientMixin {
+  final ConditionController controller = ConditionController();
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  Timer? _carouselTimer;
+  bool _isUserInteracting = false;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchCondition(widget.conditionId);
+      _startAutoPlay();
+    });
+  }
+
+  void _startAutoPlay() {
+    _carouselTimer?.cancel();
+    _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      final condition = controller.condition.value;
+      if (!_isUserInteracting &&
+          _pageController.hasClients &&
+          condition != null &&
+          condition.imageUrls.isNotEmpty) {
+        int nextPage = (_currentPage + 1) % condition.imageUrls.length;
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  void _pauseAutoPlayTemporarily() {
+    _isUserInteracting = true;
+    Future.delayed(const Duration(seconds: 5), () {
+      _isUserInteracting = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _carouselTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Fetch after first frame to avoid calling during build repeatedly
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchCondition(conditionId);
-    });
+    super.build(context);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
-        title: const SizedBox.shrink(), // as per design (no title here)
+        title: const SizedBox.shrink(),
         actions: [
           IconButton(
             icon: const Icon(Icons.call),
-            onPressed: () => Get.toNamed('/emergency-numbers'),
+            onPressed: () => context.push('/emergency-numbers'),
           ),
         ],
       ),
-      body: Obx(() {
-        // NOTE: controller uses Rx types (isLoading and condition). Access .value here.
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: ValueListenableBuilder<bool>(
+        valueListenable: controller.isLoading,
+        builder: (context, isLoading, _) {
+          if (isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        final ConditionModel? condition = controller.condition.value;
-        if (condition == null) {
-          return const Center(child: Text("No data found"));
-        }
+          final ConditionModel? condition = controller.condition.value;
+          if (condition == null) {
+            return const Center(child: Text("No data found"));
+          }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image carousel (simple single image shown here)
-              if (condition.imageUrls.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    condition.imageUrls.first,
-                    height: 220,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-
-              const SizedBox(height: 16),
-
-              // Condition Name + Save icon
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      condition.name,
-                      style: AppTextStyles.sectionTitle,
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (condition.imageUrls.isNotEmpty) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      height: 220,
+                      child: GestureDetector(
+                        onTapDown: (_) => _pauseAutoPlayTemporarily(),
+                        onPanDown: (_) => _pauseAutoPlayTemporarily(),
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: condition.imageUrls.length,
+                          onPageChanged: (index) =>
+                              setState(() => _currentPage = index),
+                          itemBuilder: (context, index) {
+                            final path = condition.imageUrls[index]
+                                .replaceFirst('resqnow/lib/', '');
+                            if (path.startsWith('http')) {
+                              return CachedNetworkImage(
+                                imageUrl: path,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey.shade200,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.broken_image),
+                              );
+                            } else {
+                              return Image.asset(
+                                path,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              );
+                            }
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.bookmark_border),
-                    onPressed: () {},
-                  ),
+                  const SizedBox(height: 8),
+                  _buildPageIndicator(condition.imageUrls.length),
+                  const SizedBox(height: 16),
                 ],
-              ),
 
-              const SizedBox(height: 8),
-
-              // Doctor Type chips
-              Wrap(
-                spacing: 8,
-                children: condition.doctorType
-                    .map((doc) => Chip(label: Text(doc)))
-                    .toList(),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Severity Indicator
-              SeverityIndicator(severity: condition.severity),
-
-              const SizedBox(height: 20),
-
-              // What to Do (firstAidDescription)
-              Text(
-                "What to Do",
-                style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
-              ),
-              const SizedBox(height: 8),
-              ...condition.firstAidDescription.map(
-                (step) => ListTile(
-                  leading: const Icon(Icons.check_circle, color: Colors.green),
-                  title: Text(step),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        condition.name,
+                        style: AppTextStyles.sectionTitle,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.bookmark_border),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
-              ),
 
-              const SizedBox(height: 16),
-
-              // What Not to Do
-              Text(
-                "What NOT to Do",
-                style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
-              ),
-              const SizedBox(height: 8),
-              ...condition.doNotDo.map(
-                (item) => ListTile(
-                  leading: const Icon(Icons.cancel, color: Colors.red),
-                  title: Text(item),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Video
-              if (condition.videoUrl.isNotEmpty) ...[
-                Text(
-                  "First Aid Video",
-                  style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
-                ),
                 const SizedBox(height: 8),
-                VideoPlayerWidget(videoUrl: condition.videoUrl),
-                const SizedBox(height: 16),
-              ],
 
-              // Required Kits (pass model list directly)
-              if (condition.requiredKits.isNotEmpty) ...[
-                Text(
-                  "Required Medical Kits",
-                  style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                Wrap(
+                  spacing: 8,
+                  children: condition.doctorType
+                      .map((doc) => Chip(label: Text(doc)))
+                      .toList(),
                 ),
-                const SizedBox(height: 8),
-                RequiredKitsList(kits: condition.requiredKits),
-                const SizedBox(height: 16),
-              ],
 
-              // FAQs
-              if (condition.faqs.isNotEmpty) ...[
-                Text(
-                  "FAQs",
-                  style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                const SizedBox(height: 16),
+
+                SeverityIndicator(severity: condition.severity),
+
+                const SizedBox(height: 20),
+
+                _buildSection(
+                  "What to Do",
+                  condition.firstAidDescription,
+                  icon: Icons.check_circle,
+                  color: Colors.green,
                 ),
-                const SizedBox(height: 8),
-                FAQAccordion(faqs: condition.faqs),
-                const SizedBox(height: 16),
-              ],
 
-              // Hospital Locator CTA
-              if (condition.hospitalLocatorLink.isNotEmpty)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.local_hospital),
-                    label: const Text("Find nearby help"),
-                    onPressed: () =>
-                        launchUrl(Uri.parse(condition.hospitalLocatorLink)),
+                _buildSection(
+                  "What NOT to Do",
+                  condition.doNotDo,
+                  icon: Icons.cancel,
+                  color: Colors.red,
+                ),
+
+                if (condition.videoUrl.isNotEmpty) ...[
+                  Text(
+                    "First Aid Video",
+                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  VideoPlayerWidget(videoUrl: condition.videoUrl),
+                  const SizedBox(height: 16),
+                ],
 
-              const SizedBox(height: 24),
-            ],
+                if (condition.requiredKits.isNotEmpty) ...[
+                  Text(
+                    "Required Medical Kits",
+                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  RequiredKitsList(kits: condition.requiredKits),
+                  const SizedBox(height: 16),
+                ],
+
+                if (condition.faqs.isNotEmpty) ...[
+                  Text(
+                    "FAQs",
+                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  FAQAccordion(faqs: condition.faqs),
+                  const SizedBox(height: 16),
+                ],
+
+                if (condition.hospitalLocatorLink.isNotEmpty)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.local_hospital),
+                      label: const Text("Find nearby help"),
+                      onPressed: () =>
+                          launchUrl(Uri.parse(condition.hospitalLocatorLink)),
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPageIndicator(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: _currentPage == index ? 10 : 8,
+          height: _currentPage == index ? 10 : 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _currentPage == index ? Colors.blue : Colors.grey.shade400,
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildSection(
+    String title,
+    List<String> items, {
+    required IconData icon,
+    required Color color,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.sectionTitle.copyWith(fontSize: 18)),
+        const SizedBox(height: 8),
+        ...items.map(
+          (step) => ListTile(
+            leading: Icon(icon, color: color),
+            title: Text(step),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

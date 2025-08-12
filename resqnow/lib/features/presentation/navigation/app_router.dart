@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
+import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
 import 'package:resqnow/features/medical_conditions/presentation/pages/condition_detail_page.dart';
 
@@ -13,11 +14,15 @@ class AppRouter {
         builder: (context, state) => const EmergencyPage(),
       ),
       GoRoute(
+        path: '/emergency-numbers',
+        name: 'emergencyNumbers',
+        builder: (context, state) => const EmergencyNumbersPage(),
+      ),
+      GoRoute(
         path: '/categories',
         name: 'categories',
         builder: (context, state) => const CategoryListPage(),
         routes: [
-          // Nested route - this ensures categories is the parent
           GoRoute(
             path: 'condition/:conditionId',
             name: 'conditionDetail',
@@ -28,8 +33,6 @@ class AppRouter {
           ),
         ],
       ),
-
-      // ✅ Optional: redirect legacy paths
       GoRoute(
         path: '/condition/:conditionId',
         redirect: (context, state) {

@@ -13,7 +13,7 @@ class CategoryListPage extends StatefulWidget {
 }
 
 class _CategoryListPageState extends State<CategoryListPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final CategoryController _controller;
   final CategoryService _categoryService = CategoryService();
   final TextEditingController _searchController = TextEditingController();
@@ -66,6 +66,8 @@ class _CategoryListPageState extends State<CategoryListPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // for AutomaticKeepAliveClientMixin
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -76,7 +78,7 @@ class _CategoryListPageState extends State<CategoryListPage>
             : IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Back to Home
+                  Navigator.of(context).pop();
                 },
               ),
         centerTitle: true,
@@ -90,7 +92,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                     child: Text(
                       'Explore Categories',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -108,9 +110,9 @@ class _CategoryListPageState extends State<CategoryListPage>
                       ),
                       child: Row(
                         children: [
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Icon(Icons.search, color: Colors.grey[600], size: 20),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
@@ -133,7 +135,6 @@ class _CategoryListPageState extends State<CategoryListPage>
                               size: 20,
                             ),
                             onPressed: () {
-                              // Future: Voice search implementation
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Voice search coming soon'),
@@ -148,7 +149,6 @@ class _CategoryListPageState extends State<CategoryListPage>
                               size: 20,
                             ),
                             onPressed: () {
-                              // Future: Image analysis implementation
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Image analysis coming soon'),
@@ -230,6 +230,7 @@ class _CategoryListPageState extends State<CategoryListPage>
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: GridView.builder(
+              key: const PageStorageKey('categoryGridView'),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 16,
@@ -238,14 +239,12 @@ class _CategoryListPageState extends State<CategoryListPage>
               ),
               itemCount: categories.length,
               itemBuilder: (context, index) {
+                final category = categories[index];
                 return CategoryCard(
-                  category: categories[index],
+                  key: ValueKey(category.id), // help preserve state
+                  category: category,
                   onTap: () {
-                    context.go(
-                      '/category/${categories[index].id}',
-                      extra:
-                          categories[index], // if you want to pass the whole object
-                    );
+                    context.go('/category/${category.id}', extra: category);
                   },
                 );
               },
@@ -255,4 +254,7 @@ class _CategoryListPageState extends State<CategoryListPage>
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
