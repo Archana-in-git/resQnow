@@ -10,6 +10,7 @@ import '../widgets/required_kits_list.dart';
 import '../widgets/faq_accordion.dart';
 import '../widgets/video_player_widget.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class ConditionDetailPage extends StatefulWidget {
   final String conditionId;
@@ -160,7 +161,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                     Expanded(
                       child: Text(
                         condition.name,
-                        style: AppTextStyles.sectionTitle,
+                        style: _sectionTitleStyle(context),
                       ),
                     ),
                     IconButton(
@@ -202,7 +203,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 if (condition.videoUrl.isNotEmpty) ...[
                   Text(
                     "First Aid Video",
-                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                    style: _sectionTitleStyle(context, fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   VideoPlayerWidget(videoUrl: condition.videoUrl),
@@ -212,7 +213,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 if (condition.requiredKits.isNotEmpty) ...[
                   Text(
                     "Required Medical Kits",
-                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                    style: _sectionTitleStyle(context, fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   RequiredKitsList(kits: condition.requiredKits),
@@ -222,7 +223,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 if (condition.faqs.isNotEmpty) ...[
                   Text(
                     "FAQs",
-                    style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+                    style: _sectionTitleStyle(context, fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   FAQAccordion(faqs: condition.faqs),
@@ -275,7 +276,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTextStyles.sectionTitle.copyWith(fontSize: 18)),
+        Text(title, style: _sectionTitleStyle(context, fontSize: 18)),
         const SizedBox(height: 8),
         ...items.map(
           (step) => ListTile(
@@ -285,6 +286,15 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  TextStyle _sectionTitleStyle(BuildContext context, {double? fontSize}) {
+    final baseStyle = AppTextStyles.sectionTitle;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return baseStyle.copyWith(
+      fontSize: fontSize ?? baseStyle.fontSize,
+      color: isDark ? Colors.white : (baseStyle.color ?? AppColors.textPrimary),
     );
   }
 }

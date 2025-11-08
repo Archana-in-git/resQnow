@@ -78,7 +78,8 @@ class _CategoryListPageState extends State<CategoryListPage>
             : IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  // Always go back to the Home page
+                  context.go('/home');
                 },
               ),
         centerTitle: true,
@@ -244,7 +245,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                   key: ValueKey(category.id), // help preserve state
                   category: category,
                   onTap: () {
-                    context.go('/category/${category.id}', extra: category);
+                    context.push('/categories/condition/${category.id}');
                   },
                 );
               },

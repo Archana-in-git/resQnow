@@ -4,6 +4,7 @@ import 'package:resqnow/core/constants/app_text_styles.dart';
 import 'package:resqnow/data/models/emergency_number_model.dart';
 import 'package:resqnow/features/emergency_numbers/data/services/emergency_number_service.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:go_router/go_router.dart';
 
 class EmergencyNumbersPage extends StatefulWidget {
   const EmergencyNumbersPage({super.key});
@@ -35,6 +36,11 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => context.go('/home'),
+          tooltip: 'Back to Home',
+        ),
         title: const Text('Emergency Numbers'),
         backgroundColor: AppColors.accent,
       ),
@@ -50,6 +56,13 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
           }
 
           final numbers = snapshot.data!;
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final titleStyle = AppTextStyles.bodyText.copyWith(
+            color: isDark ? Colors.white : AppTextStyles.bodyText.color,
+          );
+          final subtitleStyle = AppTextStyles.caption.copyWith(
+            color: isDark ? Colors.white70 : AppTextStyles.caption.color,
+          );
 
           return ListView.separated(
             padding: const EdgeInsets.all(16.0),
@@ -58,8 +71,8 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
             itemBuilder: (context, index) {
               final item = numbers[index];
               return ListTile(
-                title: Text(item.name, style: AppTextStyles.bodyText),
-                subtitle: Text(item.number, style: AppTextStyles.caption),
+                title: Text(item.name, style: titleStyle),
+                subtitle: Text(item.number, style: subtitleStyle),
                 trailing: IconButton(
                   icon: const Icon(Icons.call, color: Colors.green),
                   onPressed: () => _makePhoneCall(item.number),

@@ -1,3 +1,5 @@
+// ui_constants.dart
+
 class UIConstants {
   // Global Spacing
   static const double screenPadding = 16.0;

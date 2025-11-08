@@ -1,45 +1,64 @@
 import 'package:go_router/go_router.dart';
+
+// Home
+import 'package:resqnow/features/presentation/pages/home_page.dart';
+
+// Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
 import 'package:resqnow/features/medical_conditions/presentation/pages/condition_detail_page.dart';
-import 'package:resqnow/features/authentication/presentation/pages/login_page.dart';
-import 'package:resqnow/features/authentication/presentation/pages/signup_page.dart';
+
+// Resources
+import 'package:resqnow/features/first_aid_resources/presentation/pages/resource_list_page.dart';
+import 'package:resqnow/features/first_aid_resources/presentation/pages/resource_detail_page.dart';
+import 'package:resqnow/domain/entities/resource.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/login',
+    // ✅ Start with Home page as the first screen
+    initialLocation: '/home',
+
     routes: [
-      // Auth routes
+      // ✅ Root redirect
+      GoRoute(path: '/', redirect: (context, state) => '/home'),
+
+      /// -------------------------------
+      /// 🏠 Home Page (Landing)
+      /// -------------------------------
       GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/signup',
-        name: 'signup',
-        builder: (context, state) => const SignUpPage(),
+        path: '/home',
+        name: 'home',
+        builder: (context, state) => const HomePage(),
       ),
 
-      // Emergency routes
+      /// -------------------------------
+      /// 🚨 Emergency Page
+      /// -------------------------------
       GoRoute(
         path: '/emergency',
         name: 'emergency',
         builder: (context, state) => const EmergencyPage(),
       ),
+
+      /// -------------------------------
+      /// ☎️ Emergency Numbers Page
+      /// -------------------------------
       GoRoute(
         path: '/emergency-numbers',
         name: 'emergencyNumbers',
         builder: (context, state) => const EmergencyNumbersPage(),
       ),
 
-      // Category and condition routes
+      /// -------------------------------
+      /// 🩺 Categories Page
+      /// -------------------------------
       GoRoute(
         path: '/categories',
         name: 'categories',
         builder: (context, state) => const CategoryListPage(),
         routes: [
+          /// 📋 Category → Condition Details
           GoRoute(
             path: 'condition/:conditionId',
             name: 'conditionDetail',
@@ -51,7 +70,26 @@ class AppRouter {
         ],
       ),
 
-      // Redirects for condition and category paths to nested routes
+      /// -------------------------------
+      /// 📘 First-Aid Resources
+      /// -------------------------------
+      GoRoute(
+        path: '/resources',
+        name: 'resources',
+        builder: (context, state) => const ResourceListPage(),
+      ),
+      GoRoute(
+        path: '/resource-detail',
+        name: 'resourceDetail',
+        builder: (context, state) {
+          final resource = state.extra as Resource;
+          return ResourceDetailPage(resource: resource);
+        },
+      ),
+
+      /// -------------------------------
+      /// 🔁 Redirects (Old → New)
+      /// -------------------------------
       GoRoute(
         path: '/condition/:conditionId',
         redirect: (context, state) {

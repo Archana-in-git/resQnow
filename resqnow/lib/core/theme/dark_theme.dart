@@ -25,12 +25,14 @@ final ThemeData darkTheme = ThemeData(
     titleTextStyle: AppTextStyles.appTitle.copyWith(color: Colors.white),
   ),
   textTheme: TextTheme(
-    titleLarge: AppTextStyles.appTitle.copyWith(color: AppColors.textPrimary),
-    titleMedium: AppTextStyles.sectionTitle.copyWith(
-      color: AppColors.textPrimary,
+    titleLarge: AppTextStyles.appTitle.copyWith(color: Colors.white),
+    titleMedium: AppTextStyles.sectionTitle.copyWith(color: Colors.white),
+    bodyLarge: AppTextStyles.bodyText.copyWith(
+      color: const Color.fromARGB(255, 180, 180, 180),
     ),
-    bodyLarge: AppTextStyles.bodyText.copyWith(color: AppColors.textSecondary),
-    bodyMedium: AppTextStyles.bodyText.copyWith(color: AppColors.textSecondary),
+    bodyMedium: AppTextStyles.bodyText.copyWith(
+      color: const Color.fromARGB(255, 179, 179, 179),
+    ),
     labelLarge: AppTextStyles.buttonText.copyWith(color: Colors.white),
     labelSmall: AppTextStyles.caption.copyWith(color: Colors.grey[400]),
   ),

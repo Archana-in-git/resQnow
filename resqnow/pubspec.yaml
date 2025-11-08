@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   font_awesome_flutter: ^10.6.0
+  equatable: ^2.0.5
 
   # --- Core Utilities ---
   provider: ^6.1.2
@@ -33,7 +34,8 @@ dependencies:
   # --- Device Features ---
   flutter_phone_direct_caller: ^2.1.1
   image_picker: ^1.1.1
-  geolocator: ^14.0.2
+  geolocator: ^9.0.2
+  geocoding: ^2.0.5
   google_maps_flutter: ^2.5.3
   intl: ^0.20.2
   intl_phone_field: ^3.2.0
