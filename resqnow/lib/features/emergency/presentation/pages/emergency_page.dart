@@ -132,7 +132,6 @@ class _EmergencyPageState extends State<EmergencyPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // 🔴 YOUR ORIGINAL UI — UNCHANGED
             const Center(child: EmergencyButton()),
 
             // Close button
@@ -140,7 +139,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
               top: 16,
               right: 16,
               child: GestureDetector(
-                onTap: () => context.go('/categories'),
+                onTap: () => context.go('/home'),
                 child: const Icon(Icons.close, color: Colors.white, size: 28),
               ),
             ),
@@ -219,7 +218,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
               left: 32,
               right: 32,
               child: ElevatedButton(
-                onPressed: () => context.go('/categories'),
+                onPressed: () => context.go('/home'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white.withAlpha(40),
                   foregroundColor: Colors.white,

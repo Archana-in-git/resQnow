@@ -26,19 +26,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final resourceController = context.read<ResourceController>();
-      if (!resourceController.isLoading &&
-          resourceController.resources.isEmpty) {
-        resourceController.fetchResources();
-      }
-
-      final categoryController = context.read<CategoryController>();
-      if (!categoryController.isLoading &&
-          categoryController.categories.isEmpty) {
-        categoryController.loadCategories();
-      }
-    });
+    Future.microtask(() => context.read<CategoryController>().loadCategories());
   }
 
   @override
