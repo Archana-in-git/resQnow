@@ -49,7 +49,7 @@ class SeverityIndicator extends StatelessWidget {
           'Severity: $label',
           style: AppTextStyles.bodyText.copyWith(
             fontWeight: FontWeight.w600,
-            color: const Color.fromARGB(255, 224, 224, 224),
+            color: const Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         const SizedBox(height: 6),

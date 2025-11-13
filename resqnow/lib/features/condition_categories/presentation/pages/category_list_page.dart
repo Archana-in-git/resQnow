@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:resqnow/features/condition_categories/presentation/widgets/category_card.dart';
 import '../controllers/category_controller.dart';
 import 'package:resqnow/features/condition_categories/data/services/category_service.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
@@ -21,6 +25,9 @@ class _CategoryListPageState extends State<CategoryListPage>
   bool _isSearchExpanded = false;
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
+
+  File? _selectedImage;
+  bool _isAnalyzing = false;
 
   @override
   void initState() {
@@ -64,9 +71,76 @@ class _CategoryListPageState extends State<CategoryListPage>
     _controller.searchCategories(query);
   }
 
+  // 📸 Pick and analyze image logic
+  Future<void> _pickAndAnalyzeImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+
+    if (picked == null) return;
+
+    setState(() {
+      _selectedImage = File(picked.path);
+      _isAnalyzing = true;
+    });
+
+    final inputImage = InputImage.fromFile(_selectedImage!);
+    final labeler = ImageLabeler(
+      options: ImageLabelerOptions(confidenceThreshold: 0.6),
+    );
+
+    final labels = await labeler.processImage(inputImage);
+    // 👇 Add this
+    for (final l in labels) {
+      debugPrint(
+        '🧠 Detected label: ${l.label} (conf: ${l.confidence.toStringAsFixed(2)})',
+      );
+    }
+    labeler.close();
+
+    if (labels.isEmpty) {
+      _showSnack('No recognizable condition found.');
+      setState(() => _isAnalyzing = false);
+      return;
+    }
+
+    final keywords = labels.take(3).map((e) => e.label.toLowerCase()).toList();
+    await _searchCategoryByAliases(keywords);
+  }
+
+  // 🔍 Search Firestore categories by aliases
+  Future<void> _searchCategoryByAliases(List<String> keywords) async {
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('categories')
+          .where('aliases', arrayContainsAny: keywords)
+          .get();
+
+      setState(() => _isAnalyzing = false);
+
+      if (query.docs.isNotEmpty) {
+        final category = query.docs.first.data();
+        final categoryId = query.docs.first.id;
+        _showSnack('Detected: ${category['name']}');
+
+        // ✅ Navigate to that category
+        if (mounted) {
+          context.push('/categories/condition/$categoryId');
+        }
+      } else {
+        _showSnack('No matching category found.');
+      }
+    } catch (e) {
+      _showSnack('Error analyzing image: $e');
+    }
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    super.build(context); // for AutomaticKeepAliveClientMixin
+    super.build(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -78,7 +152,6 @@ class _CategoryListPageState extends State<CategoryListPage>
             : IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  // Always go back to the Home page
                   context.go('/home');
                 },
               ),
@@ -88,20 +161,19 @@ class _CategoryListPageState extends State<CategoryListPage>
           builder: (context, child) {
             return Row(
               children: [
-                if (!_isSearchExpanded) ...[
-                  Expanded(
+                if (!_isSearchExpanded)
+                  const Expanded(
                     child: Text(
                       'Explore Categories',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                ],
-                if (_isSearchExpanded) ...[
+                if (_isSearchExpanded)
                   Expanded(
                     child: Container(
                       height: 40,
@@ -111,9 +183,9 @@ class _CategoryListPageState extends State<CategoryListPage>
                       ),
                       child: Row(
                         children: [
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Icon(Icons.search, color: Colors.grey[600], size: 20),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
@@ -143,26 +215,30 @@ class _CategoryListPageState extends State<CategoryListPage>
                               );
                             },
                           ),
+                          // 🧠 Replaced placeholder with working image analysis
                           IconButton(
-                            icon: Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey[600],
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Image analysis coming soon'),
-                                ),
-                              );
-                            },
+                            icon: _isAnalyzing
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.teal,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.grey[600],
+                                    size: 20,
+                                  ),
+                            onPressed: _isAnalyzing
+                                ? null
+                                : _pickAndAnalyzeImage,
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                ],
                 IconButton(
                   icon: Icon(
                     _isSearchExpanded ? Icons.close : Icons.search,
@@ -242,7 +318,7 @@ class _CategoryListPageState extends State<CategoryListPage>
               itemBuilder: (context, index) {
                 final category = categories[index];
                 return CategoryCard(
-                  key: ValueKey(category.id), // help preserve state
+                  key: ValueKey(category.id),
                   category: category,
                   onTap: () {
                     context.push('/categories/condition/${category.id}');

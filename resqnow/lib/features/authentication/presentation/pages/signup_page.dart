@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../controllers/auth_controller.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -26,51 +26,11 @@ class _SignUpPageState extends State<SignUpPage> {
   String? selectedGender;
   String selectedCountryCode = '+91';
   bool isPasswordVisible = false;
-  bool isLoading = false;
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> _signUp() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => isLoading = true);
-
-    try {
-      // Create Firebase Auth account
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-
-      // Save extra data in Firestore
-      await _firestore.collection("users").doc(userCredential.user!.uid).set({
-        "name": nameController.text.trim(),
-        "email": emailController.text.trim(),
-        "phone": "$selectedCountryCode${phoneController.text.trim()}",
-        "dob": dobController.text.trim(),
-        "gender": selectedGender,
-        "address": addressController.text.trim(),
-        "createdAt": FieldValue.serverTimestamp(),
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Account created successfully!")),
-      );
-
-      Navigator.pushReplacementNamed(context, '/login');
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Signup failed")),
-      );
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final authController = Provider.of<AuthController>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -82,15 +42,12 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
-                  child: Image.asset(
-                    'lib/assets/images/logo.png',
-                    height: 160,
-                  ),
+                  child: Image.asset('lib/assets/images/logo.png', height: 160),
                 ),
                 const SizedBox(height: 16),
                 const Center(
                   child: Text(
-                    "ResQnow",
+                    "ResQNow",
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -114,11 +71,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildTextField(nameController, "Full Name", Icons.person),
                 const SizedBox(height: 16),
 
-                _buildTextField(emailController, "Email", Icons.email,
-                    keyboardType: TextInputType.emailAddress),
+                _buildTextField(
+                  emailController,
+                  "Email",
+                  Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
                 const SizedBox(height: 16),
 
-                // ✅ Fixed phone field so it doesn't duplicate +91
                 IntlPhoneField(
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
@@ -131,15 +91,20 @@ class _SignUpPageState extends State<SignUpPage> {
                     fillColor: Colors.grey[100],
                   ),
                   initialCountryCode: 'IN',
-                  dropdownIcon:
-                      const Icon(Icons.arrow_drop_down, color: Colors.teal),
-                  style: const TextStyle(color: Colors.black87),
-                  flagsButtonMargin: const EdgeInsets.only(left: 8),
-                  dropdownTextStyle: const TextStyle(color: Colors.black87),
+                  dropdownIcon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.teal,
+                  ),
                   onChanged: (phone) {
-                    phoneController.text = phone.number; // Only store number
-                    selectedCountryCode = phone.countryCode; // Store code separately
+                    phoneController.text = phone.number;
+                    selectedCountryCode = phone.countryCode;
                   },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  addressController,
+                  "Address",
+                  Icons.location_on,
                 ),
 
                 TextFormField(
@@ -147,9 +112,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Date of Birth (DD/MM/YYYY)",
-                    labelStyle: const TextStyle(color: Colors.black87),
-                    prefixIcon:
-                        const Icon(Icons.calendar_today, color: Colors.teal),
+                    prefixIcon: const Icon(
+                      Icons.calendar_today,
+                      color: Colors.teal,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -164,29 +130,29 @@ class _SignUpPageState extends State<SignUpPage> {
                       lastDate: DateTime.now(),
                     );
                     if (pickedDate != null) {
-                      dobController.text =
-                          DateFormat('dd/MM/yyyy').format(pickedDate);
+                      dobController.text = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(pickedDate);
                     }
                   },
                   validator: (value) =>
                       value == null || value.isEmpty ? 'Required' : null,
-                  style: const TextStyle(color: Colors.black87),
                 ),
                 const SizedBox(height: 16),
 
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: "Gender",
-                    labelStyle: const TextStyle(color: Colors.black87),
-                    prefixIcon:
-                        const Icon(Icons.transgender, color: Colors.teal),
+                    prefixIcon: const Icon(
+                      Icons.transgender,
+                      color: Colors.teal,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: Colors.grey[100],
                   ),
-                  dropdownColor: Colors.grey[100],
                   value: selectedGender,
                   items: const [
                     DropdownMenuItem(value: "Male", child: Text("Male")),
@@ -196,17 +162,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   onChanged: (value) => setState(() => selectedGender = value),
                   validator: (value) =>
                       value == null ? 'Please select gender' : null,
-                  style: const TextStyle(color: Colors.black87),
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: passwordController,
                   obscureText: !isPasswordVisible,
-                  style: const TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
                     labelText: "Password",
-                    labelStyle: const TextStyle(color: Colors.black87),
                     prefixIcon: const Icon(Icons.lock, color: Colors.teal),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -215,11 +178,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             : Icons.visibility,
                         color: Colors.teal,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
+                      onPressed: () => setState(
+                        () => isPasswordVisible = !isPasswordVisible,
+                      ),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -228,14 +189,56 @@ class _SignUpPageState extends State<SignUpPage> {
                     fillColor: Colors.grey[100],
                   ),
                   validator: (value) =>
-                      value == null || value.isEmpty ? 'Required field' : null,
+                      value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: isLoading ? null : _signUp,
+                    onPressed: authController.isLoading
+                        ? null
+                        : () async {
+                            if (!_formKey.currentState!.validate()) return;
+
+                            final user = await authController.signUpWithEmail(
+                              name: nameController.text.trim(),
+                              email: emailController.text.trim(),
+                              password: passwordController.text.trim(),
+                            );
+
+                            if (user != null) {
+                              // ✅ Add extended user details
+                              final firestore = FirebaseFirestore.instance;
+                              await firestore
+                                  .collection('users')
+                                  .doc(user.uid)
+                                  .set({
+                                    'phone':
+                                        '$selectedCountryCode${phoneController.text.trim()}',
+                                    'dob': dobController.text.trim(),
+                                    'gender': selectedGender,
+                                    'address': addressController.text.trim(),
+                                  }, SetOptions(merge: true));
+
+                              final role = await authController
+                                  .getCurrentUserRole();
+                              if (role == 'admin') {
+                                context.go('/adminDashboard');
+                              } else {
+                                context.go('/home');
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    authController.errorMessage ??
+                                        "Signup failed",
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -243,37 +246,35 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: isLoading
+                    child: authController.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                             "Sign Up",
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.white),
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    const Text(
-      "Already have an account? ",
-      style: TextStyle(color: Colors.black87),
-    ),
-    GestureDetector(
-      onTap: () => context.go('/login'),  // Changed here to use go_router
-      child: const Text(
-        "Login",
-        style: TextStyle(
-          color: Colors.teal,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  ],
-),
-
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Already have an account? ",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    GestureDetector(
+                      onTap: () => context.go('/login'),
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -287,27 +288,14 @@ Row(
     String label,
     IconData icon, {
     TextInputType keyboardType = TextInputType.text,
-    bool isPassword = false,
-    int maxLines = 1,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      obscureText: isPassword,
-      maxLines: maxLines,
-      style: const TextStyle(color: Colors.black87),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.black87),
         prefixIcon: Icon(icon, color: Colors.teal),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.teal),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.teal, width: 2),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[100],
       ),

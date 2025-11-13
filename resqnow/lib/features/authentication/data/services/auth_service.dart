@@ -3,15 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  // 🔹 Firebase instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // 🔹 Collection name
   static const String usersCollection = 'users';
 
   // ---------------------------------------------------------------------------
-  // 🧠 EMAIL + PASSWORD SIGNUP
+  // 🧠 EMAIL + PASSWORD SIGNUP (Default role: user)
   // ---------------------------------------------------------------------------
   Future<User?> signUpWithEmail({
     required String name,
@@ -19,30 +17,24 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // 1️⃣ Create Firebase user
+      // 1️⃣ Create the Firebase Auth user
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       User? user = credential.user;
-
       if (user != null) {
-        // 2️⃣ Determine role (admin if specific email, else user)
-        String role = (email == "archana@email.com") ? "admin" : "user";
-
-        // 3️⃣ Store in Firestore
+        // 2️⃣ Create Firestore document (role always "user" by default)
         await _firestore.collection(usersCollection).doc(user.uid).set({
           'uid': user.uid,
           'name': name,
           'email': email,
-          'role': role,
+          'role': 'user', // ✅ manual change needed in Firestore for admins
           'createdAt': FieldValue.serverTimestamp(),
         });
-
-        return user;
       }
-      return null;
+      return user;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
     }
@@ -67,12 +59,12 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 🟢 GOOGLE SIGN-IN
+  // 🟢 GOOGLE SIGN-IN (Default role: user)
   // ---------------------------------------------------------------------------
   Future<User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return null; // user cancelled
+      if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -85,7 +77,7 @@ class AuthService {
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user;
 
-      // Store user if new
+      // Check if user exists in Firestore
       if (user != null) {
         final docRef = _firestore.collection(usersCollection).doc(user.uid);
         final snapshot = await docRef.get();
@@ -95,7 +87,7 @@ class AuthService {
             'uid': user.uid,
             'name': user.displayName ?? '',
             'email': user.email,
-            'role': 'user',
+            'role': 'user', // ✅ all Google sign-ins start as user
             'createdAt': FieldValue.serverTimestamp(),
           });
         }
@@ -107,7 +99,7 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 👤 ANONYMOUS SIGN-IN
+  // 👤 ANONYMOUS SIGN-IN (Role: guest)
   // ---------------------------------------------------------------------------
   Future<User?> signInAnonymously() async {
     try {
@@ -121,7 +113,6 @@ class AuthService {
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
-
       return user;
     } catch (e) {
       throw Exception('Anonymous sign-in failed: $e');
@@ -137,7 +128,7 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 🔍 GET CURRENT USER ROLE
+  // 🔍 FETCH USER ROLE FROM FIRESTORE
   // ---------------------------------------------------------------------------
   Future<String?> getCurrentUserRole() async {
     final user = _auth.currentUser;
@@ -148,7 +139,7 @@ class AuthService {
         .doc(user.uid)
         .get();
     if (snapshot.exists) {
-      return snapshot.data()?['role'];
+      return snapshot.data()?['role'] ?? 'user';
     }
     return null;
   }
