@@ -22,7 +22,7 @@ import 'package:resqnow/domain/entities/resource.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/signup',
+    initialLocation: '/emergency',
     routes: [
       /// -------------------------------
       /// 🧭 Authentication Flow
