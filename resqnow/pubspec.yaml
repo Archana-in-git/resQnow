@@ -43,6 +43,9 @@ dependencies:
   flutter_inappwebview: ^6.0.0
   cached_network_image: ^3.2.3
   google_mlkit_image_labeling: ^0.11.0
+  flutter_tts: ^3.8.0
+  audioplayers: ^5.2.1
+  speech_to_text: ^6.6.0
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +63,8 @@ flutter:
     - lib/assets/images/icons/
     - lib/assets/images/firstaid_images/
     - lib/assets/images/kits/
+    - lib/assets/sounds/beep.wav
+    - lib/assets/animation/Audio&Voice-A-002.json
 
   # Uncomment and add your custom fonts when needed
   # fonts:
