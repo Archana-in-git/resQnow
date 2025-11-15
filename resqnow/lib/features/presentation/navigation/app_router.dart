@@ -8,6 +8,7 @@ import 'package:resqnow/features/authentication/presentation/pages/success_page.
 
 // 🏠 Home
 import 'package:resqnow/features/presentation/pages/home_page.dart';
+import 'package:resqnow/features/presentation/pages/splash_screen.dart';
 
 // 🚨 Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
@@ -22,7 +23,7 @@ import 'package:resqnow/domain/entities/resource.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/emergency',
+    initialLocation: '/splash',
     routes: [
       /// -------------------------------
       /// 🧭 Authentication Flow
@@ -128,6 +129,11 @@ class AppRouter {
           final id = state.pathParameters['id']!;
           return '/categories/condition/$id';
         },
+      ),
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
       ),
     ],
   );

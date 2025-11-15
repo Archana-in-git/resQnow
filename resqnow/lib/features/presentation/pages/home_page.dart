@@ -20,13 +20,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // ✅ Key to control the Scaffold for opening drawer
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<CategoryController>().loadCategories());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LocationController>().initialize();
+
+      final categoryController = context.read<CategoryController>();
+      if (categoryController.categories.isEmpty) {
+        categoryController.loadCategories();
+      }
+    });
   }
 
   @override

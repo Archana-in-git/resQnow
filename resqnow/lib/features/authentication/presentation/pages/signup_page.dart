@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -19,11 +18,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  final addressController = TextEditingController();
   final passwordController = TextEditingController();
-  final dobController = TextEditingController();
 
-  String? selectedGender;
   String selectedCountryCode = '+91';
   bool isPasswordVisible = false;
 
@@ -101,69 +97,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                _buildTextField(
-                  addressController,
-                  "Address",
-                  Icons.location_on,
-                ),
-
-                TextFormField(
-                  controller: dobController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: "Date of Birth (DD/MM/YYYY)",
-                    prefixIcon: const Icon(
-                      Icons.calendar_today,
-                      color: Colors.teal,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime(2000),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null) {
-                      dobController.text = DateFormat(
-                        'dd/MM/yyyy',
-                      ).format(pickedDate);
-                    }
-                  },
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: "Gender",
-                    prefixIcon: const Icon(
-                      Icons.transgender,
-                      color: Colors.teal,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  value: selectedGender,
-                  items: const [
-                    DropdownMenuItem(value: "Male", child: Text("Male")),
-                    DropdownMenuItem(value: "Female", child: Text("Female")),
-                    DropdownMenuItem(value: "Other", child: Text("Other")),
-                  ],
-                  onChanged: (value) => setState(() => selectedGender = value),
-                  validator: (value) =>
-                      value == null ? 'Please select gender' : null,
-                ),
-                const SizedBox(height: 16),
 
                 TextFormField(
                   controller: passwordController,
@@ -208,7 +141,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             );
 
                             if (user != null) {
-                              // ✅ Add extended user details
                               final firestore = FirebaseFirestore.instance;
                               await firestore
                                   .collection('users')
@@ -216,9 +148,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                   .set({
                                     'phone':
                                         '$selectedCountryCode${phoneController.text.trim()}',
-                                    'dob': dobController.text.trim(),
-                                    'gender': selectedGender,
-                                    'address': addressController.text.trim(),
                                   }, SetOptions(merge: true));
 
                               final role = await authController
