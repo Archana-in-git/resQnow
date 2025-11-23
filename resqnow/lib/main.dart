@@ -24,7 +24,6 @@ import 'features/authentication/presentation/controllers/auth_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   final firestore = FirebaseFirestore.instance;
   final categoryService = CategoryService();
 

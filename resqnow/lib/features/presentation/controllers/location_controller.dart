@@ -1,7 +1,9 @@
 // features/presentation/controllers/location_controller.dart
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+
 import 'package:resqnow/core/services/location_service.dart';
 import 'package:resqnow/core/services/permission_service.dart';
 
@@ -11,20 +13,39 @@ class LocationController extends ChangeNotifier {
   bool _hasPermission = false;
   bool _initialised = false;
 
+  StreamSubscription<Position>? _positionSubscription;
+
   String get locationText => _locationText;
   bool get isLoading => _isLoading;
   bool get hasPermission => _hasPermission;
 
+  // INITIALIZER
   Future<void> initialize() async {
     if (_initialised) return;
     _initialised = true;
     await refreshLocation();
   }
 
+  // 🔥 Wait for GPS to turn on after user opens settings
+  Future<bool> _waitForGPSOn({int seconds = 30}) async {
+    final end = DateTime.now().add(Duration(seconds: seconds));
+
+    while (DateTime.now().isBefore(end)) {
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      if (enabled) return true;
+
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    return await Geolocator.isLocationServiceEnabled();
+  }
+
+  // MAIN REFRESH LOGIC
   Future<void> refreshLocation() async {
     _isLoading = true;
     notifyListeners();
 
+    // 1️⃣ Request Permission
     final granted = await PermissionService.requestLocationPermission();
     _hasPermission = granted;
 
@@ -35,12 +56,37 @@ class LocationController extends ChangeNotifier {
       return;
     }
 
+    // 2️⃣ Check GPS / Location Services
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _locationText = 'Enable GPS to detect location';
+      notifyListeners();
+
+      // Open settings to enable GPS
+      await Geolocator.openLocationSettings();
+
+      // 🔥 Wait for the user to actually turn it on
+      final turnedOn = await _waitForGPSOn(seconds: 30);
+
+      if (!turnedOn) {
+        _locationText = 'Please enable location services';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+    }
+
+    // 3️⃣ Fetch Current Position
     final Position? position = await LocationService.getCurrentPosition();
+
     if (position != null) {
       final label = await LocationService.getCityCountryFromPosition(position);
+
       _locationText =
           label ??
           '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}';
+
+      await _startPositionStream();
     } else {
       _locationText = 'Unable to detect location';
     }
@@ -49,8 +95,38 @@ class LocationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // LIVE STREAM UPDATES
+  Future<void> _startPositionStream() async {
+    await _positionSubscription?.cancel();
+
+    _positionSubscription =
+        LocationService.getPositionStream(distanceFilter: 20).listen(
+          (Position position) async {
+            final label = await LocationService.getCityCountryFromPosition(
+              position,
+            );
+
+            _locationText =
+                label ??
+                '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}';
+
+            notifyListeners();
+          },
+          onError: (_) {
+            _locationText = 'Location unavailable';
+            notifyListeners();
+          },
+        );
+  }
+
   void setManualLocation(String label) {
     _locationText = label;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _positionSubscription?.cancel();
+    super.dispose();
   }
 }

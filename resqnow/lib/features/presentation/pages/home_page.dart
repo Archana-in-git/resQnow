@@ -25,12 +25,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<LocationController>().initialize();
 
       final categoryController = context.read<CategoryController>();
       if (categoryController.categories.isEmpty) {
         categoryController.loadCategories();
+      }
+
+      final resourceController = context.read<ResourceController>();
+      if (resourceController.resources.isEmpty &&
+          !resourceController.isLoading) {
+        await resourceController.fetchResources();
       }
     });
   }
@@ -211,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                             resource: kit,
                             onTap: () {
                               // Navigate to resource detail - adjust route if different
-                              context.push('/resource/${kit.id}');
+                              context.push('/resource-detail', extra: kit);
                             },
                             onActionTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(

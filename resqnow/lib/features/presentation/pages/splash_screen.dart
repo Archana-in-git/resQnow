@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -58,10 +58,10 @@ class _SplashScreenState extends State<SplashScreen>
                 width: 150,
               ),
               const SizedBox(height: 20),
-              const Text(
-                'ResQNow',
+              Text(
+                'ResQnow',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primary,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,

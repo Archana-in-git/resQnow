@@ -152,7 +152,7 @@ class _CategoryListPageState extends State<CategoryListPage>
             : IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  context.go('/home');
+                  context.pop();
                 },
               ),
         centerTitle: true,
@@ -215,7 +215,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                               );
                             },
                           ),
-                          // 🧠 Replaced placeholder with working image analysis
+                          // image analysis
                           IconButton(
                             icon: _isAnalyzing
                                 ? const SizedBox(

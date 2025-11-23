@@ -1,49 +1,3 @@
-// import 'package:resqnow/domain/entities/resource.dart';
-
-// class ResourceModel extends Resource {
-//   const ResourceModel({
-//     required super.id,
-//     required super.name,
-//     required super.imageUrls,
-//     required super.description,
-//     required super.category,
-//     required super.tags,
-//     required super.createdAt,
-//     required super.updatedAt,
-//     required super.isFeatured,
-//   });
-
-//   /// Factory from JSON (Firebase/REST API)
-//   factory ResourceModel.fromJson(Map<String, dynamic> json) {
-//     return ResourceModel(
-//       id: json['id'] as String,
-//       name: json['name'] as String,
-//       imageUrls: List<String>.from(json['imageUrls'] ?? []),
-//       description: json['description'] as String? ?? '',
-//       category: List<String>.from(json['category'] ?? []),
-//       tags: List<String>.from(json['tags'] ?? []),
-//       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-//       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-//       isFeatured: json['isFeatured'] ?? false,
-//     );
-//   }
-
-//   /// Convert model to JSON (for saving/updating)
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'id': id,
-//       'name': name,
-//       'imageUrls': imageUrls,
-//       'description': description,
-//       'category': category,
-//       'tags': tags,
-//       'createdAt': createdAt.toIso8601String(),
-//       'updatedAt': updatedAt.toIso8601String(),
-//       'isFeatured': isFeatured,
-//     };
-//   }
-// }
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resqnow/domain/entities/resource.dart';
 
@@ -63,12 +17,26 @@ class ResourceModel extends Resource {
   /// Factory from JSON (Firebase/REST API)
   factory ResourceModel.fromJson(Map<String, dynamic> json) {
     DateTime parseDate(dynamic value) {
-      if (value is Timestamp) {
-        return value.toDate();
-      } else if (value is String) {
-        return DateTime.tryParse(value) ?? DateTime.now();
-      } else {
-        return DateTime.now();
+      if (value is Timestamp) return value.toDate();
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      return DateTime.now();
+    }
+
+    final List<String> categories = [];
+    final rawCategories = json['category'] as List<dynamic>? ?? [];
+    for (final item in rawCategories) {
+      if (item is String) {
+        categories.add(item);
+      } else if (item is Map<String, dynamic>) {
+        final name = item['name'];
+        if (name is String && name.isNotEmpty) categories.add(name);
+
+        final aliases = item['aliases'];
+        if (aliases is List) {
+          for (final alias in aliases) {
+            if (alias is String && alias.isNotEmpty) categories.add(alias);
+          }
+        }
       }
     }
 
@@ -77,7 +45,7 @@ class ResourceModel extends Resource {
       name: json['name'] as String,
       imageUrls: List<String>.from(json['imageUrls'] ?? []),
       description: json['description'] as String? ?? '',
-      category: List<String>.from(json['category'] ?? []),
+      category: categories,
       tags: List<String>.from(json['tags'] ?? []),
       createdAt: parseDate(json['createdAt']),
       updatedAt: parseDate(json['updatedAt']),

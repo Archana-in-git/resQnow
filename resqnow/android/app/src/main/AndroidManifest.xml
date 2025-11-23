@@ -20,11 +20,12 @@
 
 
     <application
-android:label="resqnow"
+    android:label="resqnow"
     android:name="${applicationName}"
     android:icon="@mipmap/ic_launcher"
     android:usesCleartextTraffic="true"
-    android:theme="@style/LaunchTheme">
+    android:theme="@style/LaunchTheme"
+    android:enableOnBackInvokedCallback="true">
         
         <activity
             android:name=".MainActivity"

@@ -14,22 +14,22 @@ class CustomBottomNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: (index) {
         if (onTap != null) onTap!(index);
+
         switch (index) {
           case 0:
-            context.go('/home');
+            context.push('/home');
             break;
           case 1:
-            // Direct Explore (magnifier) to the category list page
-            context.go('/categories');
+            context.push('/categories');
             break;
           case 2:
-            context.go('/emergency-numbers');
+            context.push('/emergency-numbers');
             break;
           case 3:
-            context.go('/resources');
+            context.push('/resources');
             break;
           case 4:
-            context.go('/user-profile');
+            context.push('/user-profile');
             break;
         }
       },
