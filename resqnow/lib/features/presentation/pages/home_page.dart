@@ -46,10 +46,8 @@ class _HomePageState extends State<HomePage> {
     final locationText = context.watch<LocationController>().locationText;
 
     return Scaffold(
-      key: _scaffoldKey, // ✅ Add key
+      key: _scaffoldKey,
       backgroundColor: AppColors.background,
-
-      // ✅ Add endDrawer for right-to-left opening
       endDrawer: const ResQNowNavBar(),
 
       body: SafeArea(
@@ -59,9 +57,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// 🔹 Top Bar with dynamic location
+              /// 🔹 Top Bar
               TopBar(locationText: locationText),
-
               const SizedBox(height: 20),
 
               /// 🔹 Search Bar
@@ -89,8 +86,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(width: 10),
-
-                  // ✅ Replaced filter icon with menu icon
                   Container(
                     height: 48,
                     width: 48,
@@ -116,14 +111,12 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => context.push('/categories'),
               ),
               const SizedBox(height: 12),
-              // Rounded category icons (no labels). Show up to 6 (4 visible, horizontal scroll to reveal 2)
+
               LayoutBuilder(
                 builder: (context, constraints) {
-                  const itemSpacing = 12.0;
-                  final availableWidth = constraints.maxWidth;
-                  // diameter so 4 circles fit across with spacing
-                  final circleDiameter =
-                      (availableWidth - (itemSpacing * 3)) / 4;
+                  const spacing = 12.0;
+                  final width = constraints.maxWidth;
+                  final diameter = (width - (spacing * 3)) / 4;
 
                   final categories = context
                       .watch<CategoryController>()
@@ -132,16 +125,16 @@ class _HomePageState extends State<HomePage> {
                       .toList();
 
                   return SizedBox(
-                    height: circleDiameter,
+                    height: diameter,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: categories.length,
-                      separatorBuilder: (_, index) =>
-                          const SizedBox(width: itemSpacing),
-                      itemBuilder: (context, index) {
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: spacing),
+                      itemBuilder: (_, index) {
                         final cat = categories[index];
                         return _CategoryCircleIcon(
-                          diameter: circleDiameter,
+                          diameter: diameter,
                           iconPath: cat.iconAsset,
                           onTap: () =>
                               context.push('/categories/condition/${cat.id}'),
@@ -160,12 +153,13 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => context.push('/hospitals'),
               ),
               const SizedBox(height: 12),
+
               SizedBox(
                 height: 160,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 3,
-                  itemBuilder: (context, index) =>
+                  itemBuilder: (_, index) =>
                       _HospitalCardPlaceholder(name: "Hospital ${index + 1}"),
                 ),
               ),
@@ -178,29 +172,29 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => context.push('/resources'),
               ),
               const SizedBox(height: 12),
-              // Show actual first-aid kit resources (up to 4) fetched from ResourceController.
+
               Builder(
                 builder: (context) {
-                  final controller = context.watch<ResourceController>();
+                  final ctrl = context.watch<ResourceController>();
 
-                  if (controller.isLoading) {
+                  if (ctrl.isLoading) {
                     return const SizedBox(
                       height: 140,
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
 
-                  if (controller.error != null) {
+                  if (ctrl.error != null) {
                     return SizedBox(
                       height: 140,
-                      child: Center(child: Text('Error: ${controller.error}')),
+                      child: Center(child: Text('Error: ${ctrl.error}')),
                     );
                   }
 
-                  final kits = controller.resources.take(4).toList();
+                  final kits = ctrl.resources.take(4).toList();
 
                   if (kits.isEmpty) {
-                    return _ComingSoonCard(title: "Coming Soon");
+                    return const _ComingSoonCard(title: "Coming Soon");
                   }
 
                   return SizedBox(
@@ -208,17 +202,15 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: kits.length,
-                      separatorBuilder: (_, index) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (_, index) {
                         final kit = kits[index];
                         return SizedBox(
                           width: 180,
                           child: ResourceCard(
                             resource: kit,
-                            onTap: () {
-                              // Navigate to resource detail - adjust route if different
-                              context.push('/resource-detail', extra: kit);
-                            },
+                            onTap: () =>
+                                context.push('/resource-detail', extra: kit),
                             onActionTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('${kit.name}')),
@@ -234,26 +226,26 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 24),
 
-              /// 🔹 Blood Banks & Donors
+              // -----------------------------------------------------
+              // 🔥 NEW: BLOOD BANK & DONOR GRID ADDED HERE
+              // -----------------------------------------------------
               _buildSectionHeader(title: "Blood Banks & Donors"),
               const SizedBox(height: 12),
-              _ComingSoonCard(title: "Coming Soon"),
-
+              const _BloodBankHomeSection(),
               const SizedBox(height: 24),
+              // -----------------------------------------------------
 
-              /// 🔹 Learn First Aid / Workshops
+              /// 🔹 Workshops
               _buildSectionHeader(title: "Workshops"),
               const SizedBox(height: 12),
-              _ComingSoonCard(title: "Coming Soon"),
+              const _ComingSoonCard(title: "Coming Soon"),
             ],
           ),
         ),
       ),
 
-      /// 🔹 Bottom Navigation Bar
       bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
 
-      /// 🔹 Floating AI Chat Button
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.accent,
         onPressed: () => context.push('/ai-chat-coming-soon'),
@@ -290,7 +282,9 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-/// 🔵 Category Circle Icon (no label)
+/// -----------------------------------------------------------
+/// 🔵 Category Circle Icon
+/// -----------------------------------------------------------
 class _CategoryCircleIcon extends StatelessWidget {
   final double diameter;
   final String iconPath;
@@ -329,15 +323,7 @@ class _CategoryCircleIcon extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(padding),
               child: iconPath.isNotEmpty
-                  ? Image.asset(
-                      iconPath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (c, e, s) => Icon(
-                        Icons.medical_information,
-                        color: AppColors.primary,
-                        size: innerSize * 0.5,
-                      ),
-                    )
+                  ? Image.asset(iconPath, fit: BoxFit.contain)
                   : Icon(
                       Icons.medical_information,
                       color: AppColors.primary,
@@ -351,9 +337,12 @@ class _CategoryCircleIcon extends StatelessWidget {
   }
 }
 
-/// 🏥 Placeholder: Hospital Card
+/// -----------------------------------------------------------
+/// 🏥 Hospital Card Placeholder
+/// -----------------------------------------------------------
 class _HospitalCardPlaceholder extends StatelessWidget {
   final String name;
+
   const _HospitalCardPlaceholder({required this.name});
 
   @override
@@ -408,9 +397,12 @@ class _HospitalCardPlaceholder extends StatelessWidget {
   }
 }
 
+/// -----------------------------------------------------------
 /// 🟥 Coming Soon Card
+/// -----------------------------------------------------------
 class _ComingSoonCard extends StatelessWidget {
   final String title;
+
   const _ComingSoonCard({required this.title});
 
   @override
@@ -434,6 +426,112 @@ class _ComingSoonCard extends StatelessWidget {
         style: const TextStyle(
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+/// -----------------------------------------------------------
+/// 🩸 BLOOD BANK & DONOR GRID SECTION (NEW)
+/// -----------------------------------------------------------
+class _BloodBankHomeSection extends StatelessWidget {
+  const _BloodBankHomeSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.cardShadow,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _BloodFeatureTile(
+                  title: "Blood Banks",
+                  icon: Icons.local_hospital_rounded,
+                  onTap: () => context.push('/blood-banks'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _BloodFeatureTile(
+                  title: "Nearby Donors",
+                  icon: Icons.people_alt_rounded,
+                  onTap: () => context.push('/donors'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _BloodFeatureTile(
+                  title: "Become a Donor",
+                  icon: Icons.volunteer_activism_rounded,
+                  onTap: () => context.push('/donor/register'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// -----------------------------------------------------------
+/// 🩸 BLOOD FEATURE TILE
+/// -----------------------------------------------------------
+class _BloodFeatureTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _BloodFeatureTile({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.grey.shade100,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 30, color: AppColors.primary),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
         ),
       ),
     );
