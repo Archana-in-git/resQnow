@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:resqnow/core/services/location_service.dart';
@@ -14,6 +15,9 @@ class LocationController extends ChangeNotifier {
   bool _initialised = false;
 
   StreamSubscription<Position>? _positionSubscription;
+
+  double? latitude;
+  double? longitude;
 
   String get locationText => _locationText;
   bool get isLoading => _isLoading;
@@ -80,11 +84,16 @@ class LocationController extends ChangeNotifier {
     final Position? position = await LocationService.getCurrentPosition();
 
     if (position != null) {
-      final label = await LocationService.getCityCountryFromPosition(position);
+      latitude = position.latitude;
+      longitude = position.longitude;
 
-      _locationText =
-          label ??
-          '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}';
+      final result = await LocationService.getCityCountryFromPosition(position);
+
+      _locationText = _resolveLocationLabel(
+        result,
+        fallback:
+            '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}',
+      );
 
       await _startPositionStream();
     } else {
@@ -102,13 +111,18 @@ class LocationController extends ChangeNotifier {
     _positionSubscription =
         LocationService.getPositionStream(distanceFilter: 20).listen(
           (Position position) async {
-            final label = await LocationService.getCityCountryFromPosition(
+            latitude = position.latitude;
+            longitude = position.longitude;
+
+            final result = await LocationService.getCityCountryFromPosition(
               position,
             );
 
-            _locationText =
-                label ??
-                '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}';
+            _locationText = _resolveLocationLabel(
+              result,
+              fallback:
+                  '${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}',
+            );
 
             notifyListeners();
           },
@@ -128,5 +142,25 @@ class LocationController extends ChangeNotifier {
   void dispose() {
     _positionSubscription?.cancel();
     super.dispose();
+  }
+
+  String _resolveLocationLabel(dynamic result, {required String fallback}) {
+    if (result is String && result.trim().isNotEmpty) {
+      return result;
+    }
+    if (result is Placemark) {
+      final city = result.locality?.trim().isNotEmpty == true
+          ? result.locality!.trim()
+          : result.subAdministrativeArea?.trim() ?? '';
+      final country = result.country?.trim() ?? '';
+      final parts = [city, country]
+          .where((part) => part.trim().isNotEmpty)
+          .map((part) => part.trim())
+          .toList();
+      if (parts.isNotEmpty) {
+        return parts.join(', ');
+      }
+    }
+    return fallback;
   }
 }

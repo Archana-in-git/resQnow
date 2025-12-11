@@ -78,13 +78,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 IntlPhoneField(
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
-                    labelStyle: const TextStyle(color: Colors.black87),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.phone, color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: Colors.black,
                   ),
                   initialCountryCode: 'IN',
                   dropdownIcon: const Icon(
@@ -95,14 +95,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     phoneController.text = phone.number;
                     selectedCountryCode = phone.countryCode;
                   },
+                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: passwordController,
                   obscureText: !isPasswordVisible,
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: "Password",
+                    labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.lock, color: Colors.teal),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -119,7 +122,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: Colors.black,
                   ),
                   validator: (value) =>
                       value == null || value.isEmpty ? 'Required' : null,
@@ -133,6 +136,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         ? null
                         : () async {
                             if (!_formKey.currentState!.validate()) return;
+
+                            final router = GoRouter.of(context);
+                            final messenger = ScaffoldMessenger.of(context);
 
                             final user = await authController.signUpWithEmail(
                               name: nameController.text.trim(),
@@ -152,19 +158,20 @@ class _SignUpPageState extends State<SignUpPage> {
 
                               final role = await authController
                                   .getCurrentUserRole();
+
+                              if (!mounted) return;
+
                               if (role == 'admin') {
-                                context.go('/adminDashboard');
+                                router.go('/adminDashboard');
                               } else {
-                                context.go('/home');
+                                router.go('/home');
                               }
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    authController.errorMessage ??
-                                        "Signup failed",
-                                  ),
-                                ),
+                              final message =
+                                  authController.errorMessage ??
+                                  "Signup failed";
+                              messenger.showSnackBar(
+                                SnackBar(content: Text(message)),
                               );
                             }
                           },
@@ -221,12 +228,14 @@ class _SignUpPageState extends State<SignUpPage> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Icon(icon, color: Colors.teal),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: Colors.black,
       ),
       validator: (value) =>
           value == null || value.isEmpty ? 'Required field' : null,

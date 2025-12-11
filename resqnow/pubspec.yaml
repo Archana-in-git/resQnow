@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: ^10.6.0
   equatable: ^2.0.5
+  http: ^1.2.1
 
   # --- Core Utilities ---
   provider: ^6.1.2
@@ -57,14 +58,22 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  # assets:
+  #   - lib/assets/animation/success_check.json
+  #   - lib/assets/images/logo.png
+  #   - lib/assets/images/icons/
+  #   - lib/assets/images/firstaid_images/
+  #   - lib/assets/images/kits/
+  #   - assets/sounds/beep.wav
+  #   - assets/animation/Audio&Voice-A-002.json
   assets:
+    - assets/animation/
     - lib/assets/animation/success_check.json
+    - assets/sounds/beep.wav
     - lib/assets/images/logo.png
     - lib/assets/images/icons/
     - lib/assets/images/firstaid_images/
     - lib/assets/images/kits/
-    - assets/sounds/beep.wav
-    - assets/animation/Audio&Voice-A-002.json
 
   # Uncomment and add your custom fonts when needed
   # fonts:

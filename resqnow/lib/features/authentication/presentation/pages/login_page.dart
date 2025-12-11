@@ -58,31 +58,41 @@ class _LoginPageState extends State<LoginPage> {
   // Phone login
   Future<void> _loginWithPhone() async {
     String phoneNumber = '';
+    final parentContext = context;
+
     await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+      context: parentContext,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Phone Login'),
         content: TextField(
           keyboardType: TextInputType.phone,
-          decoration: const InputDecoration(
-            hintText: '+91 9876543210',
-          ),
+          decoration: const InputDecoration(hintText: '+91 9876543210'),
           onChanged: (value) => phoneNumber = value,
         ),
         actions: [
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.of(dialogContext).pop();
+              if (!mounted) return;
+
+              final enteredNumber = phoneNumber.trim();
+              if (enteredNumber.isEmpty) {
+                _showError('Enter a valid phone number.');
+                return;
+              }
+
               await _auth.verifyPhoneNumber(
-                phoneNumber: phoneNumber,
+                phoneNumber: enteredNumber,
                 verificationCompleted: (credential) async {
                   await _auth.signInWithCredential(credential);
-                  if (mounted) context.go('/home');
+                  if (!mounted) return;
+                  context.go('/home');
                 },
                 verificationFailed: (error) =>
                     _showError(error.message ?? 'Phone verification failed'),
                 codeSent: (verificationId, _) {
-                  _showOtpDialog(verificationId);
+                  if (!mounted) return;
+                  _showOtpDialog(parentContext, verificationId);
                 },
                 codeAutoRetrievalTimeout: (_) {},
               );
@@ -95,38 +105,59 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // OTP Dialog
-  Future<void> _showOtpDialog(String verificationId) async {
-    String smsCode = '';
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+  Future<void> _showOtpDialog(
+    BuildContext parentContext,
+    String verificationId,
+  ) async {
+    final otpController = TextEditingController();
+
+    await showDialog<void>(
+      context: parentContext,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Enter OTP'),
         content: TextField(
+          controller: otpController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(hintText: '6-digit code'),
-          onChanged: (value) => smsCode = value,
+          decoration: const InputDecoration(labelText: '6-digit code'),
         ),
         actions: [
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
-              final credential = PhoneAuthProvider.credential(
-                verificationId: verificationId,
-                smsCode: smsCode,
-              );
-              await _auth.signInWithCredential(credential);
-              if (mounted) context.go('/home');
+              final smsCode = otpController.text.trim();
+              if (smsCode.length != 6) {
+                _showError('Enter the 6-digit OTP.');
+                return;
+              }
+
+              try {
+                final credential = PhoneAuthProvider.credential(
+                  verificationId: verificationId,
+                  smsCode: smsCode,
+                );
+                await _auth.signInWithCredential(credential);
+
+                if (!dialogContext.mounted) return;
+                Navigator.of(dialogContext).pop();
+                if (!parentContext.mounted) return;
+                parentContext.go('/home');
+              } catch (_) {
+                _showError('Invalid OTP, please try again.');
+              }
             },
             child: const Text('Verify'),
           ),
         ],
       ),
     );
+
+    otpController.dispose();
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -140,10 +171,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Logo
-              Image.asset(
-                'lib/assets/images/logo.png',
-                height: 160,
-              ),
+              Image.asset('lib/assets/images/logo.png', height: 160),
               const SizedBox(height: 16),
 
               // Heading
@@ -170,8 +198,12 @@ class _LoginPageState extends State<LoginPage> {
 
               _buildTextField(_emailController, "Email", Icons.email),
               const SizedBox(height: 16),
-              _buildTextField(_passwordController, "Password", Icons.lock,
-                  isPassword: true),
+              _buildTextField(
+                _passwordController,
+                "Password",
+                Icons.lock,
+                isPassword: true,
+              ),
               const SizedBox(height: 20),
 
               SizedBox(
@@ -195,8 +227,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
 
-              const Text("Or sign in with",
-                  style: TextStyle(color: Colors.black54)),
+              const Text(
+                "Or sign in with",
+                style: TextStyle(color: Colors.black54),
+              ),
               const SizedBox(height: 16),
 
               Row(
@@ -223,8 +257,10 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?",
-                      style: TextStyle(color: Colors.black87)),
+                  const Text(
+                    "Don't have an account?",
+                    style: TextStyle(color: Colors.black87),
+                  ),
                   TextButton(
                     onPressed: () => context.go('/signup'),
                     child: const Text(
@@ -236,7 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -258,9 +294,7 @@ class _LoginPageState extends State<LoginPage> {
         labelText: label,
         labelStyle: const TextStyle(color: Colors.black87),
         prefixIcon: Icon(icon, color: Colors.teal),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[100],
       ),
@@ -280,9 +314,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: color,
         foregroundColor: textColor,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       icon: FaIcon(icon, size: 18),
       label: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),

@@ -1,14 +1,12 @@
-// lib/domain/usecases/update_donor.dart
-
 import 'package:resqnow/domain/entities/blood_donor.dart';
 import 'package:resqnow/domain/repositories/blood_donor_repository.dart';
 
-class UpdateDonor {
+class GetMyDonorProfile {
   final BloodDonorRepository repository;
 
-  UpdateDonor(this.repository);
+  GetMyDonorProfile(this.repository);
 
-  Future<void> call(BloodDonor donor) {
-    return repository.updateDonor(donor);
+  Future<BloodDonor?> call() {
+    return repository.getMyDonorProfile();
   }
 }

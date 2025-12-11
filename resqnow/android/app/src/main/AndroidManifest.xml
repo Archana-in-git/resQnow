@@ -20,13 +20,17 @@
 
 
     <application
-    android:label="resqnow"
-    android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher"
-    android:usesCleartextTraffic="true"
-    android:theme="@style/LaunchTheme"
-    android:enableOnBackInvokedCallback="true">
-        
+        android:label="resqnow"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/LaunchTheme"
+        android:enableOnBackInvokedCallback="true">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD3A_U1IQPf-JvQwl22AKD0F9CVSJnM0fI" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

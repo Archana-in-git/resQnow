@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: categories.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, index) =>
                           const SizedBox(width: itemSpacing),
                       itemBuilder: (context, index) {
                         final cat = categories[index];
@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: kits.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      separatorBuilder: (_, index) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
                         final kit = kits[index];
                         return SizedBox(

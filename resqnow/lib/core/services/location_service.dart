@@ -16,11 +16,11 @@ class LocationService {
   /// Real-time stream (clean)
   static Stream<Position> getPositionStream({
     LocationAccuracy accuracy = LocationAccuracy.best,
-    int distanceFilter = 10,
+    double distanceFilter = 1,
   }) {
     final settings = LocationSettings(
       accuracy: accuracy,
-      distanceFilter: distanceFilter,
+      distanceFilter: distanceFilter.round(),
     );
 
     return Geolocator.getPositionStream(locationSettings: settings);
