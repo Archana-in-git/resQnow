@@ -89,7 +89,9 @@ Future<void> main() async {
 
         // ⭐ BLOOD BANK MODULE PROVIDERS
         Provider<BloodBankService>(
-          create: (_) => BloodBankService(apiKey: "AIzaSyD3A_U1IQPf-JvQwl22AKD0F9CVSJnM0fI"),
+          create: (_) => BloodBankService(
+            apiKey: "AIzaSyD3A_U1IQPf-JvQwl22AKD0F9CVSJnM0fI",
+          ),
         ),
 
         Provider<BloodBankRepositoryImpl>(
@@ -136,8 +138,15 @@ Future<void> main() async {
               GetMyDonorProfile(context.read<BloodDonorRepositoryImpl>()),
         ),
 
-        Provider<get_donors.GetDonorsNearby>(
-          create: (context) => get_donors.GetDonorsNearby(
+        // 🔥 NEW USE CASES — District & Town Search
+        Provider<get_donors.GetDonorsByDistrict>(
+          create: (context) => get_donors.GetDonorsByDistrict(
+            context.read<BloodDonorRepositoryImpl>(),
+          ),
+        ),
+
+        Provider<get_donors.GetDonorsByTown>(
+          create: (context) => get_donors.GetDonorsByTown(
             context.read<BloodDonorRepositoryImpl>(),
           ),
         ),
@@ -157,11 +166,10 @@ Future<void> main() async {
               GetDonorById(context.read<BloodDonorRepositoryImpl>()),
         ),
 
-        /// 4️⃣ CONTROLLERS (ALL)
+        /// 4️⃣ CONTROLLERS
         ChangeNotifierProvider(
           create: (context) => DonorRegistrationController(
             registerDonorUseCase: context.read<RegisterDonor>(),
-            locationController: context.read<LocationController>(),
           ),
         ),
         ChangeNotifierProvider(
@@ -170,17 +178,23 @@ Future<void> main() async {
             updateDonorUseCase: context.read<UpdateDonor>(),
           ),
         ),
+
+        // ⭐ UPDATED DonorListController with new use cases
         ChangeNotifierProvider(
           create: (context) => DonorListController(
-            getDonorsNearbyUseCase: context.read<get_donors.GetDonorsNearby>(),
+            getDonorsByDistrictUseCase: context
+                .read<get_donors.GetDonorsByDistrict>(),
+            getDonorsByTownUseCase: context.read<get_donors.GetDonorsByTown>(),
             locationController: context.read<LocationController>(),
           ),
         ),
+
         ChangeNotifierProvider(
           create: (context) => DonorFilterController(
             filterDonorsUseCase: context.read<FilterDonors>(),
           ),
         ),
+
         ChangeNotifierProvider(
           create: (context) => DonorDetailsController(
             getDonorByIdUseCase: context.read<GetDonorById>(),

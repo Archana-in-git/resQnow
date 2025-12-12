@@ -149,7 +149,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
           _infoRow("Age", donor.age.toString()),
           _infoRow("Gender", donor.gender),
           _infoRow("Phone", donor.phone),
-          _infoRow("Address", donor.address),
+          _infoRow("Address", donor.addressString),
           _infoRow(
             "Last Donation",
             donor.lastDonationDate == null

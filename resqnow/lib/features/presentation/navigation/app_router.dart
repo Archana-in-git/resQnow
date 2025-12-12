@@ -30,7 +30,6 @@ import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_prof
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_list_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_filter_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_details_page.dart';
-import 'package:resqnow/features/blood_donor/presentation/pages/blood_landing_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -38,12 +37,6 @@ class AppRouter {
     initialLocation: '/home',
 
     routes: [
-      GoRoute(
-        path: '/blood',
-        name: 'bloodLanding',
-        builder: (context, state) => const BloodLandingPage(),
-      ),
-
       /// ----------------------------------------
       /// ⭐ BLOOD DONOR MODULE ROUTES (NEW)
       /// ----------------------------------------

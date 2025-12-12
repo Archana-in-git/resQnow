@@ -72,7 +72,7 @@ class DonorCard extends StatelessWidget {
 
                     // Address
                     Text(
-                      donor.address,
+                      donor.addressString,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

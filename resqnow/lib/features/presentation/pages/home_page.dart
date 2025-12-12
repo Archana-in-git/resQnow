@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: categories.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, _) =>
                           const SizedBox(width: spacing),
                       itemBuilder: (_, index) {
                         final cat = categories[index];
@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: kits.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      separatorBuilder: (_, _) => const SizedBox(width: 12),
                       itemBuilder: (_, index) {
                         final kit = kits[index];
                         return SizedBox(
@@ -212,9 +212,9 @@ class _HomePageState extends State<HomePage> {
                             onTap: () =>
                                 context.push('/resource-detail', extra: kit),
                             onActionTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${kit.name}')),
-                              );
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(kit.name)));
                             },
                           ),
                         );
@@ -367,7 +367,7 @@ class _HospitalCardPlaceholder extends StatelessWidget {
           Container(
             height: 100,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),

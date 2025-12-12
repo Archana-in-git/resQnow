@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:resqnow/domain/entities/blood_bank.dart';
 
@@ -23,8 +24,8 @@ class BloodBankService {
     final response = await http.get(Uri.parse(url));
 
     // DD THIS BEFORE jsonDecode
-    print("📡 BloodBankService Request URL → $url");
-    print("📨 Google Response → ${response.body}");
+    debugPrint("📡 BloodBankService Request URL → $url");
+    debugPrint("📨 Google Response → ${response.body}");
 
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch blood banks");
@@ -40,9 +41,10 @@ class BloodBankService {
       return BloodBank(
         id: place["place_id"] ?? "",
         name: place["name"] ?? "Unknown",
-        address: place["formatted_address"] ?? 
-                 place["vicinity"] ?? 
-                 "No address available",
+        address:
+            place["formatted_address"] ??
+            place["vicinity"] ??
+            "No address available",
         latitude: place["geometry"]?["location"]?["lat"] ?? 0.0,
         longitude: place["geometry"]?["location"]?["lng"] ?? 0.0,
         phoneNumber: null,

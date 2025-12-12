@@ -56,12 +56,14 @@ class BloodDonorRepositoryImpl implements BloodDonorRepository {
   }
 
   @override
+  @Deprecated("Use getDonorsByDistrict() and getDonorsByTown() instead.")
   Future<List<BloodDonor>> getDonorsNearby({
     required double latitude,
     required double longitude,
     required double radiusKm,
   }) async {
     try {
+      // ignore: deprecated_member_use_from_same_package
       return await service.getDonorsNearby(
         latitude: latitude,
         longitude: longitude,
@@ -79,6 +81,8 @@ class BloodDonorRepositoryImpl implements BloodDonorRepository {
     int? minAge,
     int? maxAge,
     bool? isAvailable,
+    String? district,
+    String? town,
   }) async {
     try {
       return await service.filterDonors(
@@ -97,6 +101,27 @@ class BloodDonorRepositoryImpl implements BloodDonorRepository {
   Future<List<BloodDonor>> getAllDonors() async {
     try {
       return await service.getAllDonors();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BloodDonor>> getDonorsByDistrict(String district) async {
+    try {
+      return await service.getDonorsByDistrict(district);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BloodDonor>> getDonorsByTown({
+    required String district,
+    required String town,
+  }) async {
+    try {
+      return await service.getDonorsByTown(district: district, town: town);
     } catch (e) {
       rethrow;
     }

@@ -18,10 +18,16 @@ class DonorFilterController extends ChangeNotifier {
   int? maxAge;
   bool? isAvailable;
 
+  /// NEW — address-based filters
+  /// These should be populated by your UI (or by district auto-detection logic elsewhere).
+  String? selectedDistrict;
+  String? selectedTown;
+
   // Apply filters
   Future<void> applyFilters() async {
     try {
       isLoading = true;
+      errorMessage = null;
       notifyListeners();
 
       filteredDonors = await filterDonorsUseCase(
@@ -30,6 +36,8 @@ class DonorFilterController extends ChangeNotifier {
         minAge: minAge,
         maxAge: maxAge,
         isAvailable: isAvailable,
+        district: selectedDistrict,
+        town: selectedTown,
       );
 
       isLoading = false;
@@ -48,6 +56,12 @@ class DonorFilterController extends ChangeNotifier {
     minAge = null;
     maxAge = null;
     isAvailable = null;
+
+    selectedDistrict = null;
+    selectedTown = null;
+
+    filteredDonors = [];
+    errorMessage = null;
     notifyListeners();
   }
 }

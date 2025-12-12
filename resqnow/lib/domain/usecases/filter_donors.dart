@@ -13,6 +13,12 @@ class FilterDonors {
     int? minAge,
     int? maxAge,
     bool? isAvailable,
+
+    /// NEW — filter by district
+    String? district,
+
+    /// NEW — filter by town
+    String? town,
   }) {
     return repository.filterDonors(
       bloodGroup: bloodGroup,
@@ -20,6 +26,8 @@ class FilterDonors {
       minAge: minAge,
       maxAge: maxAge,
       isAvailable: isAvailable,
+      district: district,
+      town: town,
     );
   }
 }

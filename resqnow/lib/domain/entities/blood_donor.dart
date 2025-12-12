@@ -1,8 +1,6 @@
-// lib/domain/entities/blood_donor.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-// NOTE: avoid importing cloud_firestore in domain layer if you prefer,
-// but _parseDate will still try to handle common representations.
 class BloodDonor extends Equatable {
   final String id;
   final String name;
@@ -13,9 +11,24 @@ class BloodDonor extends Equatable {
   final String phone;
   final bool phoneVerified;
 
-  final double? latitude;
-  final double? longitude;
-  final String address;
+  /// Exact GPS location (optional)
+  final GeoPoint? permanentLocation;
+
+  /// Structured permanent address (existing)
+  final Map<String, String> permanentAddress;
+
+  /// 🔥 NEW — Extracted address fields for filtering
+  final String? country;
+  final String? state;
+  final String? district;
+  final String? town;
+  final String? locality; // Small village/ward name
+
+  /// Full address composed string
+  final String addressString;
+
+  /// Last seen info
+  final Map<String, dynamic>? lastSeen;
 
   final DateTime? lastDonationDate;
   final int totalDonations;
@@ -24,6 +37,7 @@ class BloodDonor extends Equatable {
   final List<String> medicalConditions;
   final String? notes;
 
+  /// Profile picture URL
   final String? profileImageUrl;
 
   final DateTime createdAt;
@@ -37,19 +51,36 @@ class BloodDonor extends Equatable {
     required this.bloodGroup,
     required this.phone,
     required this.phoneVerified,
-    required this.latitude,
-    required this.longitude,
-    required this.address,
+
+    this.permanentLocation,
+
+    required this.permanentAddress,
+
+    /// New structured fields
+    this.country,
+    this.state,
+    this.district,
+    this.town,
+    this.locality,
+
+    required this.addressString,
+    required this.lastSeen,
+
     this.lastDonationDate,
-    required this.totalDonations,
-    required this.isAvailable,
+    this.totalDonations = 0,
+    this.isAvailable = true,
+
     required this.medicalConditions,
     this.notes,
     this.profileImageUrl,
+
     required this.createdAt,
     required this.updatedAt,
   });
 
+  // -----------------------------
+  // copyWith
+  // -----------------------------
   BloodDonor copyWith({
     String? name,
     int? age,
@@ -57,9 +88,17 @@ class BloodDonor extends Equatable {
     String? bloodGroup,
     String? phone,
     bool? phoneVerified,
-    double? latitude,
-    double? longitude,
-    String? address,
+    GeoPoint? permanentLocation,
+    Map<String, String>? permanentAddress,
+
+    String? country,
+    String? state,
+    String? district,
+    String? town,
+    String? locality,
+
+    String? addressString,
+    Map<String, dynamic>? lastSeen,
     DateTime? lastDonationDate,
     int? totalDonations,
     bool? isAvailable,
@@ -76,101 +115,127 @@ class BloodDonor extends Equatable {
       bloodGroup: bloodGroup ?? this.bloodGroup,
       phone: phone ?? this.phone,
       phoneVerified: phoneVerified ?? this.phoneVerified,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      address: address ?? this.address,
+
+      permanentLocation: permanentLocation ?? this.permanentLocation,
+      permanentAddress: permanentAddress ?? this.permanentAddress,
+
+      country: country ?? this.country,
+      state: state ?? this.state,
+      district: district ?? this.district,
+      town: town ?? this.town,
+      locality: locality ?? this.locality,
+
+      addressString: addressString ?? this.addressString,
+      lastSeen: lastSeen ?? this.lastSeen,
+
       lastDonationDate: lastDonationDate ?? this.lastDonationDate,
       totalDonations: totalDonations ?? this.totalDonations,
       isAvailable: isAvailable ?? this.isAvailable,
       medicalConditions: medicalConditions ?? this.medicalConditions,
       notes: notes ?? this.notes,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      createdAt: createdAt,
+
+      createdAt: this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
   }
 
+  // -----------------------------
+  // toMap
+  // -----------------------------
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'age': age,
-      'gender': gender,
-      'bloodGroup': bloodGroup,
-      'phone': phone,
-      'phoneVerified': phoneVerified,
-      'latitude': latitude,
-      'longitude': longitude,
-      'address': address,
-      'lastDonationDate': lastDonationDate?.toIso8601String(),
-      'totalDonations': totalDonations,
-      'isAvailable': isAvailable,
-      'medicalConditions': medicalConditions,
-      'notes': notes,
-      'profileImageUrl': profileImageUrl,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      "id": id,
+      "name": name,
+      "age": age,
+      "gender": gender,
+      "bloodGroup": bloodGroup,
+      "phone": phone,
+      "phoneVerified": phoneVerified,
+
+      "permanentLocation": permanentLocation,
+      "permanentAddress": permanentAddress,
+
+      /// new structured fields
+      "country": country,
+      "state": state,
+      "district": district,
+      "town": town,
+      "locality": locality,
+
+      "addressString": addressString,
+      "lastSeen": lastSeen,
+
+      "lastDonationDate": lastDonationDate?.toIso8601String(),
+      "totalDonations": totalDonations,
+      "isAvailable": isAvailable,
+
+      "medicalConditions": medicalConditions,
+      "notes": notes,
+
+      "profileImageUrl": profileImageUrl,
+
+      "createdAt": createdAt.toIso8601String(),
+      "updatedAt": updatedAt.toIso8601String(),
     };
   }
 
+  // -----------------------------
+  // Parse date helper
+  // -----------------------------
   static DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
-    if (value is String) {
-      try {
-        return DateTime.parse(value);
-      } catch (_) {
-        return null;
-      }
-    }
-    if (value is int) {
-      // assume milliseconds
-      try {
-        return DateTime.fromMillisecondsSinceEpoch(value);
-      } catch (_) {
-        return null;
-      }
-    }
-    // try to handle Firestore Timestamp without importing it explicitly
+    if (value is String) return DateTime.tryParse(value);
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+
     try {
-      // `value.toDate()` will work for Timestamp at runtime
-      final dynamic maybeTimestamp = value;
-      if (maybeTimestamp != null && maybeTimestamp.toDate is Function) {
-        return maybeTimestamp.toDate();
-      }
+      if (value.toDate is Function) return value.toDate();
     } catch (_) {}
+
     return null;
   }
 
+  // -----------------------------
+  // fromMap
+  // -----------------------------
   factory BloodDonor.fromMap(Map<String, dynamic> map) {
-    final createdAtParsed = _parseDate(map['createdAt']) ?? DateTime.now();
-    final updatedAtParsed = _parseDate(map['updatedAt']) ?? createdAtParsed;
+    final createdAtParsed = _parseDate(map["createdAt"]) ?? DateTime.now();
+    final updatedAtParsed = _parseDate(map["updatedAt"]) ?? createdAtParsed;
+
+    // Backward compatibility: extract town/district from permanentAddress if available
+    final addr = Map<String, String>.from(map["permanentAddress"] ?? {});
 
     return BloodDonor(
-      id: (map['id'] ?? map['docId'] ?? '') as String,
-      name: (map['name'] ?? '') as String,
-      age: ((map['age'] is num)
-          ? (map['age'] as num).toInt()
-          : int.tryParse('${map['age']}') ?? 0),
-      gender: (map['gender'] ?? '') as String,
-      bloodGroup: (map['bloodGroup'] ?? '') as String,
-      phone: (map['phone'] ?? '') as String,
-      phoneVerified: map['phoneVerified'] ?? false,
-      latitude: map['latitude'] != null
-          ? (map['latitude'] as num).toDouble()
-          : null,
-      longitude: map['longitude'] != null
-          ? (map['longitude'] as num).toDouble()
-          : null,
-      address: (map['address'] ?? '') as String,
-      lastDonationDate: _parseDate(map['lastDonationDate']),
-      totalDonations: (map['totalDonations'] is num)
-          ? (map['totalDonations'] as num).toInt()
-          : (int.tryParse('${map['totalDonations']}') ?? 0),
-      isAvailable: map['isAvailable'] ?? true,
-      medicalConditions: List<String>.from(map['medicalConditions'] ?? []),
-      notes: map['notes'],
-      profileImageUrl: map['profileImageUrl'],
+      id: map["id"] ?? "",
+      name: map["name"] ?? "",
+      age: (map["age"] as num).toInt(),
+      gender: map["gender"] ?? "",
+      bloodGroup: map["bloodGroup"] ?? "",
+      phone: map["phone"] ?? "",
+      phoneVerified: map["phoneVerified"] ?? false,
+
+      permanentLocation: map["permanentLocation"] as GeoPoint?,
+      permanentAddress: addr,
+
+      /// NEW — resolves missing fields gracefully
+      country: map["country"] ?? addr["country"],
+      state: map["state"] ?? addr["state"],
+      district: map["district"] ?? addr["district"],
+      town: map["town"] ?? addr["town"],
+      locality: map["locality"] ?? addr["locality"],
+
+      addressString: map["addressString"] ?? "",
+      lastSeen: map["lastSeen"],
+
+      lastDonationDate: _parseDate(map["lastDonationDate"]),
+      totalDonations: (map["totalDonations"] ?? 0) as int,
+      isAvailable: map["isAvailable"] ?? true,
+
+      medicalConditions: List<String>.from(map["medicalConditions"] ?? []),
+      notes: map["notes"],
+      profileImageUrl: map["profileImageUrl"] as String?,
+
       createdAt: createdAtParsed,
       updatedAt: updatedAtParsed,
     );
@@ -185,9 +250,15 @@ class BloodDonor extends Equatable {
     bloodGroup,
     phone,
     phoneVerified,
-    latitude,
-    longitude,
-    address,
+    permanentLocation,
+    permanentAddress,
+    country,
+    state,
+    district,
+    town,
+    locality,
+    addressString,
+    lastSeen,
     lastDonationDate,
     totalDonations,
     isAvailable,

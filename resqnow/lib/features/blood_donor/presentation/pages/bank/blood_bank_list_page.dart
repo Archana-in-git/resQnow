@@ -39,8 +39,7 @@ class _BloodBankListPageState extends State<BloodBankListPage> {
     final location = context.watch<LocationController>();
 
     /// WAIT FOR LOCATION FIRST
-    final hasLocation =
-        location.latitude != null && location.longitude != null;
+    final hasLocation = location.latitude != null && location.longitude != null;
 
     if (!hasLocation) {
       return Scaffold(
@@ -116,18 +115,19 @@ class _BloodBankListView extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             child: Row(
               children: [
-                Icon(Icons.location_on,
-                    color: Theme.of(context).colorScheme.primary),
+                Icon(
+                  Icons.location_on,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     locationLabel,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.8),
-                        ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.8),
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -141,41 +141,41 @@ class _BloodBankListView extends StatelessWidget {
             child: controller.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : controller.error != null
-                    ? Center(child: Text("Error: ${controller.error}"))
-                    : controller.bloodBanks.isEmpty
-                        ? FutureBuilder<List<BloodBank>>(
-                            future: _fetchFallbackBanks(context),
-                            builder: (_, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(child: CircularProgressIndicator());
-                              }
-                              if (snapshot.hasError) {
-                                return const Center(
-                                  child: Text("No blood banks found nearby."),
-                                );
-                              }
-                              final fallbackBanks = snapshot.data ?? [];
-                              if (fallbackBanks.isEmpty) {
-                                return const Center(
-                                  child: Text("No blood banks found within 20km."),
-                                );
-                              }
-                              return ListView.builder(
-                                itemCount: fallbackBanks.length,
-                                itemBuilder: (_, index) {
-                                  final bank = fallbackBanks[index];
-                                  return BloodBankCard(bank: bank);
-                                },
-                              );
-                            },
-                          )
-                        : ListView.builder(
-                            itemCount: controller.bloodBanks.length,
-                            itemBuilder: (_, index) {
-                              final bank = controller.bloodBanks[index];
-                              return BloodBankCard(bank: bank);
-                            },
-                          ),
+                ? Center(child: Text("Error: ${controller.error}"))
+                : controller.bloodBanks.isEmpty
+                ? FutureBuilder<List<BloodBank>>(
+                    future: _fetchFallbackBanks(context),
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text("No blood banks found nearby."),
+                        );
+                      }
+                      final fallbackBanks = snapshot.data ?? [];
+                      if (fallbackBanks.isEmpty) {
+                        return const Center(
+                          child: Text("No blood banks found within 20km."),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: fallbackBanks.length,
+                        itemBuilder: (_, index) {
+                          final bank = fallbackBanks[index];
+                          return BloodBankCard(bank: bank);
+                        },
+                      );
+                    },
+                  )
+                : ListView.builder(
+                    itemCount: controller.bloodBanks.length,
+                    itemBuilder: (_, index) {
+                      final bank = controller.bloodBanks[index];
+                      return BloodBankCard(bank: bank);
+                    },
+                  ),
           ),
         ],
       ),

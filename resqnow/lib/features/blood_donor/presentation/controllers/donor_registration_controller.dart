@@ -1,72 +1,24 @@
 // lib/features/blood_donor/presentation/controllers/donor_registration_controller.dart
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:resqnow/domain/entities/blood_donor.dart';
 import 'package:resqnow/domain/usecases/register_donor.dart';
-import 'package:resqnow/features/presentation/controllers/location_controller.dart';
 
 class DonorRegistrationController extends ChangeNotifier {
   final RegisterDonor registerDonorUseCase;
-  final LocationController locationController;
 
-  DonorRegistrationController({
-    required this.registerDonorUseCase,
-    required this.locationController,
-  });
+  DonorRegistrationController({required this.registerDonorUseCase});
 
   bool isLoading = false;
   String? errorMessage;
 
-  String address = "";
+  // Optional preview text
+  String addressPreview = "";
 
-  // Only GPS coordinates now
-  double? gpsLat;
-  double? gpsLng;
-
-  // Public getters for the UI
-  double? get latitude => gpsLat;
-  double? get longitude => gpsLng;
-
-  // ------------------------------
-  // FETCH LOCATION USING GPS
-  // ------------------------------
-  Future<void> fetchLocation() async {
-    try {
-      isLoading = true;
-      errorMessage = null;
-      notifyListeners();
-
-      await locationController.refreshLocation();
-
-      gpsLat = locationController.latitude;
-      gpsLng = locationController.longitude;
-
-      if (gpsLat == null || gpsLng == null) {
-        throw Exception("GPS unavailable");
-      }
-
-      address = locationController.locationText;
-
-      isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      errorMessage = "Unable to detect location.";
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // ------------------------------
-  // SET ADDRESS MANUALLY
-  // ------------------------------
-  void setManualAddress(String newAddress) {
-    address = newAddress.trim();
-    notifyListeners();
-  }
-
-  // ------------------------------
+  // -------------------------------------------------------------
   // REGISTER DONOR
-  // ------------------------------
+  // -------------------------------------------------------------
   Future<bool> register({
     required String name,
     required int age,
@@ -74,26 +26,15 @@ class DonorRegistrationController extends ChangeNotifier {
     required String bloodGroup,
     required String phone,
     required List<String> conditions,
+    required Map<String, String> permanentAddressComponents,
+    required String addressInput,
+    Map<String, dynamic>? lastSeen,
     String? notes,
-    String? addressInput,
-    double? latitudeInput,
-    double? longitudeInput,
+
+    /// NEW OPTIONAL FIELD
+    String? profileImageUrl,
   }) async {
     errorMessage = null;
-
-    final resolvedAddress =
-        (addressInput != null && addressInput.trim().isNotEmpty)
-        ? addressInput.trim()
-        : (address.trim().isNotEmpty ? address.trim() : '');
-
-    if (resolvedAddress.isEmpty) {
-      errorMessage = "Address is required.";
-      notifyListeners();
-      return false;
-    }
-
-    final double? finalLat = latitudeInput ?? gpsLat;
-    final double? finalLng = longitudeInput ?? gpsLng;
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -114,15 +55,22 @@ class DonorRegistrationController extends ChangeNotifier {
         bloodGroup: bloodGroup,
         phone: phone,
         phoneVerified: true,
-        latitude: finalLat,
-        longitude: finalLng,
-        address: resolvedAddress,
-        lastDonationDate: null,
-        totalDonations: 0,
-        isAvailable: true,
+
+        permanentLocation: null, // still optional
+
+        permanentAddress: permanentAddressComponents,
+        addressString: addressInput,
+        lastSeen: lastSeen,
+
         medicalConditions: conditions,
         notes: notes,
-        profileImageUrl: null,
+
+        /// NEW FIELD INCLUDED HERE
+        profileImageUrl: profileImageUrl,
+
+        /// REQUIRED FIELD (was missing)
+        totalDonations: 0,
+
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -134,7 +82,7 @@ class DonorRegistrationController extends ChangeNotifier {
       return true;
     } catch (e) {
       isLoading = false;
-      errorMessage = "Failed to register donor.";
+      errorMessage = "Failed to register donor. Error: $e";
       notifyListeners();
       return false;
     }

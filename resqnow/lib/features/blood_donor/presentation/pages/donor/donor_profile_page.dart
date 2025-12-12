@@ -146,7 +146,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                       _detailRow("Age", donor.age.toString()),
                       _detailRow("Gender", donor.gender),
                       _detailRow("Phone", donor.phone),
-                      _detailRow("Address", donor.address),
+                      _detailRow("Address", donor.addressString),
                       _detailRow(
                         "Last Donation",
                         donor.lastDonationDate == null
