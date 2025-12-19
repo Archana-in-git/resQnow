@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class SuccessPage extends StatelessWidget {
@@ -17,11 +18,11 @@ class SuccessPage extends StatelessWidget {
               children: [
                 Lottie.asset(
                   'lib/assets/animation/success_check.json',
-                  repeat: true,
-                  animate: true,
+                  repeat: false,
                   height: 180,
                 ),
                 const SizedBox(height: 20),
+
                 const Text(
                   'Success!',
                   style: TextStyle(
@@ -31,8 +32,9 @@ class SuccessPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 const Text(
-                  'Your account has been created successfully.\nWelcome to ResQnow!',
+                  'Your account has been created successfully.\nWelcome to ResQNow!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -41,9 +43,11 @@ class SuccessPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
+
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    // ✅ Router-controlled navigation
+                    context.go('/home');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
@@ -53,7 +57,7 @@ class SuccessPage extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Go to Login',
+                    'Continue to Home',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

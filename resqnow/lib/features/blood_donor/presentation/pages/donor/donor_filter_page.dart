@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resqnow/features/blood_donor/presentation/controllers/donor_filter_controller.dart';
+import 'package:resqnow/features/presentation/controllers/location_controller.dart';
 
 class DonorFilterPage extends StatefulWidget {
   const DonorFilterPage({super.key});
@@ -27,8 +28,13 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final location = context.watch<LocationController>();
+
     return Consumer<DonorFilterController>(
       builder: (context, controller, _) {
+        // Pre-fill district only ONCE
+        controller.selectedDistrict ??= location.detectedDistrict;
+
         return Scaffold(
           appBar: AppBar(
             title: const Text("Filter Donors"),
@@ -49,7 +55,9 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
+                // ------------------------------
                 // BLOOD GROUP
+                // ------------------------------
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
                     labelText: "Blood Group",
@@ -69,7 +77,9 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
 
                 const SizedBox(height: 20),
 
+                // ------------------------------
                 // GENDER
+                // ------------------------------
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
                     labelText: "Gender",
@@ -89,7 +99,9 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
 
                 const SizedBox(height: 20),
 
+                // ------------------------------
                 // AGE RANGE
+                // ------------------------------
                 const Text(
                   "Age Range",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -114,7 +126,9 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
 
                 const SizedBox(height: 20),
 
-                // AVAILABILITY
+                // ------------------------------
+                // AVAILABILITY SWITCH
+                // ------------------------------
                 SwitchListTile(
                   title: const Text("Available for Donation"),
                   value: controller.isAvailable ?? false,
@@ -125,9 +139,53 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
                   },
                 ),
 
+                const SizedBox(height: 20),
+
+                // ------------------------------
+                // DISTRICT (READ-ONLY)
+                // ------------------------------
+                TextFormField(
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: "District",
+                    border: OutlineInputBorder(),
+                  ),
+                  controller: TextEditingController(
+                    text: controller.selectedDistrict ?? "",
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ------------------------------
+                // TOWN DROPDOWN
+                // ------------------------------
+                if (location.availableTowns.isNotEmpty)
+                  DropdownButtonFormField<String>(
+                    value: controller.selectedTown ?? location.selectedTown,
+                    decoration: const InputDecoration(
+                      labelText: "Town / Locality",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text("Any")),
+                      ...location.availableTowns.map(
+                        (town) =>
+                            DropdownMenuItem(value: town, child: Text(town)),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        controller.selectedTown = val;
+                      });
+                    },
+                  ),
+
                 const SizedBox(height: 30),
 
-                // APPLY BUTTON
+                // ------------------------------
+                // APPLY FILTERS BUTTON
+                // ------------------------------
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

@@ -21,9 +21,10 @@ class DonorListController extends ChangeNotifier {
   /// NEW — holds current district & town selection
   String? detectedDistrict;
   String? selectedTown;
+  String? detectedPincode;
 
   // ---------------------------------------------------------------------------
-  // Load donors by detecting district via GPS
+  // Load donors by detecting district via GPS + pincode lookup
   // ---------------------------------------------------------------------------
   Future<void> loadDonors() async {
     try {
@@ -31,20 +32,24 @@ class DonorListController extends ChangeNotifier {
       errorMessage = null;
       notifyListeners();
 
-      // initialize GPS + reverse geocoding
+      // Initialize GPS + reverse geocoding + pincode lookup
       await locationController.initialize();
 
+      // Get the DYNAMICALLY detected district (only if pincode matched our dataset)
       detectedDistrict = locationController.detectedDistrict;
 
       if (detectedDistrict == null || detectedDistrict!.isEmpty) {
-        errorMessage = "Unable to determine district from location.";
+        errorMessage =
+            "Unable to determine your district automatically. Please select manually.";
         isLoading = false;
         notifyListeners();
-        return;
       }
 
-      // FETCH ALL DONORS BY DISTRICT
-      donors = await getDonorsByDistrictUseCase(detectedDistrict!);
+      // ✅ STEP 2: FETCH ALL DONORS IN THE DETECTED DISTRICT
+      // Only fetch if auto-detection succeeded
+      if (detectedDistrict != null && detectedDistrict!.isNotEmpty) {
+        donors = await getDonorsByDistrictUseCase(detectedDistrict!);
+      }
 
       isLoading = false;
       notifyListeners();
@@ -86,5 +91,55 @@ class DonorListController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   Future<void> refresh() async {
     await loadDonors();
+  }
+
+  // ---------------------------------------------------------------------------
+  // MANUAL DISTRICT SELECTION (fallback)
+  // ---------------------------------------------------------------------------
+  Future<void> setManualDistrict(String district) async {
+    detectedDistrict = district;
+    selectedTown = null;
+    errorMessage = null;
+
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      // ✅ DISTRICT-LEVEL FETCH (IMPORTANT FIX)
+      donors = await getDonorsByDistrictUseCase(detectedDistrict!);
+
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      errorMessage = e.toString();
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // MANUAL TOWN SELECTION
+  // ---------------------------------------------------------------------------
+  Future<void> setManualTown(String town) async {
+    selectedTown = town;
+
+    if (detectedDistrict == null) return;
+
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      donors = await getDonorsByTownUseCase(
+        district: detectedDistrict!,
+        town: selectedTown!,
+      );
+
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      errorMessage = e.toString();
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

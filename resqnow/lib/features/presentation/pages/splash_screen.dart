@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:go_router/go_router.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,9 +29,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) context.go('/signup');
-    });
+    // ✅ NO NAVIGATION HERE
+    // GoRouter is the ONLY navigation authority
   }
 
   @override
@@ -45,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -70,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen>
               const SizedBox(height: 10),
               const Text(
                 'Your Emergency Companion',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                style: TextStyle(color: Colors.black54, fontSize: 16),
               ),
             ],
           ),

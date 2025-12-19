@@ -305,6 +305,24 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     // --------------------------
     // CALL register()
     // --------------------------
+    final registrationData = {
+      "name": nameCtrl.text.trim(),
+      "age": computedAge,
+      "gender": gender,
+      "bloodGroup": bloodGroup,
+      "phone": "$selectedCountryCode${phoneCtrl.text.trim()}",
+      "conditions": selectedConditions,
+      "notes": notesCtrl.text.trim(),
+      "addressInput": assembledAddress,
+      "permanentAddressComponents": components,
+      "lastSeen": lastSeenData,
+      "profileImageUrl": _uploadedImageUrl,
+    };
+
+    print("🩸🩸🩸 DONOR REGISTRATION PAYLOAD START");
+    print(registrationData);
+    print("🩸🩸🩸 DONOR REGISTRATION PAYLOAD END");
+
     final success = await controller.register(
       name: nameCtrl.text.trim(),
       age: computedAge,

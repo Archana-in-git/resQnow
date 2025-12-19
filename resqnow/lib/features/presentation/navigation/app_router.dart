@@ -1,4 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:resqnow/features/authentication/presentation/controllers/auth_controller.dart';
 
 // 🧭 Authentication
 import 'package:resqnow/features/authentication/presentation/pages/welcome_page.dart';
@@ -21,10 +26,8 @@ import 'package:resqnow/features/first_aid_resources/presentation/pages/resource
 import 'package:resqnow/features/first_aid_resources/presentation/pages/resource_detail_page.dart';
 import 'package:resqnow/domain/entities/resource.dart';
 
-// 🩸 Blood Banks
+// 🩸 Blood
 import 'package:resqnow/features/blood_donor/presentation/pages/bank/blood_bank_list_page.dart';
-
-// 🩸 BLOOD DONOR MODULE (NEW)
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_registration_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_profile_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_list_page.dart';
@@ -32,177 +35,150 @@ import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_filt
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_details_page.dart';
 
 class AppRouter {
-  static final GoRouter router = GoRouter(
-    // ⭐ INITIAL SCREEN: Home Page
-    initialLocation: '/home',
+  static GoRouter createRouter(BuildContext context) {
+    final authController = context.read<AuthController>();
 
-    routes: [
-      /// ----------------------------------------
-      /// ⭐ BLOOD DONOR MODULE ROUTES (NEW)
-      /// ----------------------------------------
+    return GoRouter(
+      initialLocation: '/splash',
+      refreshListenable: Listenable.merge([authController]),
 
-      // 1️⃣ Donor List Page (initial)
-      GoRoute(
-        path: '/donors',
-        name: 'donorList',
-        builder: (context, state) => const DonorListPage(),
-      ),
+      redirect: (context, state) {
+        final location = state.matchedLocation;
 
-      // 2️⃣ Donor Registration Page
-      GoRoute(
-        path: '/donor/register',
-        name: 'donorRegister',
-        builder: (context, state) => const DonorRegistrationPage(),
-      ),
+        final user = FirebaseAuth.instance.currentUser;
+        final loggedIn = user != null;
 
-      // 3️⃣ Donor Profile Page
-      GoRoute(
-        path: '/donor/profile',
-        name: 'donorProfile',
-        builder: (context, state) => const DonorProfilePage(),
-      ),
+        // 🔍 DEBUG LOGS (DO NOT REMOVE YET)
+        debugPrint('--- ROUTER REDIRECT ---');
+        debugPrint('location      : $location');
+        debugPrint('currentUser   : ${user?.uid}');
+        debugPrint('loggedIn      : $loggedIn');
 
-      // 4️⃣ Donor Filter Page
-      GoRoute(
-        path: '/donor/filter',
-        name: 'donorFilter',
-        builder: (context, state) => const DonorFilterPage(),
-      ),
+        final bool isAuthRoute =
+            location == '/welcome' ||
+            location == '/login' ||
+            location == '/signup' ||
+            location == '/success';
 
-      // 5️⃣ Donor Details Page
-      GoRoute(
-        path: '/donor/details/:id',
-        name: 'donorDetails',
-        builder: (context, state) {
-          final donorId = state.pathParameters['id']!;
-          return DonorDetailsPage(donorId: donorId);
-        },
-      ),
+        debugPrint('isAuthRoute   : $isAuthRoute');
 
-      /// ----------------------------------------
-      /// 🩸 BLOOD BANK PAGE (existing)
-      /// ----------------------------------------
-      GoRoute(
-        path: '/blood-banks',
-        name: 'bloodBanks',
-        builder: (context, state) => const BloodBankListPage(),
+        if (location == '/splash') {
+          return '/welcome';
+        }
+
+        if (!loggedIn && !isAuthRoute) {
+          debugPrint('Decision: redirect to /welcome');
+          return '/welcome';
+        }
+
+        if (loggedIn && isAuthRoute) {
+          debugPrint('Decision: redirect to /home');
+          return '/home';
+        }
+
+        debugPrint('Decision: no redirect');
+        return null;
+      },
+
+      errorBuilder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Page not found')),
+        body: Center(child: Text('Error: ${state.error}')),
       ),
 
-      /// ----------------------------------------
-      /// 🧭 Authentication Flow
-      /// ----------------------------------------
-      GoRoute(
-        path: '/signup',
-        name: 'signup',
-        builder: (context, state) => const SignUpPage(),
-      ),
-      GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/welcome',
-        name: 'welcome',
-        builder: (context, state) => const WelcomePage(),
-      ),
-      GoRoute(
-        path: '/success',
-        name: 'success',
-        builder: (context, state) => const SuccessPage(),
-      ),
+      routes: [
+        /// SPLASH
+        GoRoute(
+          path: '/splash',
+          builder: (context, state) => const SplashScreen(),
+        ),
 
-      /// ----------------------------------------
-      /// 🏠 Home Page
-      /// ----------------------------------------
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomePage(),
-      ),
+        /// AUTH
+        GoRoute(
+          path: '/welcome',
+          builder: (context, state) => const WelcomePage(),
+        ),
+        GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+        GoRoute(
+          path: '/signup',
+          builder: (context, state) => const SignUpPage(),
+        ),
+        GoRoute(
+          path: '/success',
+          builder: (context, state) => const SuccessPage(),
+        ),
 
-      /// ----------------------------------------
-      /// 🚨 Emergency Page
-      /// ----------------------------------------
-      GoRoute(
-        path: '/emergency',
-        name: 'emergency',
-        builder: (context, state) => const EmergencyPage(),
-      ),
+        /// HOME
+        GoRoute(path: '/home', builder: (context, state) => const HomePage()),
 
-      /// ----------------------------------------
-      /// ☎️ Emergency Numbers Page
-      /// ----------------------------------------
-      GoRoute(
-        path: '/emergency-numbers',
-        name: 'emergencyNumbers',
-        builder: (context, state) => const EmergencyNumbersPage(),
-      ),
+        /// DONORS
+        GoRoute(
+          path: '/donors',
+          builder: (context, state) => const DonorListPage(),
+        ),
+        GoRoute(
+          path: '/donor/register',
+          builder: (context, state) => const DonorRegistrationPage(),
+        ),
+        GoRoute(
+          path: '/donor/profile',
+          builder: (context, state) => const DonorProfilePage(),
+        ),
+        GoRoute(
+          path: '/donor/filter',
+          builder: (context, state) => const DonorFilterPage(),
+        ),
+        GoRoute(
+          path: '/donor/details/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return DonorDetailsPage(donorId: id);
+          },
+        ),
 
-      /// ----------------------------------------
-      /// 🩺 Categories Page
-      /// ----------------------------------------
-      GoRoute(
-        path: '/categories',
-        name: 'categories',
-        builder: (context, state) => const CategoryListPage(),
-        routes: [
-          GoRoute(
-            path: 'condition/:conditionId',
-            name: 'conditionDetail',
-            builder: (context, state) {
-              final conditionId = state.pathParameters['conditionId']!;
-              return ConditionDetailPage(conditionId: conditionId);
-            },
-          ),
-        ],
-      ),
+        /// BLOOD BANKS
+        GoRoute(
+          path: '/blood-banks',
+          builder: (context, state) => const BloodBankListPage(),
+        ),
 
-      /// ----------------------------------------
-      /// 📘 First-Aid Resources
-      /// ----------------------------------------
-      GoRoute(
-        path: '/resources',
-        name: 'resources',
-        builder: (context, state) => const ResourceListPage(),
-      ),
+        /// EMERGENCY
+        GoRoute(
+          path: '/emergency',
+          builder: (context, state) => const EmergencyPage(),
+        ),
+        GoRoute(
+          path: '/emergency-numbers',
+          builder: (context, state) => const EmergencyNumbersPage(),
+        ),
 
-      GoRoute(
-        path: '/resource-detail',
-        name: 'resourceDetail',
-        builder: (context, state) {
-          final resource = state.extra as Resource;
-          return ResourceDetailPage(resource: resource);
-        },
-      ),
+        /// CATEGORIES
+        GoRoute(
+          path: '/categories',
+          builder: (context, state) => const CategoryListPage(),
+          routes: [
+            GoRoute(
+              path: 'condition/:conditionId',
+              builder: (context, state) {
+                final id = state.pathParameters['conditionId']!;
+                return ConditionDetailPage(conditionId: id);
+              },
+            ),
+          ],
+        ),
 
-      /// ----------------------------------------
-      /// 🔁 Redirects (Old → New)
-      /// ----------------------------------------
-      GoRoute(
-        path: '/condition/:conditionId',
-        redirect: (context, state) {
-          final id = state.pathParameters['conditionId']!;
-          return '/categories/condition/$id';
-        },
-      ),
-
-      GoRoute(
-        path: '/category/:id',
-        redirect: (context, state) {
-          final id = state.pathParameters['id']!;
-          return '/categories/condition/$id';
-        },
-      ),
-
-      /// ----------------------------------------
-      /// Splash
-      /// ----------------------------------------
-      GoRoute(
-        path: '/splash',
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-    ],
-  );
+        /// RESOURCES
+        GoRoute(
+          path: '/resources',
+          builder: (context, state) => const ResourceListPage(),
+        ),
+        GoRoute(
+          path: '/resource-detail',
+          builder: (context, state) {
+            final resource = state.extra as Resource;
+            return ResourceDetailPage(resource: resource);
+          },
+        ),
+      ],
+    );
+  }
 }

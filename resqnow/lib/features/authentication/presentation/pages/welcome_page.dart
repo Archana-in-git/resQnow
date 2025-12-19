@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -38,17 +39,14 @@ class WelcomePage extends StatelessWidget {
               const Text(
                 'Your first aid and emergency care companion.\nBe ready. Be safe.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey, fontSize: 14),
               ),
 
               const Spacer(),
 
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  context.go('/login');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
@@ -67,7 +65,7 @@ class WelcomePage extends StatelessWidget {
 
               OutlinedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
+                  context.go('/signup');
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.teal),

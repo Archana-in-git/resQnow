@@ -56,24 +56,42 @@ class DonorRegistrationController extends ChangeNotifier {
         phone: phone,
         phoneVerified: true,
 
-        permanentLocation: null, // still optional
-
+        permanentLocation: null,
         permanentAddress: permanentAddressComponents,
+
+        /// 🔥 FLATTENED FIELDS (CRITICAL FOR QUERIES)
+        country: permanentAddressComponents['country'],
+        state: permanentAddressComponents['state'],
+        district: permanentAddressComponents['district'],
+        town: permanentAddressComponents['city'],
+        pincode: permanentAddressComponents['pincode'],
+        locality: permanentAddressComponents['locality'],
+
         addressString: addressInput,
         lastSeen: lastSeen,
 
         medicalConditions: conditions,
         notes: notes,
 
-        /// NEW FIELD INCLUDED HERE
         profileImageUrl: profileImageUrl,
 
-        /// REQUIRED FIELD (was missing)
+        isAvailable: true,
         totalDonations: 0,
 
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
+
+      print("📍 FLATTENED LOCATION CHECK:");
+      print({
+        "state": donor.state,
+        "district": donor.district,
+        "town": donor.town,
+        "pincode": donor.pincode,
+      });
+
+      print("🩸 DONOR REGISTRATION PAYLOAD:");
+      print(donor.toMap());
 
       await registerDonorUseCase(donor);
 

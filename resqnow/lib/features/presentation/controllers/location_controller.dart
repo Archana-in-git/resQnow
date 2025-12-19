@@ -21,58 +21,80 @@ class LocationController extends ChangeNotifier {
   double? latitude;
   double? longitude;
 
-  // ----------------------------------------------------------
-  // NEW — district & town system
-  // ----------------------------------------------------------
-  String? detectedDistrict;
+  // NEW: final resolved values
+  String? detectedDistrict; // always “Palakkad” for your region
+  String? selectedTown; // auto-detected from pincode
+  String? detectedPincode; // captured pincode from reverse geocoding
   List<String> availableTowns = [];
+  bool _userManuallySelectedTown = false; // prevent GPS override
 
+  // JSON DATA
   Map<String, List<String>> _districtTownMap = {};
+  List<Map<String, dynamic>> _pincodeAreaList = [];
 
-  // PUBLIC GETTERS
   String get locationText => _locationText;
   bool get isLoading => _isLoading;
   bool get hasPermission => _hasPermission;
 
-  // ----------------------------------------------------------
   // INITIALIZER
-  // ----------------------------------------------------------
   Future<void> initialize() async {
     if (_initialised) return;
     _initialised = true;
 
     await _loadKeralaTownJson();
+    await _loadPincodeJson();
     await refreshLocation();
   }
 
-  // ----------------------------------------------------------
-  // LOAD JSON DATA FOR DISTRICT → TOWNS
-  // ----------------------------------------------------------
+  // LOAD KERALA TOWN JSON
   Future<void> _loadKeralaTownJson() async {
     try {
       final jsonString = await rootBundle.loadString(
         'assets/kerala_towns.json',
       );
-
       final Map<String, dynamic> data = json.decode(jsonString);
-
-      _districtTownMap = data.map((district, towns) {
-        return MapEntry(district, List<String>.from(towns));
-      });
+      _districtTownMap = data.map(
+        (district, towns) => MapEntry(district, List<String>.from(towns)),
+      );
     } catch (e) {
       debugPrint("ERROR loading Kerala towns JSON: $e");
-      _districtTownMap = {};
     }
   }
 
-  // ----------------------------------------------------------
-  // REFRESH LOCATION MAIN LOGIC
-  // ----------------------------------------------------------
+  // LOAD PINCODE → TOWN JSON
+  Future<void> _loadPincodeJson() async {
+    try {
+      debugPrint(
+        "🔄 Loading pincode JSON from assets/data/pin_palakkad.json...",
+      );
+
+      final jsonString = await rootBundle.loadString(
+        'assets/data/pin_palakkad.json',
+      );
+
+      debugPrint(
+        "✅ JSON file loaded successfully. Size: ${jsonString.length} bytes",
+      );
+
+      final List<dynamic> data = json.decode(jsonString);
+      _pincodeAreaList = data.map((e) => Map<String, dynamic>.from(e)).toList();
+
+      debugPrint(
+        "✅ Pincode JSON parsed successfully. Total entries: ${_pincodeAreaList.length}",
+      );
+    } catch (e) {
+      debugPrint("❌ ERROR loading pincode JSON: $e");
+      debugPrint("❌ Stack trace: ${StackTrace.current}");
+      _pincodeAreaList = [];
+    }
+  }
+
+  // REFRESH LOCATION
   Future<void> refreshLocation() async {
     _isLoading = true;
     notifyListeners();
 
-    // 1️⃣ Request Permission
+    // Request permission
     final granted = await PermissionService.requestLocationPermission();
     _hasPermission = granted;
 
@@ -83,7 +105,7 @@ class LocationController extends ChangeNotifier {
       return;
     }
 
-    // 2️⃣ Check GPS
+    // Check GPS
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       _locationText = 'Enable GPS to detect location';
@@ -100,7 +122,7 @@ class LocationController extends ChangeNotifier {
       }
     }
 
-    // 3️⃣ Fetch GPS position
+    // Fetch position
     final Position? position = await LocationService.getCurrentPosition();
     if (position == null) {
       _locationText = 'Unable to detect location';
@@ -112,61 +134,109 @@ class LocationController extends ChangeNotifier {
     latitude = position.latitude;
     longitude = position.longitude;
 
-    // 4️⃣ Reverse geocode district
-    await _resolveDistrict(position);
+    // Reverse geocode → detect district + town
+    await _resolveDistrictAndTown(position);
 
-    // 5️⃣ Start live updates
+    // Start listening to future updates
     await _startPositionStream();
 
     _isLoading = false;
     notifyListeners();
   }
 
-  // ----------------------------------------------------------
-  // REVERSE GEOCODE DISTRICT + UPDATE TOWNS LIST
-  // ----------------------------------------------------------
-  Future<void> _resolveDistrict(Position pos) async {
+  // DETECT DISTRICT + TOWN (dynamically from pincode)
+  Future<void> _resolveDistrictAndTown(Position pos) async {
     try {
+      // Reset values
+      detectedDistrict = null;
+      if (!_userManuallySelectedTown) {
+        selectedTown = null;
+      }
+      availableTowns = [];
+
+      // Try to get reverse geocoded address for UI display
       final placemarks = await placemarkFromCoordinates(
         pos.latitude,
         pos.longitude,
       );
 
-      if (placemarks.isEmpty) return;
+      if (placemarks.isNotEmpty) {
+        final pm = placemarks.first;
 
-      final pm = placemarks.first;
+        // 🎯 STEP 1: Try to extract district from PINCODE (most reliable)
+        final postalCode = pm.postalCode?.trim();
+        detectedPincode = postalCode;
 
-      // Extract district safely
-      final district = pm.subAdministrativeArea?.trim();
+        if (postalCode != null && postalCode.isNotEmpty) {
+          final normalizedPostalCode = postalCode.trim();
 
-      if (district != null && district.isNotEmpty) {
-        detectedDistrict = district;
+          debugPrint(
+            "🔍 Looking for pincode: '$normalizedPostalCode' (type: ${normalizedPostalCode.runtimeType})",
+          );
+          debugPrint("📊 Total pincodes loaded: ${_pincodeAreaList.length}");
 
-        // Load towns for this district
-        availableTowns = _districtTownMap[district] ?? [];
+          final matches = _pincodeAreaList.where((e) {
+            final pin = e['pincode']?.toString().trim();
+            return pin == normalizedPostalCode;
+          }).toList();
+
+          debugPrint("🎯 Total matches found: ${matches.length}");
+
+          if (matches.isNotEmpty) {
+            // ✅ STEP 1: Get district from first match (all should have same)
+            detectedDistrict = matches.first['district'];
+            debugPrint("✅ District detected: $detectedDistrict");
+
+            // ✅ STEP 2: Derive unique towns from the pincode matches
+            // (NOT from the master district town list)
+            final townSet = <String>{};
+            for (final match in matches) {
+              final town = match['town']?.toString().trim();
+              if (town != null && town.isNotEmpty && town != 'NA') {
+                townSet.add(town);
+              }
+            }
+            availableTowns = townSet.toList();
+            availableTowns.sort(); // For consistent ordering
+
+            debugPrint("✅ Towns derived from pincode: $availableTowns");
+
+            // ✅ STEP 3: Auto-select town if only one available
+            if (availableTowns.length == 1 && !_userManuallySelectedTown) {
+              selectedTown = availableTowns.first;
+              debugPrint("✅ Auto-selected single town: $selectedTown");
+            }
+          } else {
+            debugPrint(
+              "⚠️ Pincode $normalizedPostalCode not found in local dataset",
+            );
+          }
+        } else {
+          debugPrint("⚠️ No postal code in reverse geocoding result");
+        }
+
+        // UI label with city/locality (for display only)
+        final city = pm.locality ?? pm.subLocality ?? '';
+        final country = pm.country ?? '';
+        final label = [city, country].where((e) => e.isNotEmpty).join(', ');
+
+        _locationText = label.isNotEmpty
+            ? label
+            : '${pos.latitude}, ${pos.longitude}';
+      } else {
+        // No placemark available
+        _locationText = '${pos.latitude}, ${pos.longitude}';
+        debugPrint("⚠️ No placemarks found for coordinates");
       }
-
-      // Update main label (city + country)
-      final city = pm.locality ?? pm.subLocality ?? '';
-      final country = pm.country ?? '';
-      final label = [
-        city,
-        country,
-      ].where((e) => e.trim().isNotEmpty).join(', ');
-
-      _locationText = label.isNotEmpty
-          ? label
-          : '${pos.latitude}, ${pos.longitude}';
     } catch (e) {
-      debugPrint("District resolve failed: $e");
+      debugPrint("❌ District resolution error: $e");
       detectedDistrict = null;
       availableTowns = [];
+      _locationText = '${pos.latitude}, ${pos.longitude}';
     }
   }
 
-  // ----------------------------------------------------------
-  // GPS ON WAIT
-  // ----------------------------------------------------------
+  // WAIT FOR GPS
   Future<bool> _waitForGPSOn({int seconds = 30}) async {
     final end = DateTime.now().add(Duration(seconds: seconds));
 
@@ -178,9 +248,7 @@ class LocationController extends ChangeNotifier {
     return await Geolocator.isLocationServiceEnabled();
   }
 
-  // ----------------------------------------------------------
-  // LIVE LOCATION STREAM HANDLING
-  // ----------------------------------------------------------
+  // LIVE STREAM
   Future<void> _startPositionStream() async {
     await _positionSubscription?.cancel();
 
@@ -190,14 +258,9 @@ class LocationController extends ChangeNotifier {
             latitude = position.latitude;
             longitude = position.longitude;
 
-            // update district only if it changed
-            final oldDistrict = detectedDistrict;
+            await _resolveDistrictAndTown(position);
 
-            await _resolveDistrict(position);
-
-            if (oldDistrict != detectedDistrict) {
-              notifyListeners();
-            }
+            notifyListeners();
           },
           onError: (_) {
             _locationText = 'Location unavailable';
@@ -206,17 +269,16 @@ class LocationController extends ChangeNotifier {
         );
   }
 
-  // ----------------------------------------------------------
-  // MANUAL SET LOCATION (optional)
-  // ----------------------------------------------------------
-  void setManualLocation(String label) {
-    _locationText = label;
-    notifyListeners();
-  }
-
   @override
   void dispose() {
     _positionSubscription?.cancel();
     super.dispose();
+  }
+
+  // PUBLIC: Allow UI to set manual town selection
+  void setManualTownSelection(String town) {
+    selectedTown = town;
+    _userManuallySelectedTown = true;
+    notifyListeners();
   }
 }

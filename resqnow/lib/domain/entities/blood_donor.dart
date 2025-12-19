@@ -23,6 +23,7 @@ class BloodDonor extends Equatable {
   final String? district;
   final String? town;
   final String? locality; // Small village/ward name
+  final String? pincode;
 
   /// Full address composed string
   final String addressString;
@@ -62,6 +63,7 @@ class BloodDonor extends Equatable {
     this.district,
     this.town,
     this.locality,
+    this.pincode,
 
     required this.addressString,
     required this.lastSeen,
@@ -96,6 +98,7 @@ class BloodDonor extends Equatable {
     String? district,
     String? town,
     String? locality,
+    String? pincode,
 
     String? addressString,
     Map<String, dynamic>? lastSeen,
@@ -124,6 +127,7 @@ class BloodDonor extends Equatable {
       district: district ?? this.district,
       town: town ?? this.town,
       locality: locality ?? this.locality,
+      pincode: pincode ?? this.pincode,
 
       addressString: addressString ?? this.addressString,
       lastSeen: lastSeen ?? this.lastSeen,
@@ -162,11 +166,13 @@ class BloodDonor extends Equatable {
       "district": district,
       "town": town,
       "locality": locality,
+      "pincode": pincode,
 
       "addressString": addressString,
       "lastSeen": lastSeen,
-
-      "lastDonationDate": lastDonationDate?.toIso8601String(),
+      "lastDonationDate": lastDonationDate != null
+          ? Timestamp.fromDate(lastDonationDate!)
+          : null,
       "totalDonations": totalDonations,
       "isAvailable": isAvailable,
 
@@ -224,11 +230,13 @@ class BloodDonor extends Equatable {
       district: map["district"] ?? addr["district"],
       town: map["town"] ?? addr["town"],
       locality: map["locality"] ?? addr["locality"],
+      pincode: (map["pincode"] ?? addr["pincode"])?.toString(),
 
       addressString: map["addressString"] ?? "",
-      lastSeen: map["lastSeen"],
-
-      lastDonationDate: _parseDate(map["lastDonationDate"]),
+      lastSeen: map['lastSeen'] as Map<String, dynamic>?,
+      lastDonationDate: map['lastDonationDate'] != null
+          ? (map['lastDonationDate'] as Timestamp).toDate()
+          : null,
       totalDonations: (map["totalDonations"] ?? 0) as int,
       isAvailable: map["isAvailable"] ?? true,
 
@@ -257,6 +265,7 @@ class BloodDonor extends Equatable {
     district,
     town,
     locality,
+    pincode,
     addressString,
     lastSeen,
     lastDonationDate,

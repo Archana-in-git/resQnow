@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart';
 import 'features/presentation/navigation/app_router.dart';
@@ -49,6 +48,8 @@ import 'features/blood_donor/presentation/controllers/donor_list_controller.dart
 import 'features/blood_donor/presentation/controllers/donor_filter_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_details_controller.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -73,7 +74,7 @@ Future<void> main() async {
         // LOCATION
         ChangeNotifierProvider(create: (_) => LocationController()),
 
-        // AUTH
+        // AUTH (MUST be above router)
         ChangeNotifierProvider(create: (_) => AuthController()),
 
         // CATEGORY
@@ -87,86 +88,71 @@ Future<void> main() async {
               ResourceController(getResourcesUseCase: getResourcesUseCase),
         ),
 
-        // ⭐ BLOOD BANK MODULE PROVIDERS
-        Provider<BloodBankService>(
+        // ⭐ BLOOD BANK MODULE
+        Provider(
           create: (_) => BloodBankService(
             apiKey: "AIzaSyD3A_U1IQPf-JvQwl22AKD0F9CVSJnM0fI",
           ),
         ),
-
-        Provider<BloodBankRepositoryImpl>(
+        Provider(
           create: (context) => BloodBankRepositoryImpl(
             service: context.read<BloodBankService>(),
           ),
         ),
-
-        Provider<GetBloodBanksNearby>(
+        Provider(
           create: (context) =>
               GetBloodBanksNearby(context.read<BloodBankRepositoryImpl>()),
         ),
 
-        // ⭐ BLOOD DONOR MODULE PROVIDERS
-
-        /// 1️⃣ SERVICE
-        Provider<BloodDonorService>(
+        // ⭐ BLOOD DONOR MODULE
+        Provider(
           create: (_) => BloodDonorService(
             firestore: firestore,
             auth: FirebaseAuth.instance,
           ),
         ),
-
-        /// 2️⃣ REPOSITORY IMPLEMENTATION
-        Provider<BloodDonorRepositoryImpl>(
+        Provider(
           create: (context) => BloodDonorRepositoryImpl(
             service: context.read<BloodDonorService>(),
           ),
         ),
 
-        /// 3️⃣ USE CASES
-        Provider<RegisterDonor>(
+        Provider(
           create: (context) =>
               RegisterDonor(context.read<BloodDonorRepositoryImpl>()),
         ),
-
-        Provider<UpdateDonor>(
+        Provider(
           create: (context) =>
               UpdateDonor(context.read<BloodDonorRepositoryImpl>()),
         ),
-
-        Provider<GetMyDonorProfile>(
+        Provider(
           create: (context) =>
               GetMyDonorProfile(context.read<BloodDonorRepositoryImpl>()),
         ),
 
-        // 🔥 NEW USE CASES — District & Town Search
-        Provider<get_donors.GetDonorsByDistrict>(
+        Provider(
           create: (context) => get_donors.GetDonorsByDistrict(
             context.read<BloodDonorRepositoryImpl>(),
           ),
         ),
-
-        Provider<get_donors.GetDonorsByTown>(
+        Provider(
           create: (context) => get_donors.GetDonorsByTown(
             context.read<BloodDonorRepositoryImpl>(),
           ),
         ),
-
-        Provider<FilterDonors>(
+        Provider(
           create: (context) =>
               FilterDonors(context.read<BloodDonorRepositoryImpl>()),
         ),
-
-        Provider<IsUserDonor>(
+        Provider(
           create: (context) =>
               IsUserDonor(context.read<BloodDonorRepositoryImpl>()),
         ),
-
-        Provider<GetDonorById>(
+        Provider(
           create: (context) =>
               GetDonorById(context.read<BloodDonorRepositoryImpl>()),
         ),
 
-        /// 4️⃣ CONTROLLERS
         ChangeNotifierProvider(
           create: (context) => DonorRegistrationController(
             registerDonorUseCase: context.read<RegisterDonor>(),
@@ -178,8 +164,6 @@ Future<void> main() async {
             updateDonorUseCase: context.read<UpdateDonor>(),
           ),
         ),
-
-        // ⭐ UPDATED DonorListController with new use cases
         ChangeNotifierProvider(
           create: (context) => DonorListController(
             getDonorsByDistrictUseCase: context
@@ -188,13 +172,11 @@ Future<void> main() async {
             locationController: context.read<LocationController>(),
           ),
         ),
-
         ChangeNotifierProvider(
           create: (context) => DonorFilterController(
             filterDonorsUseCase: context.read<FilterDonors>(),
           ),
         ),
-
         ChangeNotifierProvider(
           create: (context) => DonorDetailsController(
             getDonorByIdUseCase: context.read<GetDonorById>(),
@@ -211,7 +193,7 @@ class ResQNowApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeManager = Provider.of<ThemeManager>(context);
+    final themeManager = context.watch<ThemeManager>();
 
     return MaterialApp.router(
       title: 'ResQNow',
@@ -219,7 +201,9 @@ class ResQNowApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
-      routerConfig: AppRouter.router,
+
+      // ✅ CORRECT ROUTER INJECTION
+      routerConfig: AppRouter.createRouter(context),
     );
   }
 }

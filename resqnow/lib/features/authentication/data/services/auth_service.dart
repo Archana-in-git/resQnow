@@ -9,7 +9,7 @@ class AuthService {
   static const String usersCollection = 'users';
 
   // ---------------------------------------------------------------------------
-  // 🧠 EMAIL + PASSWORD SIGNUP (Default role: user)
+  // 🧠 EMAIL + PASSWORD SIGNUP
   // ---------------------------------------------------------------------------
   Future<User?> signUpWithEmail({
     required String name,
@@ -17,26 +17,27 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // 1️⃣ Create the Firebase Auth user
-      UserCredential credential = await _auth.createUserWithEmailAndPassword(
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      User? user = credential.user;
+      final user = credential.user;
       if (user != null) {
-        // 2️⃣ Create Firestore document (role always "user" by default)
+        // ✅ Ensure display name exists in FirebaseAuth
+        await user.updateDisplayName(name);
+
         await _firestore.collection(usersCollection).doc(user.uid).set({
           'uid': user.uid,
           'name': name,
           'email': email,
-          'role': 'user', // ✅ manual change needed in Firestore for admins
+          'role': 'user',
           'createdAt': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
       }
       return user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -48,28 +49,41 @@ class AuthService {
     required String password,
   }) async {
     try {
-      UserCredential credential = await _auth.signInWithEmailAndPassword(
+      final credential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return credential.user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+
+      final user = credential.user;
+      if (user != null) {
+        // ✅ Ensure Firestore user doc exists
+        await _firestore.collection(usersCollection).doc(user.uid).set({
+          'uid': user.uid,
+          'email': user.email,
+          'role': 'user',
+        }, SetOptions(merge: true));
+      }
+
+      return user;
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
   // ---------------------------------------------------------------------------
-  // 🟢 GOOGLE SIGN-IN (Default role: user)
+  // 🟢 GOOGLE SIGN-IN
   // ---------------------------------------------------------------------------
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut(); // avoid cached account
+
+      final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final googleAuth = await googleUser.authentication;
 
-      final OAuthCredential credential = GoogleAuthProvider.credential(
+      final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
@@ -77,45 +91,49 @@ class AuthService {
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user;
 
-      // Check if user exists in Firestore
       if (user != null) {
         final docRef = _firestore.collection(usersCollection).doc(user.uid);
-        final snapshot = await docRef.get();
+        final doc = await docRef.get();
 
-        if (!snapshot.exists) {
+        if (!doc.exists) {
           await docRef.set({
             'uid': user.uid,
             'name': user.displayName ?? '',
             'email': user.email,
-            'role': 'user', // ✅ all Google sign-ins start as user
+            'role': 'user',
             'createdAt': FieldValue.serverTimestamp(),
           });
         }
       }
       return user;
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
-      throw Exception('Google sign-in failed: $e');
+      throw FirebaseAuthException(
+        code: 'google-sign-in-failed',
+        message: e.toString(),
+      );
     }
   }
 
   // ---------------------------------------------------------------------------
-  // 👤 ANONYMOUS SIGN-IN (Role: guest)
+  // 👤 ANONYMOUS SIGN-IN (Guest)
   // ---------------------------------------------------------------------------
   Future<User?> signInAnonymously() async {
     try {
-      UserCredential userCredential = await _auth.signInAnonymously();
-      User? user = userCredential.user;
+      final credential = await _auth.signInAnonymously();
+      final user = credential.user;
 
       if (user != null) {
         await _firestore.collection(usersCollection).doc(user.uid).set({
           'uid': user.uid,
           'role': 'guest',
           'createdAt': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
       }
       return user;
-    } catch (e) {
-      throw Exception('Anonymous sign-in failed: $e');
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -128,7 +146,7 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 🔍 FETCH USER ROLE FROM FIRESTORE
+  // 🔍 GET CURRENT USER ROLE
   // ---------------------------------------------------------------------------
   Future<String?> getCurrentUserRole() async {
     final user = _auth.currentUser;
@@ -138,14 +156,11 @@ class AuthService {
         .collection(usersCollection)
         .doc(user.uid)
         .get();
-    if (snapshot.exists) {
-      return snapshot.data()?['role'] ?? 'user';
-    }
-    return null;
+    return snapshot.data()?['role'];
   }
 
   // ---------------------------------------------------------------------------
-  // 🧾 STREAM FOR AUTH STATE CHANGES
+  // 🧾 AUTH STATE STREAM
   // ---------------------------------------------------------------------------
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 }

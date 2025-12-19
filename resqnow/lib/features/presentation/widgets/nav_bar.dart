@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
+import 'package:resqnow/features/authentication/presentation/controllers/auth_controller.dart';
 
 class ResQNowNavBar extends StatelessWidget {
   const ResQNowNavBar({super.key});
@@ -79,7 +81,10 @@ class ResQNowNavBar extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               title: const Text("Logout"),
-              onTap: () => Navigator.pop(context),
+              onTap: () async {
+                Navigator.pop(context); // close drawer first
+                await context.read<AuthController>().signOut();
+              },
             ),
           ],
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../controllers/auth_controller.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -24,8 +24,17 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isPasswordVisible = false;
 
   @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthController>(context);
+    final auth = context.watch<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,11 +64,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Center(
                   child: Text(
                     "Create Account",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -77,42 +82,33 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 IntlPhoneField(
                   decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    labelStyle: const TextStyle(color: Colors.grey),
+                    labelText: 'Phone Number (optional)',
                     prefixIcon: const Icon(Icons.phone, color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.black,
+                    fillColor: Colors.grey[100],
                   ),
                   initialCountryCode: 'IN',
-                  dropdownIcon: const Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.teal,
-                  ),
                   onChanged: (phone) {
                     phoneController.text = phone.number;
                     selectedCountryCode = phone.countryCode;
                   },
-                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: passwordController,
                   obscureText: !isPasswordVisible,
-                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: "Password",
-                    labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.lock, color: Colors.teal),
                     suffixIcon: IconButton(
                       icon: Icon(
                         isPasswordVisible
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.teal,
                       ),
                       onPressed: () => setState(
                         () => isPasswordVisible = !isPasswordVisible,
@@ -122,56 +118,33 @@ class _SignUpPageState extends State<SignUpPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.black,
+                    fillColor: Colors.grey[100],
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Password required'
+                      : null,
                 ),
                 const SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: authController.isLoading
+                    onPressed: auth.isLoading
                         ? null
                         : () async {
                             if (!_formKey.currentState!.validate()) return;
 
-                            final router = GoRouter.of(context);
-                            final messenger = ScaffoldMessenger.of(context);
-
-                            final user = await authController.signUpWithEmail(
+                            final user = await auth.signUpWithEmail(
                               name: nameController.text.trim(),
                               email: emailController.text.trim(),
                               password: passwordController.text.trim(),
                             );
 
-                            if (user != null) {
-                              final firestore = FirebaseFirestore.instance;
-                              await firestore
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .set({
-                                    'phone':
-                                        '$selectedCountryCode${phoneController.text.trim()}',
-                                  }, SetOptions(merge: true));
+                            if (!mounted) return;
 
-                              final role = await authController
-                                  .getCurrentUserRole();
-
-                              if (!mounted) return;
-
-                              if (role == 'admin') {
-                                router.go('/adminDashboard');
-                              } else {
-                                router.go('/home');
-                              }
-                            } else {
-                              final message =
-                                  authController.errorMessage ??
-                                  "Signup failed";
-                              messenger.showSnackBar(
-                                SnackBar(content: Text(message)),
+                            if (user == null && auth.errorMessage != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(auth.errorMessage!)),
                               );
                             }
                           },
@@ -182,7 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: authController.isLoading
+                    child: auth.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                             "Sign Up",
@@ -195,10 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Already have an account? ",
-                      style: TextStyle(color: Colors.black87),
-                    ),
+                    const Text("Already have an account? "),
                     GestureDetector(
                       onTap: () => context.go('/login'),
                       child: const Text(
@@ -228,14 +198,12 @@ class _SignUpPageState extends State<SignUpPage> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Icon(icon, color: Colors.teal),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.black,
+        fillColor: Colors.grey[100],
       ),
       validator: (value) =>
           value == null || value.isEmpty ? 'Required field' : null,

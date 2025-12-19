@@ -82,6 +82,7 @@ flutter:
     - assets/data/districts_kerala.json
     - assets/data/cities_kerala.json
     - assets/data/states_india.json
+    - assets/data/pin_palakkad.json
 
   # Uncomment and add your custom fonts when needed
   # fonts:

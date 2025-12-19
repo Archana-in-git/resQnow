@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../authentication/data/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../authentication/data/services/auth_service.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -12,6 +12,11 @@ class AuthController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   // ---------------------------------------------------------------------------
+  // 🧾 AUTH STATE (CRITICAL FOR ROUTER)
+  // ---------------------------------------------------------------------------
+  Stream<User?> get authStateChanges => _authService.authStateChanges;
+
+  // ---------------------------------------------------------------------------
   // 🧠 EMAIL SIGNUP
   // ---------------------------------------------------------------------------
   Future<User?> signUpWithEmail({
@@ -19,21 +24,13 @@ class AuthController extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    try {
-      _setLoading(true);
-      final user = await _authService.signUpWithEmail(
+    return _runAuthAction(() async {
+      return await _authService.signUpWithEmail(
         name: name,
         email: email,
         password: password,
       );
-      _clearError();
-      return user;
-    } catch (e) {
-      _setError(e.toString());
-      return null;
-    } finally {
-      _setLoading(false);
-    }
+    }, defaultError: 'Signup failed');
   }
 
   // ---------------------------------------------------------------------------
@@ -43,50 +40,61 @@ class AuthController extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    try {
-      _setLoading(true);
-      final user = await _authService.loginWithEmail(
+    return _runAuthAction(() async {
+      return await _authService.loginWithEmail(
         email: email,
         password: password,
       );
-      _clearError();
-      return user;
-    } catch (e) {
-      _setError(e.toString());
-      return null;
-    } finally {
-      _setLoading(false);
-    }
+    }, defaultError: 'Login failed');
   }
 
   // ---------------------------------------------------------------------------
   // 🟢 GOOGLE SIGN-IN
   // ---------------------------------------------------------------------------
   Future<User?> signInWithGoogle() async {
-    try {
-      _setLoading(true);
-      final user = await _authService.signInWithGoogle();
-      _clearError();
-      return user;
-    } catch (e) {
-      _setError(e.toString());
-      return null;
-    } finally {
-      _setLoading(false);
-    }
+    return _runAuthAction(() async {
+      return await _authService.signInWithGoogle();
+    }, defaultError: 'Google sign-in failed');
   }
 
   // ---------------------------------------------------------------------------
   // 👤 ANONYMOUS SIGN-IN
   // ---------------------------------------------------------------------------
   Future<User?> signInAnonymously() async {
+    return _runAuthAction(() async {
+      return await _authService.signInAnonymously();
+    }, defaultError: 'Guest login failed');
+  }
+
+  // ---------------------------------------------------------------------------
+  // 🚪 SIGN OUT
+  // ---------------------------------------------------------------------------
+  Future<void> signOut() async {
+    await _authService.signOut();
+    notifyListeners(); // ✅ force router & UI refresh
+  }
+
+  // ---------------------------------------------------------------------------
+  // 🔍 ROLE
+  // ---------------------------------------------------------------------------
+  Future<String?> getCurrentUserRole() async {
+    return _authService.getCurrentUserRole();
+  }
+
+  // ---------------------------------------------------------------------------
+  // ⚙️ SHARED AUTH HANDLER
+  // ---------------------------------------------------------------------------
+  Future<User?> _runAuthAction(
+    Future<User?> Function() action, {
+    required String defaultError,
+  }) async {
+    _setLoading(true);
     try {
-      _setLoading(true);
-      final user = await _authService.signInAnonymously();
+      final user = await action();
       _clearError();
       return user;
-    } catch (e) {
-      _setError(e.toString());
+    } on FirebaseAuthException catch (e) {
+      _setError(e.message ?? defaultError);
       return null;
     } finally {
       _setLoading(false);
@@ -94,25 +102,7 @@ class AuthController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // 🚪 SIGN OUT
-  // ---------------------------------------------------------------------------
-  Future<void> signOut() async {
-    try {
-      await _authService.signOut();
-    } catch (e) {
-      debugPrint('Sign out failed: $e');
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // 🔍 GET ROLE
-  // ---------------------------------------------------------------------------
-  Future<String?> getCurrentUserRole() async {
-    return await _authService.getCurrentUserRole();
-  }
-
-  // ---------------------------------------------------------------------------
-  // ⚙️ INTERNAL STATE HELPERS
+  // ⚙️ STATE HELPERS
   // ---------------------------------------------------------------------------
   void _setLoading(bool value) {
     _isLoading = value;
