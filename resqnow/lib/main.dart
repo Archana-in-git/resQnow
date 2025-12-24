@@ -38,6 +38,7 @@ import 'domain/usecases/register_donor.dart';
 import 'domain/usecases/update_donor.dart';
 import 'domain/usecases/get_my_donor_profile.dart';
 import 'domain/usecases/get_donors.dart' as get_donors;
+import 'domain/usecases/get_all_donors.dart';
 import 'domain/usecases/filter_donors.dart';
 import 'domain/usecases/is_user_donor.dart';
 import 'domain/usecases/get_donor_by_id.dart';
@@ -140,6 +141,13 @@ Future<void> main() async {
             context.read<BloodDonorRepositoryImpl>(),
           ),
         ),
+        Provider<GetAllDonors>(
+          lazy: false,
+          create: (context) {
+            final repository = context.read<BloodDonorRepositoryImpl>();
+            return GetAllDonors(repository);
+          },
+        ),
         Provider(
           create: (context) =>
               FilterDonors(context.read<BloodDonorRepositoryImpl>()),
@@ -169,6 +177,7 @@ Future<void> main() async {
             getDonorsByDistrictUseCase: context
                 .read<get_donors.GetDonorsByDistrict>(),
             getDonorsByTownUseCase: context.read<get_donors.GetDonorsByTown>(),
+            getAllDonorsUseCase: context.read<GetAllDonors>(),
             locationController: context.read<LocationController>(),
           ),
         ),

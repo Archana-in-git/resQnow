@@ -11,6 +11,7 @@ import 'package:resqnow/features/condition_categories/presentation/controllers/c
 import 'package:resqnow/features/first_aid_resources/presentation/controllers/resource_controller.dart';
 import 'package:resqnow/features/first_aid_resources/presentation/widgets/resource_card.dart';
 import 'package:resqnow/features/presentation/widgets/nav_bar.dart';
+import 'package:resqnow/features/blood_donor/presentation/controllers/donor_profile_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -67,34 +68,49 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: "Search...",
+                        hintText: "Search resources, conditions...",
                         prefixIcon: const Icon(
                           Icons.search,
                           color: AppColors.primary,
+                          size: 22,
                         ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
+                          vertical: 14,
                           horizontal: 16,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(
+                          color: AppColors.textSecondary.withOpacity(0.6),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Container(
-                    height: 48,
-                    width: 48,
+                    height: 50,
+                    width: 50,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                       onPressed: () {
                         _scaffoldKey.currentState?.openEndDrawer();
                       },
@@ -262,8 +278,9 @@ class _HomePageState extends State<HomePage> {
           title,
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            letterSpacing: -0.3,
           ),
         ),
         if (onSeeAll != null)
@@ -273,7 +290,8 @@ class _HomePageState extends State<HomePage> {
               "See All",
               style: TextStyle(
                 color: AppColors.primary,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
               ),
             ),
           ),
@@ -314,9 +332,9 @@ class _CategoryCircleIcon extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.cardShadow,
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
+                  color: AppColors.cardShadow.withOpacity(0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -355,9 +373,9 @@ class _HospitalCardPlaceholder extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: AppColors.cardShadow.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -365,29 +383,37 @@ class _HospitalCardPlaceholder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 100,
+            height: 110,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary.withOpacity(0.15),
+                  AppColors.primary.withOpacity(0.08),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
             ),
-            child: const Center(
+            child: Center(
               child: Icon(
                 Icons.local_hospital,
                 color: AppColors.primary,
-                size: 40,
+                size: 44,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Text(
               name,
               style: const TextStyle(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 fontSize: 14,
                 color: AppColors.textPrimary,
+                letterSpacing: -0.2,
               ),
             ),
           ),
@@ -409,23 +435,40 @@ class _ComingSoonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 5,
+            color: AppColors.cardShadow.withOpacity(0.08),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-          color: AppColors.textPrimary,
+      child: Center(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.schedule, color: AppColors.primary, size: 28),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+                fontSize: 15,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -461,6 +504,7 @@ class _BloodBankHomeSection extends StatelessWidget {
                 child: _BloodFeatureTile(
                   title: "Blood Banks",
                   icon: Icons.local_hospital_rounded,
+                  tileType: _BloodTileType.becomeDonor,
                   onTap: () => context.push('/blood-banks'),
                 ),
               ),
@@ -469,6 +513,7 @@ class _BloodBankHomeSection extends StatelessWidget {
                 child: _BloodFeatureTile(
                   title: "Nearby Donors",
                   icon: Icons.people_alt_rounded,
+                  tileType: _BloodTileType.myProfile,
                   onTap: () => context.push('/donors'),
                 ),
               ),
@@ -481,7 +526,15 @@ class _BloodBankHomeSection extends StatelessWidget {
                 child: _BloodFeatureTile(
                   title: "Become a Donor",
                   icon: Icons.volunteer_activism_rounded,
-                  onTap: () => context.push('/donor/register'),
+                  tileType: _BloodTileType.becomeDonor,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _BloodFeatureTile(
+                  title: "My Profile",
+                  icon: Icons.person_rounded,
+                  tileType: _BloodTileType.myProfile,
                 ),
               ),
             ],
@@ -493,47 +546,203 @@ class _BloodBankHomeSection extends StatelessWidget {
 }
 
 /// -----------------------------------------------------------
+/// 🩸 BLOOD TILE TYPE ENUM
+/// -----------------------------------------------------------
+enum _BloodTileType { becomeDonor, myProfile }
+
+/// -----------------------------------------------------------
 /// 🩸 BLOOD FEATURE TILE
 /// -----------------------------------------------------------
 class _BloodFeatureTile extends StatelessWidget {
   final String title;
   final IconData icon;
-  final VoidCallback onTap;
+  final _BloodTileType tileType;
+  final VoidCallback? onTap;
 
   const _BloodFeatureTile({
     required this.title,
     required this.icon,
-    required this.onTap,
+    required this.tileType,
+    this.onTap,
   });
+
+  /// Handle smart navigation based on donor status
+  Future<void> _handleTap(BuildContext context) async {
+    try {
+      final profileController = context.read<DonorProfileController>();
+      final isDonor = await profileController.isDonor();
+
+      if (!context.mounted) return;
+
+      if (tileType == _BloodTileType.becomeDonor) {
+        // If already donor, show alert and navigate to profile
+        if (isDonor) {
+          _showAlreadyDonorAlert(context);
+        } else {
+          // Not a donor, navigate to registration
+          context.push('/donor/register');
+        }
+      } else if (tileType == _BloodTileType.myProfile) {
+        // If donor, navigate to profile
+        if (isDonor) {
+          context.push('/donor/profile');
+        } else {
+          // Not a donor, show alert and offer to register
+          _showNotDonorAlert(context);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error handling tile tap: $e");
+    }
+  }
+
+  /// Alert shown when user tries to view profile but is not a donor
+  void _showNotDonorAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
+        title: Row(
+          children: [
+            Icon(Icons.info_rounded, color: AppColors.primary),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Not a Donor Yet',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'You are not registered as a blood donor. Register now to create your donor profile and help save lives!',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Later'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/donor/register');
+            },
+            child: const Text('Register Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Alert shown when user is already a donor but clicks "Become a Donor"
+  void _showAlreadyDonorAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
+        title: Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: Colors.green.shade600),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Already Registered',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'You are already registered as a blood donor! Go to your profile to manage your details and availability.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/donor/profile');
+            },
+            child: const Text('View Profile'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: onTap ?? () => _handleTap(context),
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: Colors.grey.shade100,
+          color: _getTileColor(),
+          boxShadow: [
+            BoxShadow(
+              color: _getTileColor().withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 30, color: AppColors.primary),
-            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _getIconColor().withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 28, color: _getIconColor()),
+            ),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: 13,
                 color: AppColors.textPrimary,
+                letterSpacing: -0.2,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Color _getTileColor() {
+    if (tileType == _BloodTileType.becomeDonor) {
+      return Colors.red.shade50;
+    } else {
+      return Colors.blue.shade50;
+    }
+  }
+
+  Color _getIconColor() {
+    if (tileType == _BloodTileType.becomeDonor) {
+      return Colors.red.shade600;
+    } else {
+      return Colors.blue.shade600;
+    }
   }
 }

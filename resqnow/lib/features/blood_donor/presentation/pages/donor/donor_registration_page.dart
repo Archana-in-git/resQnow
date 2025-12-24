@@ -13,6 +13,8 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/features/blood_donor/presentation/controllers/donor_registration_controller.dart';
+import 'package:resqnow/features/blood_donor/presentation/controllers/donor_profile_controller.dart';
+import 'package:go_router/go_router.dart';
 
 // New imports for image & firebase
 import 'package:image_picker/image_picker.dart';
@@ -29,6 +31,7 @@ class DonorRegistrationPage extends StatefulWidget {
 
 class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _initialCheckDone = false;
 
   // basic personal controllers
   final nameCtrl = TextEditingController();
@@ -107,6 +110,69 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   void initState() {
     super.initState();
     _loadAddressData();
+    _checkIfAlreadyDonor();
+  }
+
+  /// Check if user is already registered as a donor
+  Future<void> _checkIfAlreadyDonor() async {
+    if (!mounted) return;
+
+    try {
+      final profileController = context.read<DonorProfileController>();
+      final isDonor = await profileController.isDonor();
+
+      if (isDonor && mounted) {
+        // User is already a donor, show dialog and redirect
+        _showAlreadyDonorDialog();
+      }
+    } catch (e) {
+      debugPrint("Error checking donor status: $e");
+    }
+  }
+
+  /// Dialog shown when user is already a registered donor
+  void _showAlreadyDonorDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
+        title: Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: Colors.green.shade600),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Already Registered',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'You are already registered as a blood donor! View your donor profile to see your details and manage your availability.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              context.go('/donor-profile');
+            },
+            child: const Text('View Profile'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

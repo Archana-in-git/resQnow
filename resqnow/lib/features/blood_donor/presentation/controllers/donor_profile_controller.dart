@@ -18,6 +18,16 @@ class DonorProfileController extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
 
+  /// Check if current user is registered as a donor (without loading full profile)
+  Future<bool> isDonor() async {
+    try {
+      donor = await getMyDonorProfileUseCase();
+      return donor != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> loadProfile() async {
     try {
       isLoading = true;

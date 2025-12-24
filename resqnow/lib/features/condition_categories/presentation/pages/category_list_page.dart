@@ -145,21 +145,28 @@ class _CategoryListPageState extends State<CategoryListPage>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
+        backgroundColor: AppColors.white,
+        elevation: 1,
+        automaticallyImplyLeading: !_isSearchExpanded,
         leading: _isSearchExpanded
             ? null
             : IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.textPrimary,
+                ),
                 onPressed: () {
                   context.pop();
                 },
               ),
-        centerTitle: true,
+        centerTitle: !_isSearchExpanded,
         title: AnimatedBuilder(
           animation: _expandAnimation,
           builder: (context, child) {
             return Row(
+              mainAxisAlignment: _isSearchExpanded
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.center,
               children: [
                 if (!_isSearchExpanded)
                   const Expanded(
@@ -167,7 +174,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                       'Explore Categories',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
@@ -177,34 +184,57 @@ class _CategoryListPageState extends State<CategoryListPage>
                   Expanded(
                     child: Container(
                       height: 40,
+                      margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.grey[100],
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.2),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.08),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [
                           const SizedBox(width: 12),
-                          Icon(Icons.search, color: Colors.grey[600], size: 20),
+                          Icon(
+                            Icons.search,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
                               onChanged: _onSearchChanged,
                               autofocus: true,
-                              style: const TextStyle(fontSize: 16),
-                              decoration: const InputDecoration(
+                              textAlignVertical: TextAlignVertical.center,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
                                 hintText: 'Search conditions...',
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 8,
+                                hintStyle: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 14,
                                 ),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
                               ),
                             ),
                           ),
                           IconButton(
                             icon: Icon(
                               Icons.mic,
-                              color: Colors.grey[600],
+                              color: AppColors.primary.withOpacity(0.7),
                               size: 20,
                             ),
                             onPressed: () {
@@ -214,6 +244,8 @@ class _CategoryListPageState extends State<CategoryListPage>
                                 ),
                               );
                             },
+                            iconSize: 20,
+                            splashRadius: 20,
                           ),
                           // image analysis
                           IconButton(
@@ -228,24 +260,48 @@ class _CategoryListPageState extends State<CategoryListPage>
                                   )
                                 : Icon(
                                     Icons.camera_alt,
-                                    color: Colors.grey[600],
+                                    color: AppColors.primary.withOpacity(0.7),
                                     size: 20,
                                   ),
                             onPressed: _isAnalyzing
                                 ? null
                                 : _pickAndAnalyzeImage,
+                            iconSize: 20,
+                            splashRadius: 20,
                           ),
                         ],
                       ),
                     ),
                   ),
-                IconButton(
-                  icon: Icon(
-                    _isSearchExpanded ? Icons.close : Icons.search,
-                    color: Colors.white,
+                if (_isSearchExpanded)
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _toggleSearch,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Icon(
+                          Icons.close_rounded,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(
+                      Icons.search,
+                      color: AppColors.textPrimary,
+                    ),
+                    onPressed: _toggleSearch,
                   ),
-                  onPressed: _toggleSearch,
-                ),
               ],
             );
           },

@@ -53,9 +53,12 @@ class _ExpandableSearchBarState extends State<ExpandableSearchBar> {
                 controller: _controller,
                 onChanged: widget.onChanged,
                 autofocus: true,
+                textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                   hintText: widget.hintText,
                   border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
             ),

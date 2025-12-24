@@ -7,6 +7,9 @@ class Resource extends Equatable {
   final String description;
   final List<String> category;
   final List<String> tags;
+  final String? whenToUse;
+  final String? safetyTips;
+  final String? proTip;
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isFeatured;
@@ -18,6 +21,9 @@ class Resource extends Equatable {
     required this.description,
     required this.category,
     required this.tags,
+    this.whenToUse,
+    this.safetyTips,
+    this.proTip,
     required this.createdAt,
     required this.updatedAt,
     required this.isFeatured,
@@ -31,6 +37,9 @@ class Resource extends Equatable {
     description,
     category,
     tags,
+    whenToUse,
+    safetyTips,
+    proTip,
     createdAt,
     updatedAt,
     isFeatured,

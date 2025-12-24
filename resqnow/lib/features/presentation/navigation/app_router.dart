@@ -14,6 +14,10 @@ import 'package:resqnow/features/authentication/presentation/pages/success_page.
 // 🏠 Home
 import 'package:resqnow/features/presentation/pages/home_page.dart';
 import 'package:resqnow/features/presentation/pages/splash_screen.dart';
+import 'package:resqnow/features/presentation/pages/notification_page.dart';
+
+// 🤖 AI Chat
+import 'package:resqnow/features/presentation/pages/ai_chat_coming_soon_page.dart';
 
 // 🚨 Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
@@ -62,8 +66,13 @@ class AppRouter {
 
         debugPrint('isAuthRoute   : $isAuthRoute');
 
+        // 🎬 ALLOW SPLASH TO SHOW FIRST
+        // The splash screen will handle navigation after animation completes
         if (location == '/splash') {
-          return '/welcome';
+          debugPrint(
+            'Decision: stay on /splash (let animation complete first)',
+          );
+          return null;
         }
 
         if (!loggedIn && !isAuthRoute) {
@@ -109,6 +118,18 @@ class AppRouter {
 
         /// HOME
         GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+
+        /// NOTIFICATIONS
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotificationPage(),
+        ),
+
+        /// AI CHAT
+        GoRoute(
+          path: '/ai-chat-coming-soon',
+          builder: (context, state) => const AiChatComingSoonPage(),
+        ),
 
         /// DONORS
         GoRoute(
