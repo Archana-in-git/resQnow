@@ -30,6 +30,9 @@ import 'package:resqnow/features/first_aid_resources/presentation/pages/resource
 import 'package:resqnow/features/first_aid_resources/presentation/pages/resource_detail_page.dart';
 import 'package:resqnow/domain/entities/resource.dart';
 
+// 🛒 Shopping Cart
+import 'package:resqnow/features/shopping_cart/presentation/pages/cart_page.dart';
+
 // 🩸 Blood
 import 'package:resqnow/features/blood_donor/presentation/pages/bank/blood_bank_list_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_registration_page.dart';
@@ -199,6 +202,9 @@ class AppRouter {
             return ResourceDetailPage(resource: resource);
           },
         ),
+
+        /// 🛒 SHOPPING CART
+        GoRoute(path: '/cart', builder: (context, state) => const CartPage()),
       ],
     );
   }

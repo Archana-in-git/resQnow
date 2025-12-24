@@ -146,7 +146,18 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 🔍 GET CURRENT USER ROLE
+  // � PASSWORD RESET
+  // ---------------------------------------------------------------------------
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException {
+      rethrow;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // �🔍 GET CURRENT USER ROLE
   // ---------------------------------------------------------------------------
   Future<String?> getCurrentUserRole() async {
     final user = _auth.currentUser;

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/core/constants/app_text_styles.dart';
 import 'package:resqnow/domain/entities/resource.dart';
+import 'package:resqnow/features/shopping_cart/data/models/cart_item.dart';
+import 'package:resqnow/features/shopping_cart/presentation/controllers/cart_controller.dart';
 
 class ResourceDetailPage extends StatefulWidget {
   final Resource resource;
@@ -290,12 +294,29 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
+                        final cartItem = CartItem(
+                          id: widget.resource.id,
+                          name: widget.resource.name,
+                          description: widget.resource.description,
+                          imageUrl: widget.resource.imageUrls.isNotEmpty
+                              ? widget.resource.imageUrls.first
+                              : '',
+                          price: widget.resource.price,
+                          category: widget.resource.category.isNotEmpty
+                              ? widget.resource.category.first
+                              : 'General',
+                        );
+                        context.read<CartController>().addToCart(cartItem);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
                               "${widget.resource.name} added to cart!",
                             ),
                             duration: const Duration(seconds: 2),
+                            action: SnackBarAction(
+                              label: 'View Cart',
+                              onPressed: () => context.push('/cart'),
+                            ),
                           ),
                         );
                       },
@@ -309,7 +330,7 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                       ),
                       icon: const Icon(Icons.add_shopping_cart),
                       label: const Text(
-                        "Add to Kit",
+                        "Add to Cart",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

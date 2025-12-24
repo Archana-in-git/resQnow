@@ -49,6 +49,23 @@ class AuthController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
+  // 🔐 PASSWORD RESET
+  // ---------------------------------------------------------------------------
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _setLoading(true);
+    try {
+      await _authService.sendPasswordResetEmail(email);
+      _clearError();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      _setError(e.message ?? 'Failed to send reset email');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // 🟢 GOOGLE SIGN-IN
   // ---------------------------------------------------------------------------
   Future<User?> signInWithGoogle() async {

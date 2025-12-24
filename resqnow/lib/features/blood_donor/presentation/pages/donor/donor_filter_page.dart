@@ -122,6 +122,10 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "Select Blood Group",
+                      labelStyle: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -150,6 +154,10 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "Select Gender",
+                      labelStyle: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -299,6 +307,10 @@ class _DonorFilterPageState extends State<DonorFilterPage> {
                               controller.selectedTown ?? location.selectedTown,
                           decoration: InputDecoration(
                             labelText: "Town / Locality",
+                            labelStyle: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

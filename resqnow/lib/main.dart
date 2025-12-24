@@ -34,6 +34,9 @@ import 'domain/usecases/get_blood_banks_nearby.dart';
 import 'features/blood_donor/data/services/blood_donor_service.dart';
 import 'data/repositories/blood_donor_repository_impl.dart';
 
+// 🛒 SHOPPING CART MODULE
+import 'features/shopping_cart/presentation/controllers/cart_controller.dart';
+
 import 'domain/usecases/register_donor.dart';
 import 'domain/usecases/update_donor.dart';
 import 'domain/usecases/get_my_donor_profile.dart';
@@ -191,6 +194,9 @@ Future<void> main() async {
             getDonorByIdUseCase: context.read<GetDonorById>(),
           ),
         ),
+
+        // 🛒 SHOPPING CART
+        ChangeNotifierProvider(create: (_) => CartController()),
       ],
       child: const ResQNowApp(),
     ),

@@ -10,6 +10,7 @@ class Resource extends Equatable {
   final String? whenToUse;
   final String? safetyTips;
   final String? proTip;
+  final double price;
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isFeatured;
@@ -24,6 +25,7 @@ class Resource extends Equatable {
     this.whenToUse,
     this.safetyTips,
     this.proTip,
+    required this.price,
     required this.createdAt,
     required this.updatedAt,
     required this.isFeatured,
@@ -40,6 +42,7 @@ class Resource extends Equatable {
     whenToUse,
     safetyTips,
     proTip,
+    price,
     createdAt,
     updatedAt,
     isFeatured,

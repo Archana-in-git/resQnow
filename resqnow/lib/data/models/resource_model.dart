@@ -12,6 +12,7 @@ class ResourceModel extends Resource {
     super.whenToUse,
     super.safetyTips,
     super.proTip,
+    required super.price,
     required super.createdAt,
     required super.updatedAt,
     required super.isFeatured,
@@ -53,6 +54,7 @@ class ResourceModel extends Resource {
       whenToUse: json['whenToUse'] as String? ?? '',
       safetyTips: json['safetyTips'] as String? ?? '',
       proTip: json['proTip'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       createdAt: parseDate(json['createdAt']),
       updatedAt: parseDate(json['updatedAt']),
       isFeatured: json['isFeatured'] ?? false,
@@ -71,6 +73,7 @@ class ResourceModel extends Resource {
       'whenToUse': whenToUse,
       'safetyTips': safetyTips,
       'proTip': proTip,
+      'price': price,
       // ✅ When saving back, use Firestore Timestamp
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
