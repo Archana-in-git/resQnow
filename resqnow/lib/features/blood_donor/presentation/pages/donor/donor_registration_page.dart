@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/features/blood_donor/presentation/controllers/donor_registration_controller.dart';
@@ -31,7 +30,6 @@ class DonorRegistrationPage extends StatefulWidget {
 
 class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _initialCheckDone = false;
 
   // basic personal controllers
   final nameCtrl = TextEditingController();
@@ -51,7 +49,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   String? selectedCity; // selected from dropdown
   final cityManualCtrl = TextEditingController(); // manual fallback
   final pincodeCtrl = TextEditingController();
-  final localityCtrl = TextEditingController();
 
   // NON-INDIA minimal fields (Option A)
   final nonIndiaAddressCtrl = TextEditingController();
@@ -184,7 +181,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     dobCtrl.dispose();
     cityManualCtrl.dispose();
     pincodeCtrl.dispose();
-    localityCtrl.dispose();
 
     nonIndiaAddressCtrl.dispose();
     nonIndiaCityCtrl.dispose();
@@ -297,12 +293,10 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     Map<String, String> components = {};
 
     if (selectedCountryName == "India") {
-      final cityValue = selectedCity ?? cityManualCtrl.text.trim();
-      final locality = localityCtrl.text.trim();
+      final cityValue = selectedCity ?? "";
       final pin = pincodeCtrl.text.trim();
 
       assembledAddress = [
-        locality,
         cityValue,
         selectedDistrict ?? "",
         selectedState ?? "",
@@ -315,7 +309,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         "district": selectedDistrict ?? "",
         "city": cityValue,
         "pincode": pin,
-        "locality": locality,
       };
     } else {
       final addr = nonIndiaAddressCtrl.text.trim();
@@ -436,7 +429,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pop(true);
+      context.go('/donor-profile');
     } else {
       if (!mounted) return;
       messenger.showSnackBar(
@@ -707,8 +700,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       builder: (context, controller, _) {
         final notesEnabled = !noneSelected;
         final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-        final primaryColor = AppColors.primary;
 
         // Compute button enabled state
         final canSubmit =
@@ -721,375 +712,537 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             !_isUploadingImage; // disable submit while uploading image
 
         return Scaffold(
-          backgroundColor: theme.scaffoldBackgroundColor,
+          backgroundColor: const Color(0xFFFAFAFA),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top bar
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          color: theme.iconTheme.color,
-                          onPressed: () => Navigator.pop(context),
+                    // Enhanced Header Section
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.08),
+                            AppColors.primary.withValues(alpha: 0.03),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 20,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "Become a Donor",
-                                    style: theme.textTheme.headlineMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                          color: colorScheme.onSurface,
-                                          height: 1.2,
-                                        ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.15,
                                   ),
-                                  const SizedBox(width: 6),
-                                  SizedBox(
-                                    height: 34,
-                                    width: 34,
-                                    child: Lottie.asset(
-                                      'assets/animation/giving-hand.json',
-                                      animate: true,
-                                      repeat: true,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.favorite,
+                                      size: 14,
+                                      color: AppColors.primary,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                "Your contribution can save lives.",
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color:
-                                      theme.textTheme.bodyMedium?.color ??
-                                      colorScheme.onSurfaceVariant,
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Save Lives",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 12),
+                          Text(
+                            "Become a Donor",
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              fontSize: 32,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 16,
+                                color: Colors.grey.shade500,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Join our community and help save lives",
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
 
-                    // Profile picture row (NEW)
-                    Center(
+                    // Profile picture section - Elegant card matching section width
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 28,
+                      ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 48,
-                                backgroundColor: theme.colorScheme.surface,
-                                backgroundImage: _pickedImageFile != null
-                                    ? FileImage(_pickedImageFile!)
-                                          as ImageProvider
-                                    : null,
-                                child: _pickedImageFile == null
-                                    ? Icon(
-                                        Icons.person,
-                                        size: 48,
-                                        color: theme.disabledColor,
-                                      )
-                                    : null,
-                              ),
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: GestureDetector(
-                                  onTap: _showImageSourceSheet,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.12,
-                                          ),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
+                          Center(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AppColors.primary.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        AppColors.primary.withValues(
+                                          alpha: 0.06,
                                         ),
                                       ],
                                     ),
-                                    child: Icon(
-                                      _pickedImageFile == null
-                                          ? Icons.add_a_photo
-                                          : Icons.edit,
-                                      size: 18,
-                                      color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 60,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: _pickedImageFile != null
+                                        ? FileImage(_pickedImageFile!)
+                                              as ImageProvider
+                                        : null,
+                                    child: _pickedImageFile == null
+                                        ? Icon(
+                                            Icons.person_outline,
+                                            size: 52,
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.25,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: GestureDetector(
+                                    onTap: _showImageSourceSheet,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.35,
+                                            ),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        _pickedImageFile == null
+                                            ? Icons.add
+                                            : Icons.edit,
+                                        size: 18,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Profile picture (optional, recommended)",
-                            style: theme.textTheme.bodySmall,
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Text(
+                              "Profile Photo",
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87,
+                                    fontSize: 15,
+                                  ),
+                            ),
                           ),
                           if (_isUploadingImage) ...[
-                            const SizedBox(height: 8),
-                            const SizedBox(
-                              height: 14,
-                              width: 14,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary,
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 6),
-                            const Text("Uploading image..."),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Uploading...",
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                  ),
+                            ),
                           ],
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 32),
 
-                    // PERSONAL DETAILS
-                    _sectionHeader("Your Details"),
-                    const SizedBox(height: 12),
-
-                    _modernInput("Full Name", Icons.person, nameCtrl),
-                    const SizedBox(height: 12),
-                    _modernInput(
-                      "Date of Birth",
-                      Icons.calendar_month,
-                      dobCtrl,
-                      readOnly: true,
-                      onTap: _onSelectDob,
-                    ),
-                    const SizedBox(height: 12),
-                    _modernInput(
-                      "Age",
-                      Icons.cake_outlined,
-                      ageCtrl,
-                      keyboardType: TextInputType.number,
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 20),
-
-                    _genderSelector(),
-                    const SizedBox(height: 20),
-
-                    _bloodGroupSelector(),
-                    const SizedBox(height: 20),
-
-                    Container(
-                      decoration: _boxDecoration(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      child: IntlPhoneField(
-                        controller: phoneCtrl,
-                        initialCountryCode: selectedCountryIsoCode,
-                        style: _inputTextStyle(context),
-                        decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          border: InputBorder.none,
-                          prefixIcon: Icon(Icons.phone, color: primaryColor),
-                          labelStyle: _labelTextStyle(context),
+                    // PERSONAL DETAILS SECTION
+                    _buildSectionCard(
+                      title: "Your Details",
+                      children: [
+                        _modernInput(
+                          "Full Name",
+                          Icons.person_outline,
+                          nameCtrl,
                         ),
-                        dropdownIcon: Icon(
-                          Icons.arrow_drop_down,
-                          color: primaryColor,
+                        const SizedBox(height: 14),
+                        _modernInput(
+                          "Date of Birth",
+                          Icons.calendar_today_outlined,
+                          dobCtrl,
+                          readOnly: true,
+                          onTap: _onSelectDob,
                         ),
-                        onChanged: (phone) {
-                          selectedCountryCode = phone.countryCode;
-                          phoneCtrl.text = phone.number;
-                          setState(() {});
-                        },
-                      ),
+                        const SizedBox(height: 14),
+                        _modernInput(
+                          "Age",
+                          Icons.cake_outlined,
+                          ageCtrl,
+                          keyboardType: TextInputType.number,
+                          readOnly: true,
+                        ),
+                        const SizedBox(height: 18),
+                        _genderSelector(),
+                        const SizedBox(height: 18),
+                        _bloodGroupSelector(),
+                      ],
                     ),
 
                     const SizedBox(height: 20),
 
-                    // -----------------------------
-                    // PERMANENT ADDRESS SECTION
-                    // -----------------------------
-                    _sectionHeader("Permanent Address"),
-                    const SizedBox(height: 12),
-
-                    // COUNTRY SELECTOR (NEW)
-                    _countrySelector(),
-
-                    const SizedBox(height: 12),
-
-                    // If India -> show state/district/city UI
-                    if (selectedCountryName == "India") ...[
-                      _stateDropdown(),
-                      const SizedBox(height: 12),
-                      _districtDropdown(),
-                      const SizedBox(height: 12),
-                      _citySelector(),
-                      const SizedBox(height: 12),
-
-                      // Locality
-                      _modernInput(
-                        "Locality (optional)",
-                        Icons.location_city,
-                        localityCtrl,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // PIN code (India)
-                      _modernInput(
-                        "PIN Code",
-                        Icons.pin_drop,
-                        pincodeCtrl,
-                        keyboardType: TextInputType.number,
-                      ),
-                    ] else ...[
-                      // Non-India minimal fields (Option A)
-                      _nonIndiaAddressSection(),
-                    ],
-
-                    const SizedBox(height: 12),
-
-                    const SizedBox(height: 20),
-
-                    // MEDICAL CONDITIONS
-                    Text(
-                      "Medical Conditions",
-                      style: _labelTextStyle(
-                        context,
-                      ).copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      width: double.infinity,
-                      constraints: const BoxConstraints(minHeight: 64),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 18,
-                      ),
-                      decoration: _boxDecoration(),
-                      child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: conditions.map((c) {
-                          final selected = selectedConditions.contains(c);
-                          final disabled = noneSelected && c != "None";
-                          final chipBackground = selected
-                              ? AppColors.primary.withValues(alpha: 0.12)
-                              : disabled
-                              ? theme.disabledColor.withValues(alpha: 0.10)
-                              : theme.colorScheme.surfaceContainerHighest;
-                          final chipBorderColor = selected
-                              ? AppColors.primary.withValues(alpha: 0.80)
-                              : disabled
-                              ? theme.disabledColor.withValues(alpha: 0.30)
-                              : theme.dividerColor;
-                          final chipTextColor = selected
-                              ? AppColors.primary
-                              : disabled
-                              ? theme.disabledColor
-                              : theme.textTheme.bodyMedium?.color;
-
-                          return GestureDetector(
-                            onTap: disabled ? null : () => _onConditionTap(c),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 240),
-                              curve: Curves.easeOutCubic,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 10,
+                    // CONTACT INFORMATION
+                    _buildSectionCard(
+                      title: "Contact Information",
+                      children: [
+                        Container(
+                          decoration: _modernBoxDecoration(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
+                          child: IntlPhoneField(
+                            controller: phoneCtrl,
+                            initialCountryCode: selectedCountryIsoCode,
+                            style: _inputTextStyle(
+                              context,
+                            ).copyWith(fontSize: 15),
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.phone_outlined,
+                                color: AppColors.primary,
+                                size: 20,
                               ),
-                              decoration: BoxDecoration(
-                                color: chipBackground,
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(color: chipBorderColor),
-                              ),
-                              child: Text(
-                                c,
-                                style: TextStyle(
-                                  fontWeight: selected
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
-                                  color: chipTextColor,
-                                ),
+                              labelStyle: _labelTextStyle(context),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 2,
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: _boxDecoration(dimmed: !notesEnabled),
-                      child: TextField(
-                        controller: notesCtrl,
-                        enabled: notesEnabled,
-                        maxLines: 2,
-                        style: _inputTextStyle(context),
-                        onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: noneSelected
-                              ? "Other (disabled)"
-                              : "Other (optional)",
-                          hintStyle: _labelTextStyle(context),
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 2,
+                            dropdownIcon: Icon(
+                              Icons.arrow_drop_down,
+                              color: AppColors.primary,
+                              size: 24,
+                            ),
+                            onChanged: (phone) {
+                              selectedCountryCode = phone.countryCode;
+                              phoneCtrl.text = phone.number;
+                              setState(() {});
+                            },
                           ),
                         ),
-                      ),
+                      ],
                     ),
 
-                    const SizedBox(height: 40),
-
-                    // SUBMIT BUTTON
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                    // PERMANENT ADDRESS SECTION
+                    _buildSectionCard(
+                      title: "Permanent Address",
+                      children: [
+                        _countrySelector(),
+                        const SizedBox(height: 14),
+                        if (selectedCountryName == "India") ...[
+                          _stateDropdown(),
+                          const SizedBox(height: 14),
+                          _districtDropdown(),
+                          const SizedBox(height: 14),
+                          _citySelector(),
+                          const SizedBox(height: 14),
+                          _modernInput(
+                            "PIN Code",
+                            Icons.pin_drop_outlined,
+                            pincodeCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                        ),
-                        onPressed: canSubmit
-                            ? () => _onRegisterPressed(controller)
-                            : null,
-                        child: controller.isLoading
-                            ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: colorScheme.onPrimary,
+                        ] else ...[
+                          _nonIndiaAddressSection(),
+                        ],
+                      ],
+                    ),
+
+                    // MEDICAL CONDITIONS SECTION
+                    _buildSectionCard(
+                      title: "Medical Conditions",
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          constraints: const BoxConstraints(minHeight: 72),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: conditions.map((c) {
+                              final selected = selectedConditions.contains(c);
+                              final disabled = noneSelected && c != "None";
+
+                              return GestureDetector(
+                                onTap: disabled
+                                    ? null
+                                    : () => _onConditionTap(c),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeOutCubic,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: selected
+                                        ? AppColors.primary.withValues(
+                                            alpha: 0.15,
+                                          )
+                                        : disabled
+                                        ? Colors.grey.shade200
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: selected
+                                          ? AppColors.primary.withValues(
+                                              alpha: 0.5,
+                                            )
+                                          : disabled
+                                          ? Colors.grey.shade300
+                                          : Colors.grey.shade300,
+                                      width: selected ? 1.5 : 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    c,
+                                    style: TextStyle(
+                                      fontWeight: selected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: selected
+                                          ? AppColors.primary
+                                          : disabled
+                                          ? Colors.grey.shade500
+                                          : Colors.grey.shade700,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ),
-                              )
-                            : const Text(
-                                "Register as Donor",
-                                style: TextStyle(fontSize: 18),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: _modernBoxDecoration(
+                            dimmed: !notesEnabled,
+                          ),
+                          child: TextField(
+                            controller: notesCtrl,
+                            enabled: notesEnabled,
+                            maxLines: 2,
+                            style: _inputTextStyle(context),
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: noneSelected
+                                  ? "Other (disabled)"
+                                  : "Other conditions (optional)",
+                              hintStyle: _labelTextStyle(context),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 0,
+                                vertical: 2,
                               ),
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Icon(
+                                  Icons.note_outlined,
+                                  size: 18,
+                                  color: notesEnabled
+                                      ? AppColors.primary
+                                      : Colors.grey.shade400,
+                                ),
+                              ),
+                              prefixIconConstraints: const BoxConstraints(
+                                minWidth: 0,
+                                minHeight: 0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // SUBMIT BUTTON - ELEGANT DESIGN
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary,
+                            AppColors.primary.withValues(alpha: 0.85),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.25),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: canSubmit
+                              ? () => _onRegisterPressed(controller)
+                              : null,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Center(
+                              child: controller.isLoading
+                                  ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white.withValues(
+                                                alpha: 0.9,
+                                              ),
+                                            ),
+                                      ),
+                                    )
+                                  : Text(
+                                      "Register as Donor",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            letterSpacing: 0.3,
+                                          ),
+                                    ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 28),
                   ],
                 ),
               ),
@@ -1100,31 +1253,74 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     );
   }
 
-  // -------------------------
-  // NEW: Country selector widget
-  // -------------------------
+  // ===== NEW SECTION CARD WIDGET =====
+  Widget _buildSectionCard({
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              fontSize: 16,
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  // ===== MODERN BOX DECORATION =====
+  BoxDecoration _modernBoxDecoration({bool dimmed = false}) {
+    return BoxDecoration(
+      color: dimmed ? Colors.grey.shade100 : Colors.grey.shade50,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: dimmed ? Colors.grey.shade300 : Colors.grey.shade200,
+      ),
+    );
+  }
+
+  // ===== COUNTRY SELECTOR =====
   Widget _countrySelector() {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
         showCountryPicker(
           context: context,
-          showPhoneCode:
-              true, // show phone code to let user know dialing code (helps sync with phone input)
+          showPhoneCode: true,
           onSelect: (Country country) {
             setState(() {
               selectedCountryName = country.name;
               selectedCountryIsoCode = country.countryCode;
               selectedCountryDialCode = '+${country.phoneCode}';
               selectedCountryCode = '+${country.phoneCode}';
-              // For simplicity, don't auto-change phone field value here; IntlPhoneField handles its own picker.
               // Reset address fields when country changes
               selectedState = null;
               selectedDistrict = null;
               selectedCity = null;
               cityManualCtrl.clear();
               pincodeCtrl.clear();
-              localityCtrl.clear();
 
               nonIndiaAddressCtrl.clear();
               nonIndiaCityCtrl.clear();
@@ -1141,12 +1337,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         );
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        decoration: _boxDecoration(),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: _modernBoxDecoration(),
         child: Row(
           children: [
-            Icon(Icons.public, color: AppColors.primary),
-            const SizedBox(width: 14),
+            Icon(Icons.public, color: AppColors.primary, size: 20),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 selectedCountryName ?? "Select Country",
@@ -1154,28 +1350,26 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.arrow_drop_down, color: AppColors.primary),
+            Icon(Icons.arrow_drop_down, color: AppColors.primary, size: 24),
           ],
         ),
       ),
     );
   }
 
-  // -------------------------
-  // NON-INDIA minimal address section (Option A)
-  // -------------------------
+  // ===== NON-INDIA MINIMAL ADDRESS SECTION =====
   Widget _nonIndiaAddressSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _modernInput("Address line", Icons.home, nonIndiaAddressCtrl),
-        const SizedBox(height: 12),
+        _modernInput("Address line", Icons.home_outlined, nonIndiaAddressCtrl),
+        const SizedBox(height: 14),
         Row(
           children: [
             Expanded(
               child: _modernInput(
                 "City",
-                Icons.location_city,
+                Icons.location_city_outlined,
                 nonIndiaCityCtrl,
               ),
             ),
@@ -1183,16 +1377,16 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             Expanded(
               child: _modernInput(
                 "Province / State",
-                Icons.map,
+                Icons.map_outlined,
                 nonIndiaProvinceCtrl,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         _modernInput(
           "Postal Code",
-          Icons.pin_drop,
+          Icons.pin_drop_outlined,
           nonIndiaPincodeCtrl,
           keyboardType: TextInputType.number,
         ),
@@ -1200,11 +1394,8 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     );
   }
 
-  // -------------------------
-  // ADDRESS WIDGET HELPERS (India)
-  // -------------------------
+  // ===== STATE DROPDOWN =====
   Widget _stateDropdown() {
-    // If statesList is not loaded yet, show a placeholder or small spinner
     final items = _addressDataLoaded && statesList.isNotEmpty
         ? statesList
         : ['Kerala'];
@@ -1265,11 +1456,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       },
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
-          hintText: selectedState == null
-              ? "Select State first"
-              : (selectedState!.toLowerCase() == 'kerala'
-                    ? "Select District"
-                    : "Districts (Kerala only)"),
+          hintText: "Select District",
           border: InputBorder.none,
           prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
         ),
@@ -1309,16 +1496,13 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
           onChanged: (v) {
             setState(() {
               selectedCity = v;
-              cityManualCtrl.clear(); // clear manual entry
+              cityManualCtrl
+                  .clear(); // clear manual entry when selecting from dropdown
             });
           },
           dropdownDecoratorProps: DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
-              hintText: selectedDistrict == null
-                  ? "Select district first"
-                  : (cities.isEmpty
-                        ? "No city data for this district"
-                        : "Select City/Town (or enter manually below)"),
+              hintText: "Select City/Town",
               border: InputBorder.none,
               prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
             ),
@@ -1332,11 +1516,35 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
         const SizedBox(height: 8),
 
-        // Manual entry fallback
-        _modernInput(
-          "If your town isn't listed, enter it here",
-          Icons.edit_location,
-          cityManualCtrl,
+        // Manual entry fallback - updates selectedCity when typing
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: _modernBoxDecoration(),
+          child: Row(
+            children: [
+              Icon(Icons.edit_location, color: AppColors.primary, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: cityManualCtrl,
+                  onChanged: (value) {
+                    // Update selectedCity as user types
+                    setState(() {
+                      selectedCity = value.trim().isEmpty ? null : value.trim();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "If your town isn't listed, enter it here",
+                    border: InputBorder.none,
+                    hintStyle: _labelTextStyle(context),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                  ),
+                  style: _inputTextStyle(context).copyWith(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -1350,28 +1558,28 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     bool readOnly = false,
     VoidCallback? onTap,
   }) {
-    final primaryColor = AppColors.primary;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      decoration: _boxDecoration(),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: _modernBoxDecoration(),
       child: Row(
         children: [
-          Icon(icon, color: primaryColor),
-          const SizedBox(width: 14),
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 12),
           Expanded(
             child: TextField(
               controller: ctrl,
               keyboardType: keyboardType,
               readOnly: readOnly,
               onTap: onTap,
-              onChanged: (_) =>
-                  setState(() {}), // reflect in canSubmit / validation
+              onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
                 hintText: label,
                 border: InputBorder.none,
                 hintStyle: _labelTextStyle(context),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 2),
               ),
-              style: _inputTextStyle(context),
+              style: _inputTextStyle(context).copyWith(fontSize: 14),
             ),
           ),
         ],
@@ -1380,35 +1588,80 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   }
 
   Widget _genderSelector() {
-    final primaryColor = AppColors.primary;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Gender",
-          style: _labelTextStyle(context).copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
         Container(
-          decoration: _boxDecoration(),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
           child: Column(
             children: genderList.map((g) {
-              return RadioListTile<String>(
-                value: g,
-                groupValue: gender,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => gender = value);
-                  }
-                },
-                activeColor: primaryColor,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 2,
+              final selected = gender == g;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() => gender = g);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? AppColors.primary.withValues(alpha: 0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: selected
+                                  ? AppColors.primary
+                                  : Colors.grey.shade400,
+                              width: selected ? 2 : 1.5,
+                            ),
+                          ),
+                          child: selected
+                              ? Center(
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          g,
+                          style: TextStyle(
+                            fontWeight: selected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: selected
+                                ? Colors.black87
+                                : Colors.grey.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                dense: true,
-                title: Text(g, style: Theme.of(context).textTheme.bodyMedium),
               );
             }).toList(),
           ),
@@ -1418,89 +1671,59 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   }
 
   Widget _bloodGroupSelector() {
-    final primaryColor = AppColors.primary;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Blood Group",
-          style: _labelTextStyle(context).copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 10),
         Container(
           width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 64),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-          decoration: _boxDecoration(),
+          constraints: const BoxConstraints(minHeight: 72),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
           child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 10,
+            runSpacing: 10,
             children: bloodGroups.map((b) {
               final selected = bloodGroup == b;
 
               return GestureDetector(
                 onTap: () => setState(() => bloodGroup = b),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 10,
+                    horizontal: 14,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: selected
-                        ? primaryColor.withValues(alpha: 0.40)
-                        : Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(28),
+                        ? AppColors.primary.withValues(alpha: 0.15)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: selected
-                          ? primaryColor
-                          : Theme.of(context).dividerColor,
+                          ? AppColors.primary.withValues(alpha: 0.5)
+                          : Colors.grey.shade300,
+                      width: selected ? 1.5 : 1,
                     ),
                   ),
                   child: Text(
                     b,
                     style: TextStyle(
-                      fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                       color: selected
-                          ? primaryColor
-                          : Theme.of(context).textTheme.bodyMedium?.color,
+                          ? AppColors.primary
+                          : Colors.grey.shade700,
+                      fontSize: 13,
                     ),
                   ),
                 ),
               );
             }).toList(),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _sectionHeader(String text) {
-    final base =
-        Theme.of(context).textTheme.titleMedium ??
-        const TextStyle(fontSize: 20);
-    return Text(
-      text,
-      style: base.copyWith(
-        fontWeight: FontWeight.w700,
-        color: Colors.grey.shade700,
-      ),
-    );
-  }
-
-  BoxDecoration _boxDecoration({bool dimmed = false}) {
-    final theme = Theme.of(context);
-    return BoxDecoration(
-      color: dimmed
-          ? theme.colorScheme.surfaceContainerHighest
-          : theme.colorScheme.surface,
-      borderRadius: BorderRadius.circular(18),
-      boxShadow: [
-        BoxShadow(
-          color: const Color.fromRGBO(0, 0, 0, 0.05),
-          blurRadius: 10,
-          offset: const Offset(0, 6),
         ),
       ],
     );

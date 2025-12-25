@@ -62,4 +62,50 @@ class DonorProfileController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Update donor profile with new details
+  Future<bool> updateProfile({
+    String? name,
+    int? age,
+    String? gender,
+    String? bloodGroup,
+    String? phone,
+    Map<String, String>? permanentAddress,
+    String? addressString,
+    List<String>? medicalConditions,
+    String? notes,
+    String? profileImageUrl,
+  }) async {
+    if (donor == null) return false;
+
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      donor = donor!.copyWith(
+        name: name,
+        age: age,
+        gender: gender,
+        bloodGroup: bloodGroup,
+        phone: phone,
+        permanentAddress: permanentAddress,
+        addressString: addressString,
+        medicalConditions: medicalConditions,
+        notes: notes,
+        profileImageUrl: profileImageUrl,
+        updatedAt: DateTime.now(),
+      );
+
+      await updateDonorUseCase(donor!);
+
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      isLoading = false;
+      errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
 }

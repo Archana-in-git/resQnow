@@ -22,7 +22,6 @@ class BloodDonor extends Equatable {
   final String? state;
   final String? district;
   final String? town;
-  final String? locality; // Small village/ward name
   final String? pincode;
 
   /// Full address composed string
@@ -62,7 +61,6 @@ class BloodDonor extends Equatable {
     this.state,
     this.district,
     this.town,
-    this.locality,
     this.pincode,
 
     required this.addressString,
@@ -97,7 +95,6 @@ class BloodDonor extends Equatable {
     String? state,
     String? district,
     String? town,
-    String? locality,
     String? pincode,
 
     String? addressString,
@@ -126,7 +123,6 @@ class BloodDonor extends Equatable {
       state: state ?? this.state,
       district: district ?? this.district,
       town: town ?? this.town,
-      locality: locality ?? this.locality,
       pincode: pincode ?? this.pincode,
 
       addressString: addressString ?? this.addressString,
@@ -165,7 +161,6 @@ class BloodDonor extends Equatable {
       "state": state,
       "district": district,
       "town": town,
-      "locality": locality,
       "pincode": pincode,
 
       "addressString": addressString,
@@ -229,7 +224,6 @@ class BloodDonor extends Equatable {
       state: map["state"] ?? addr["state"],
       district: map["district"] ?? addr["district"],
       town: map["town"] ?? addr["town"],
-      locality: map["locality"] ?? addr["locality"],
       pincode: (map["pincode"] ?? addr["pincode"])?.toString(),
 
       addressString: map["addressString"] ?? "",
@@ -264,7 +258,6 @@ class BloodDonor extends Equatable {
     state,
     district,
     town,
-    locality,
     pincode,
     addressString,
     lastSeen,

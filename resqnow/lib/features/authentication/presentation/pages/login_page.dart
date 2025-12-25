@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -64,32 +63,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
   }
 
-  // Email & Password login
-  Future<void> _loginWithEmail() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _loginError = null);
-
-    final context = this.context;
-    final auth = context.read<AuthController>();
-
-    final user = await auth.loginWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-
-    if (!mounted) return;
-
-    if (user == null && auth.errorMessage != null) {
-      setState(() => _loginError = auth.errorMessage);
-    }
-  }
-
-  void _showError(String message) {
-    if (!mounted) return;
-    setState(() => _loginError = message);
-  }
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -103,7 +76,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthController>();
+    context.watch<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -572,26 +545,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _socialButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color textColor,
-    VoidCallback? onPressed,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: textColor,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-      icon: FaIcon(icon, size: 18),
-      label: Text(label),
     );
   }
 }

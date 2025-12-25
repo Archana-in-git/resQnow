@@ -9,7 +9,6 @@ import 'package:resqnow/features/authentication/presentation/controllers/auth_co
 import 'package:resqnow/features/authentication/presentation/pages/welcome_page.dart';
 import 'package:resqnow/features/authentication/presentation/pages/login_page.dart';
 import 'package:resqnow/features/authentication/presentation/pages/signup_page.dart';
-import 'package:resqnow/features/authentication/presentation/pages/success_page.dart';
 
 // 🏠 Home
 import 'package:resqnow/features/presentation/pages/home_page.dart';
@@ -24,6 +23,7 @@ import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dar
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
 import 'package:resqnow/features/medical_conditions/presentation/pages/condition_detail_page.dart';
+import 'package:resqnow/features/medical_conditions/presentation/pages/condition_faq_page.dart';
 
 // 📘 Resources
 import 'package:resqnow/features/first_aid_resources/presentation/pages/resource_list_page.dart';
@@ -114,10 +114,6 @@ class AppRouter {
           path: '/signup',
           builder: (context, state) => const SignUpPage(),
         ),
-        GoRoute(
-          path: '/success',
-          builder: (context, state) => const SuccessPage(),
-        ),
 
         /// HOME
         GoRoute(path: '/home', builder: (context, state) => const HomePage()),
@@ -186,6 +182,19 @@ class AppRouter {
                 final id = state.pathParameters['conditionId']!;
                 return ConditionDetailPage(conditionId: id);
               },
+              routes: [
+                GoRoute(
+                  path: 'faqs',
+                  builder: (context, state) {
+                    final id = state.pathParameters['conditionId']!;
+                    final condition = state.extra as dynamic;
+                    return ConditionFAQPage(
+                      conditionId: id,
+                      condition: condition,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

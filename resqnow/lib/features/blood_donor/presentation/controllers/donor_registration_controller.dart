@@ -65,7 +65,6 @@ class DonorRegistrationController extends ChangeNotifier {
         district: permanentAddressComponents['district'],
         town: permanentAddressComponents['city'],
         pincode: permanentAddressComponents['pincode'],
-        locality: permanentAddressComponents['locality'],
 
         addressString: addressInput,
         lastSeen: lastSeen,
