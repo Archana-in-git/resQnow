@@ -36,7 +36,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _firstAidTabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchCondition(widget.conditionId);
@@ -321,7 +321,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 const SizedBox(height: 24),
 
                 // ═══════════════════════════════════════════════════════════
-                // TABBED CONTENT SECTION (Resources, Video, FAQs)
+                // TABBED CONTENT SECTION (Resources, Video)
                 // ═══════════════════════════════════════════════════════════
                 Container(
                   decoration: BoxDecoration(
@@ -338,7 +338,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                     tabs: const [
                       Tab(text: 'Resources'),
                       Tab(text: 'Video'),
-                      Tab(text: 'FAQs'),
                     ],
                   ),
                 ),
@@ -355,12 +354,29 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
 
                       // TAB 2: Video
                       _buildVideoTab(condition),
-
-                      // TAB 3: FAQs
-                      _buildFAQTab(condition),
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 24),
+
+                // ═══════════════════════════════════════════════════════════
+                // FAQ SECTION - Link to separate FAQ page
+                // ═══════════════════════════════════════════════════════════
+                if (condition.faqs.isNotEmpty)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.help_outline),
+                      label: const Text("View Frequently Asked Questions"),
+                      onPressed: () {
+                        context.push(
+                          '/condition/${widget.conditionId}/faqs',
+                          extra: condition,
+                        );
+                      },
+                    ),
+                  ),
 
                 const SizedBox(height: 24),
 
