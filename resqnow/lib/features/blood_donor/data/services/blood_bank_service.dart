@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:resqnow/domain/entities/blood_bank.dart';
 
@@ -23,9 +22,8 @@ class BloodBankService {
 
     final response = await http.get(Uri.parse(url));
 
-    // DD THIS BEFORE jsonDecode
-    debugPrint("📡 BloodBankService Request URL → $url");
-    debugPrint("📨 Google Response → ${response.body}");
+    // debugPrint("📡 BloodBankService Request URL → $url");
+    // debugPrint("📨 Google Response → ${response.body}");
 
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch blood banks");
@@ -38,6 +36,18 @@ class BloodBankService {
     final List results = data["results"];
 
     return results.map((place) {
+      // Extract photo_reference from the photos array
+      String? photoReference;
+      int? userRatingsTotal;
+
+      if (place["photos"] != null && place["photos"].isNotEmpty) {
+        photoReference = place["photos"][0]["photo_reference"];
+      }
+
+      if (place["user_ratings_total"] != null) {
+        userRatingsTotal = place["user_ratings_total"];
+      }
+
       return BloodBank(
         id: place["place_id"] ?? "",
         name: place["name"] ?? "Unknown",
@@ -52,6 +62,9 @@ class BloodBankService {
             ? double.tryParse(place["rating"].toString())
             : null,
         openNow: place["opening_hours"]?["open_now"],
+        isOpenNow: place["opening_hours"]?["open_now"],
+        photoUrl: photoReference,
+        userRatingsTotal: userRatingsTotal,
       );
     }).toList();
   }

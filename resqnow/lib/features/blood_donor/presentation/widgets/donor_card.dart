@@ -25,7 +25,9 @@ class DonorCard extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: AppColors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E1E1E)
+              : AppColors.white,
           borderRadius: BorderRadius.circular(16),
           child: InkWell(
             onTap: onTap,
@@ -103,10 +105,14 @@ class DonorCard extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     donor.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -122,29 +128,33 @@ class DonorCard extends StatelessWidget {
                               '${donor.age} • ${donor.gender}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[400]
+                                    : AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
 
                             const SizedBox(height: 8),
 
-                            // Blood Group Badge
+                            // Blood Group Badge (Pill Style)
                             Container(
-                              width: 56,
-                              height: 56,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.red.shade600,
-                                shape: BoxShape.circle,
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Center(
-                                child: Text(
-                                  donor.bloodGroup,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 18,
-                                  ),
+                              child: Text(
+                                donor.bloodGroup,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -175,7 +185,9 @@ class DonorCard extends StatelessWidget {
                   // ============ DIVIDER ============
                   Container(
                     height: 1,
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.withOpacity(0.2)
+                        : AppColors.primary.withOpacity(0.1),
                   ),
 
                   const SizedBox(height: 12),
@@ -202,7 +214,11 @@ class DonorCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.textSecondary,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[400]
+                                      : AppColors.textSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -238,7 +254,11 @@ class DonorCard extends StatelessWidget {
                               'Donations',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: AppColors.textSecondary,
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[400]
+                                    : AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

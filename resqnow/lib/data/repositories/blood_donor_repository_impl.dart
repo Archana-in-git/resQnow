@@ -29,6 +29,15 @@ class BloodDonorRepositoryImpl implements BloodDonorRepository {
   }
 
   @override
+  Future<void> deleteDonor() async {
+    try {
+      await service.deleteDonor();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<BloodDonor?> getMyDonorProfile() async {
     try {
       return await service.getMyDonorProfile();

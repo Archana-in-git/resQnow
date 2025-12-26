@@ -141,19 +141,22 @@ class _CategoryListPageState extends State<CategoryListPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDarkMode
+          ? const Color(0xFF121212)
+          : AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: isDarkMode ? AppColors.secondary : AppColors.white,
         elevation: 1,
         automaticallyImplyLeading: !_isSearchExpanded,
         leading: _isSearchExpanded
             ? null
             : IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back,
-                  color: AppColors.textPrimary,
+                  color: isDarkMode ? Colors.white : AppColors.textPrimary,
                 ),
                 onPressed: () {
                   context.pop();
@@ -169,12 +172,14 @@ class _CategoryListPageState extends State<CategoryListPage>
                   : MainAxisAlignment.center,
               children: [
                 if (!_isSearchExpanded)
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Explore Categories',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: isDarkMode
+                            ? Colors.white
+                            : AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
@@ -186,7 +191,9 @@ class _CategoryListPageState extends State<CategoryListPage>
                       height: 40,
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: isDarkMode
+                            ? const Color(0xFF2A2A2A)
+                            : Colors.grey[100],
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: AppColors.primary.withOpacity(0.2),
@@ -215,14 +222,17 @@ class _CategoryListPageState extends State<CategoryListPage>
                               onChanged: _onSearchChanged,
                               autofocus: true,
                               textAlignVertical: TextAlignVertical.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
+                                color: isDarkMode ? Colors.white : Colors.black,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Search conditions...',
                                 hintStyle: TextStyle(
-                                  color: Colors.grey[500],
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.grey[500],
                                   fontSize: 14,
                                 ),
                                 border: InputBorder.none,
@@ -296,9 +306,9 @@ class _CategoryListPageState extends State<CategoryListPage>
                   )
                 else
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.search,
-                      color: AppColors.textPrimary,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
                     ),
                     onPressed: _toggleSearch,
                   ),
@@ -312,7 +322,9 @@ class _CategoryListPageState extends State<CategoryListPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, AppColors.primary.withOpacity(0.01)],
+            colors: isDarkMode
+                ? [const Color(0xFF121212), const Color(0xFF1A1A1A)]
+                : [Colors.white, AppColors.primary.withOpacity(0.01)],
           ),
         ),
         child: AnimatedBuilder(
@@ -327,11 +339,20 @@ class _CategoryListPageState extends State<CategoryListPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, size: 64, color: Colors.red),
+                    Icon(
+                      Icons.error,
+                      size: 64,
+                      color: isDarkMode ? Colors.red.shade300 : Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error: ${_controller.error}',
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white
+                            : AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -355,7 +376,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                           ? Icons.search_off
                           : Icons.category,
                       size: 64,
-                      color: Colors.grey,
+                      color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -363,7 +384,10 @@ class _CategoryListPageState extends State<CategoryListPage>
                           ? 'No categories found for "${_searchController.text}"'
                           : 'No categories available',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),

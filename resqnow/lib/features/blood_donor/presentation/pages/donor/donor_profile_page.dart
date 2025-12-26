@@ -1,6 +1,7 @@
 // lib/features/blood_donor/presentation/pages/donor/donor_profile_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/features/blood_donor/presentation/controllers/donor_profile_controller.dart';
@@ -82,25 +83,53 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                 // Edit Button
                 Align(
                   alignment: Alignment.topRight,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.edit_rounded,
-                        color: AppColors.textPrimary,
-                        size: 20,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.edit_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          onPressed: () =>
+                              _showEditBottomSheet(context, controller, donor),
+                          padding: const EdgeInsets.all(6),
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
+                        ),
                       ),
-                      onPressed: () =>
-                          _showEditBottomSheet(context, controller, donor),
-                      padding: const EdgeInsets.all(6),
-                      constraints: const BoxConstraints(
-                        minWidth: 40,
-                        minHeight: 40,
+                      const SizedBox(width: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                          onPressed: () => _showDeleteConfirmationDialog(
+                            context,
+                            controller,
+                          ),
+                          padding: const EdgeInsets.all(6),
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
 
@@ -176,13 +205,15 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
 
                 const SizedBox(height: 16),
 
-                // Blood Group Badge - Circular
+                // Blood Group Badge - Rectangular with rounded corners
                 Container(
-                  width: 80,
-                  height: 80,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red.shade600,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.red.withOpacity(0.2),
@@ -191,14 +222,13 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Text(
-                      donor.bloodGroup,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 24,
-                      ),
+                  child: Text(
+                    donor.bloodGroup,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 22,
+                      letterSpacing: 1.0,
                     ),
                   ),
                 ),
@@ -494,6 +524,86 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
       backgroundColor: Colors.transparent,
       builder: (_) => _EditProfileForm(donor: donor, controller: controller),
     );
+  }
+
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    DonorProfileController controller,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        title: Row(
+          children: [
+            Icon(Icons.warning_rounded, color: Colors.red.shade600, size: 28),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Delete Profile?',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'This will permanently delete your donor profile. You can register as a donor again anytime. This action cannot be undone.',
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteProfile(context, controller);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteProfile(
+    BuildContext context,
+    DonorProfileController controller,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    final success = await controller.deleteProfile();
+
+    if (success && mounted) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Profile deleted successfully'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // Navigate to home page after deletion
+      if (mounted) {
+        context.go('/');
+      }
+    } else if (mounted) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(controller.errorMessage ?? 'Failed to delete profile'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 

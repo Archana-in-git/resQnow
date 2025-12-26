@@ -26,7 +26,7 @@ class CustomBottomNavBar extends StatelessWidget {
             context.push('/emergency-numbers');
             break;
           case 3:
-            context.push('/cart');
+            context.push('/saved-topics');
             break;
           case 4:
             context.push('/user-profile');
@@ -48,8 +48,8 @@ class CustomBottomNavBar extends StatelessWidget {
           label: 'Emergency',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart_rounded),
-          label: 'Cart',
+          icon: Icon(Icons.bookmark_rounded),
+          label: 'Saved',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person_rounded),

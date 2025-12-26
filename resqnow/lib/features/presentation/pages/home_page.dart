@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                           borderSide: BorderSide.none,
                         ),
                         hintStyle: TextStyle(
-                          color: AppColors.textSecondary.withOpacity(0.6),
+                          color: AppColors.textSecondary.withValues(alpha: 0.6),
                         ),
                       ),
                     ),
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.2),
+                          color: AppColors.primary.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -332,7 +332,7 @@ class _CategoryCircleIcon extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.cardShadow.withOpacity(0.1),
+                  color: AppColors.cardShadow.withValues(alpha: 0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -373,7 +373,7 @@ class _HospitalCardPlaceholder extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow.withOpacity(0.1),
+            color: AppColors.cardShadow.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -387,8 +387,8 @@ class _HospitalCardPlaceholder extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.15),
-                  AppColors.primary.withOpacity(0.08),
+                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.primary.withValues(alpha: 0.08),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -441,7 +441,7 @@ class _ComingSoonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow.withOpacity(0.08),
+            color: AppColors.cardShadow.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -453,7 +453,7 @@ class _ComingSoonCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.schedule, color: AppColors.primary, size: 28),
@@ -696,7 +696,7 @@ class _BloodFeatureTile extends StatelessWidget {
           color: _getTileColor(),
           boxShadow: [
             BoxShadow(
-              color: _getTileColor().withOpacity(0.15),
+              color: _getTileColor().withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -708,7 +708,7 @@ class _BloodFeatureTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _getIconColor().withOpacity(0.15),
+                color: _getIconColor().withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 28, color: _getIconColor()),

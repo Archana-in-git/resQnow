@@ -63,17 +63,6 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
     });
   }
 
-  void _toggleDrawer() {
-    setState(() {
-      isDrawerOpen = !isDrawerOpen;
-    });
-    if (isDrawerOpen) {
-      _drawerController.forward();
-    } else {
-      _drawerController.reverse();
-    }
-  }
-
   @override
   void dispose() {
     nameController.dispose();
@@ -89,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthController>();
+    context.watch<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -130,7 +119,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                                 color: Colors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
+                                    color: Colors.black.withValues(alpha: 0.1),
                                     blurRadius: 15,
                                     spreadRadius: 2,
                                   ),
@@ -162,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                               'Create an account to get started',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: 0.2,
                               ),
@@ -287,6 +276,8 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                                           return;
                                         }
 
+                                        final scaffoldMessenger =
+                                            ScaffoldMessenger.of(context);
                                         final auth = context
                                             .read<AuthController>();
                                         final user = await auth.signUpWithEmail(
@@ -300,9 +291,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
 
                                         if (user == null &&
                                             auth.errorMessage != null) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
+                                          scaffoldMessenger.showSnackBar(
                                             SnackBar(
                                               content: Text(auth.errorMessage!),
                                             ),
@@ -312,7 +301,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal,
                                   disabledBackgroundColor: Colors.teal
-                                      .withOpacity(0.6),
+                                      .withValues(alpha: 0.6),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),

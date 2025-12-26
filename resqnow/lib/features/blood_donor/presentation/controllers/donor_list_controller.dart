@@ -37,16 +37,32 @@ class DonorListController extends ChangeNotifier {
   /// Track if user manually cleared district filter
   bool userClearedDistrict = false;
 
+  /// Track the last district we fetched donors for to avoid duplicate fetches
+  String? _lastFetchedDistrict;
+
   // Listen to LocationController changes
   void _onLocationChanged() {
     // Only auto-apply detected district if user hasn't manually cleared it
     if (!userClearedDistrict) {
-      detectedDistrict = locationController.detectedDistrict;
+      final newDistrict = locationController.detectedDistrict;
+      detectedDistrict = newDistrict;
+
       // Reset town when district changes
       selectedTown = null;
-      // Auto-fetch donors when district is detected
-      if (detectedDistrict != null && detectedDistrict!.isNotEmpty) {
-        _fetchDonorsForDistrict(detectedDistrict!);
+
+      // Only fetch if district actually changed
+      if (newDistrict != null &&
+          newDistrict.isNotEmpty &&
+          newDistrict != _lastFetchedDistrict) {
+        debugPrint(
+          "🔄 District changed from $_lastFetchedDistrict to $newDistrict - fetching donors",
+        );
+        _fetchDonorsForDistrict(newDistrict);
+        _lastFetchedDistrict = newDistrict;
+      } else if (newDistrict == _lastFetchedDistrict) {
+        debugPrint(
+          "⏭️ District unchanged ($_lastFetchedDistrict) - skipping fetch",
+        );
       }
     }
     notifyListeners();

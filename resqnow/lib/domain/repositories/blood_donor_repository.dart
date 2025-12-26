@@ -3,6 +3,7 @@ import 'package:resqnow/domain/entities/blood_donor.dart';
 abstract class BloodDonorRepository {
   Future<void> registerDonor(BloodDonor donor);
   Future<void> updateDonor(BloodDonor donor);
+  Future<void> deleteDonor();
 
   Future<BloodDonor?> getMyDonorProfile();
   Future<bool> isUserDonor();

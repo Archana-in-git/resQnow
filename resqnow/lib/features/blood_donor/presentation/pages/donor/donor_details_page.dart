@@ -54,7 +54,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.15),
+                          color: AppColors.primary.withValues(alpha: 0.15),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -136,7 +136,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
           alignment: Alignment.topLeft,
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -161,13 +161,13 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 3,
                 ),
               ),
               child: CircleAvatar(
                 radius: 54,
-                backgroundColor: AppColors.primary.withOpacity(0.1),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 backgroundImage: donor.profileImageUrl != null
                     ? NetworkImage(donor.profileImageUrl!)
                     : null,
@@ -216,7 +216,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -236,7 +236,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -262,7 +262,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.red.withOpacity(0.25),
+                color: Colors.red.withValues(alpha: 0.25),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -287,13 +287,13 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: donor.isAvailable
-                ? AppColors.success.withOpacity(0.1)
-                : Colors.red.withOpacity(0.1),
+                ? AppColors.success.withValues(alpha: 0.1)
+                : Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: donor.isAvailable
-                  ? AppColors.success.withOpacity(0.3)
-                  : Colors.red.withOpacity(0.3),
+                  ? AppColors.success.withValues(alpha: 0.3)
+                  : Colors.red.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
@@ -356,9 +356,9 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bgColor.withOpacity(0.1),
+        color: bgColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: bgColor.withOpacity(0.2), width: 1),
+        border: Border.all(color: bgColor.withValues(alpha: 0.2), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -395,9 +395,12 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

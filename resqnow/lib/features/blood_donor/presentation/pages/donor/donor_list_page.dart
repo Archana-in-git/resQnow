@@ -72,7 +72,11 @@ class _DonorListPageState extends State<DonorListPage> {
                               Text(
                                 'CURRENT LOCATION',
                                 style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[400]
+                                      : AppColors.textSecondary,
                                   fontSize: 10,
                                   letterSpacing: 0.5,
                                 ),
@@ -81,7 +85,11 @@ class _DonorListPageState extends State<DonorListPage> {
                               Text(
                                 location.locationText,
                                 style: AppTextStyles.sectionTitle.copyWith(
-                                  color: AppColors.textPrimary,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : AppColors.textPrimary,
                                   fontSize: 14,
                                 ),
                                 maxLines: 1,
@@ -124,7 +132,11 @@ class _DonorListPageState extends State<DonorListPage> {
                                     Text(
                                       'DISTRICT',
                                       style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.textSecondary,
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.grey[400]
+                                            : AppColors.textSecondary,
                                         fontSize: 10,
                                         letterSpacing: 0.3,
                                       ),
@@ -138,7 +150,13 @@ class _DonorListPageState extends State<DonorListPage> {
                                                 'Select',
                                             style: AppTextStyles.sectionTitle
                                                 .copyWith(
-                                                  color: AppColors.textPrimary,
+                                                  color:
+                                                      Theme.of(
+                                                            context,
+                                                          ).brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.white
+                                                      : AppColors.textPrimary,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -192,7 +210,11 @@ class _DonorListPageState extends State<DonorListPage> {
                                     Text(
                                       'TOWN',
                                       style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.textSecondary,
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.grey[400]
+                                            : AppColors.textSecondary,
                                         fontSize: 10,
                                         letterSpacing: 0.3,
                                       ),
@@ -205,7 +227,13 @@ class _DonorListPageState extends State<DonorListPage> {
                                             controller.selectedTown ?? 'Select',
                                             style: AppTextStyles.sectionTitle
                                                 .copyWith(
-                                                  color: AppColors.textPrimary,
+                                                  color:
+                                                      Theme.of(
+                                                            context,
+                                                          ).brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.white
+                                                      : AppColors.textPrimary,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -319,91 +347,106 @@ class _DonorListPageState extends State<DonorListPage> {
 
     if (!mounted) return;
 
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    // Show modal in next frame with fresh context
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+          builder: (context) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.location_on_rounded,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.location_on_rounded,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Select District',
+                              style: AppTextStyles.sectionTitle.copyWith(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(height: 4),
                         Text(
-                          'Select District',
-                          style: AppTextStyles.sectionTitle.copyWith(
-                            color: AppColors.textPrimary,
+                          'Choose a district to see donors nearby',
+                          style: AppTextStyles.caption.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[400]
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Choose a district to see donors nearby',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                  ),
+                  // Districts List
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount:
+                          keralaDistricts.length + 1, // +1 for "None" option
+                      itemBuilder: (context, index) {
+                        // First item is "None" option
+                        if (index == 0) {
+                          return _buildClearDistrictOption(
+                            context,
+                            controller,
+                            isSelected: controller.detectedDistrict == null,
+                          );
+                        }
+                        final district = keralaDistricts[index - 1];
+                        return _buildDistrictOption(
+                          context,
+                          controller,
+                          district,
+                          Icons.map_rounded,
+                          isSelected: controller.detectedDistrict == district,
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                  // Close padding
+                  const SizedBox(height: 20),
+                ],
               ),
-              // Districts List
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: keralaDistricts.length + 1, // +1 for "None" option
-                  itemBuilder: (context, index) {
-                    // First item is "None" option
-                    if (index == 0) {
-                      return _buildClearDistrictOption(
-                        context,
-                        controller,
-                        isSelected: controller.detectedDistrict == null,
-                      );
-                    }
-                    final district = keralaDistricts[index - 1];
-                    return _buildDistrictOption(
-                      context,
-                      controller,
-                      district,
-                      Icons.map_rounded,
-                      isSelected: controller.detectedDistrict == district,
-                    );
-                  },
-                ),
-              ),
-              // Close padding
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         );
-      },
-    );
+      }
+    });
   }
 
   // Load Kerala districts from JSON
@@ -435,91 +478,105 @@ class _DonorListPageState extends State<DonorListPage> {
 
     if (!mounted) return;
 
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    // Show modal in next frame with fresh context
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+          builder: (context) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.location_city_rounded,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.location_city_rounded,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Select Town',
+                              style: AppTextStyles.sectionTitle.copyWith(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(height: 4),
                         Text(
-                          'Select Town',
-                          style: AppTextStyles.sectionTitle.copyWith(
-                            color: AppColors.textPrimary,
+                          'Choose a town to refine your search',
+                          style: AppTextStyles.caption.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[400]
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Choose a town to refine your search',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                  ),
+                  // Towns List
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: towns.length + 1, // +1 for "None" option
+                      itemBuilder: (context, index) {
+                        // First item is "None" option
+                        if (index == 0) {
+                          return _buildClearTownOption(
+                            context,
+                            controller,
+                            isSelected: controller.selectedTown == null,
+                          );
+                        }
+                        final town = towns[index - 1];
+                        return _buildTownOption(
+                          context,
+                          controller,
+                          town,
+                          Icons.location_on_rounded,
+                          isSelected: controller.selectedTown == town,
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                  // Close padding
+                  const SizedBox(height: 20),
+                ],
               ),
-              // Towns List
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: towns.length + 1, // +1 for "None" option
-                  itemBuilder: (context, index) {
-                    // First item is "None" option
-                    if (index == 0) {
-                      return _buildClearTownOption(
-                        context,
-                        controller,
-                        isSelected: controller.selectedTown == null,
-                      );
-                    }
-                    final town = towns[index - 1];
-                    return _buildTownOption(
-                      context,
-                      controller,
-                      town,
-                      Icons.location_on_rounded,
-                      isSelected: controller.selectedTown == town,
-                    );
-                  },
-                ),
-              ),
-              // Close padding
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         );
-      },
-    );
+      }
+    });
   }
 
   // Town option widget
@@ -572,7 +629,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         townName,
                         style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w600,
@@ -653,7 +712,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         districtName,
                         style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w600,
@@ -736,7 +797,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         'None',
                         style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w600,
@@ -745,7 +808,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         'Clear filters',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[400]
+                              : AppColors.textSecondary,
                           fontSize: 11,
                         ),
                       ),
@@ -818,7 +883,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         'None',
                         style: AppTextStyles.cardTitle.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w600,
@@ -827,7 +894,9 @@ class _DonorListPageState extends State<DonorListPage> {
                       Text(
                         'Show all towns',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[400]
+                              : AppColors.textSecondary,
                           fontSize: 11,
                         ),
                       ),

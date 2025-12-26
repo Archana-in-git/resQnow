@@ -12,4 +12,8 @@ class MapConstants {
 
   static const double mapPaddingBottom = 180.0;
   static const double markerIconSize = 100.0;
+
+  // Google Places API Key
+  static const String googlePlacesApiKey =
+      'AIzaSyDZxL1FwXcsvoFFTJ3aHJNNOq3r4Bk_pFs';
 }

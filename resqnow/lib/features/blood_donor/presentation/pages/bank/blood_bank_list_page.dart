@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/domain/usecases/get_blood_banks_nearby.dart';
-import 'package:resqnow/domain/entities/blood_bank.dart'; // added import
+import 'package:resqnow/domain/entities/blood_bank.dart';
 import 'package:resqnow/features/blood_donor/presentation/controllers/blood_bank_list_controller.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/bank/blood_bank_map_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/widgets/blood_bank_card.dart';
@@ -23,11 +24,9 @@ class _BloodBankListPageState extends State<BloodBankListPage> {
   void initState() {
     super.initState();
 
-    /// We initialize LocationController here IF not ready.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final location = context.read<LocationController>();
 
-      // If location is not yet fetched, initialize it
       if (location.latitude == null || location.longitude == null) {
         location.initialize();
       }
@@ -38,27 +37,43 @@ class _BloodBankListPageState extends State<BloodBankListPage> {
   Widget build(BuildContext context) {
     final location = context.watch<LocationController>();
 
-    /// WAIT FOR LOCATION FIRST
     final hasLocation = location.latitude != null && location.longitude != null;
 
     if (!hasLocation) {
       return Scaffold(
-        appBar: _BloodBankAppBar(), // removed const to allow Consumer
-        body: Center(child: Text("Waiting for location...")),
+        appBar: AppBar(
+          title: const Text('Blood Banks'),
+          centerTitle: true,
+          backgroundColor: AppColors.primary,
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: AppColors.accent),
+              SizedBox(height: 16),
+              Text(
+                "Fetching your location...",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
-    /// CREATE CONTROLLER ONLY ONCE AFTER LOCATION IS READY
     controller ??= BloodBankListController(
       getBloodBanksNearby: context.read<GetBloodBanksNearby>(),
       locationController: location,
     );
 
-    // Attach a listener to perform a widened search once if needed
     controller!.removeListener(_onControllerUpdated);
     controller!.addListener(_onControllerUpdated);
 
-    /// LOAD BLOOD BANKS ONLY ONCE
     if (!_loadedOnce) {
       _loadedOnce = true;
       controller!.loadBloodBanks();
@@ -66,7 +81,7 @@ class _BloodBankListPageState extends State<BloodBankListPage> {
 
     return ChangeNotifierProvider.value(
       value: controller!,
-      child: _BloodBankListView(), // removed const to allow rebuilds
+      child: const _BloodBankListView(),
     );
   }
 
@@ -74,10 +89,9 @@ class _BloodBankListPageState extends State<BloodBankListPage> {
     final c = controller;
     if (c == null) return;
 
-    // When initial search finishes and found nothing, retry once (controller default radius)
     if (!_widenedSearchOnce && !c.isLoading && c.bloodBanks.isEmpty) {
       _widenedSearchOnce = true;
-      c.loadBloodBanks(); // removed unsupported radiusKm
+      c.loadBloodBanks();
     }
   }
 }
@@ -90,7 +104,6 @@ class _BloodBankListView extends StatelessWidget {
     final loc = context.read<LocationController>();
     final lat = loc.latitude!;
     final lon = loc.longitude!;
-    // 20km = 20000 meters
     return await usecase.call(
       latitude: lat,
       longitude: lon,
@@ -104,106 +117,372 @@ class _BloodBankListView extends StatelessWidget {
     final locationLabel = context.watch<LocationController>().locationText;
 
     return Scaffold(
-      appBar: const _BloodBankAppBar(),
-      body: Column(
+      backgroundColor: AppColors.background,
+      body: RefreshIndicator(
+        color: AppColors.accent,
+        onRefresh: () async {
+          controller.loadBloodBanks();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Results Header
+              if (!controller.isLoading && controller.error == null)
+                _buildResultsHeader(controller, locationLabel),
+
+              // Main Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: controller.isLoading
+                    ? _buildLoadingState()
+                    : controller.error != null
+                    ? _buildErrorState(controller.error!)
+                    : controller.bloodBanks.isEmpty
+                    ? _buildEmptyState(context)
+                    : _buildListView(controller.bloodBanks),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsHeader(
+    BloodBankListController controller,
+    String locationLabel,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Location banner below AppBar
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: Theme.of(context).colorScheme.surface,
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    locationLabel,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.8),
+          // Current Location Section
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'CURRENT LOCATION',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                    const SizedBox(height: 2),
+                    Text(
+                      locationLabel,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
 
-          // Main content
-          Expanded(
-            child: controller.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : controller.error != null
-                ? Center(child: Text("Error: ${controller.error}"))
-                : controller.bloodBanks.isEmpty
-                ? FutureBuilder<List<BloodBank>>(
-                    future: _fetchFallbackBanks(context),
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(
-                          child: Text("No blood banks found nearby."),
-                        );
-                      }
-                      final fallbackBanks = snapshot.data ?? [];
-                      if (fallbackBanks.isEmpty) {
-                        return const Center(
-                          child: Text("No blood banks found within 20km."),
-                        );
-                      }
-                      return ListView.builder(
-                        itemCount: fallbackBanks.length,
-                        itemBuilder: (_, index) {
-                          final bank = fallbackBanks[index];
-                          return BloodBankCard(bank: bank);
-                        },
-                      );
-                    },
-                  )
-                : ListView.builder(
-                    itemCount: controller.bloodBanks.length,
-                    itemBuilder: (_, index) {
-                      final bank = controller.bloodBanks[index];
-                      return BloodBankCard(bank: bank);
-                    },
-                  ),
+          // Blood Banks Count Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.local_hospital_rounded,
+                  color: AppColors.accent,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Found ${controller.bloodBanks.length} Blood Bank${controller.bloodBanks.length != 1 ? 's' : ''}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      "Tap any card to get directions and donate blood",
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class _BloodBankAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _BloodBankAppBar();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text("Nearby Blood Banks"),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.map),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BloodBankMapPage()),
-            );
-          },
+  Widget _buildLoadingState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 80),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.accent,
+                  strokeWidth: 3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Finding nearby blood banks...",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "This may take a moment",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 80),
+        child: Column(
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  color: AppColors.accent,
+                  size: 36,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Unable to Load",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                error,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return FutureBuilder<List<BloodBank>>(
+      future: _fetchFallbackBanks(context),
+      builder: (_, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 80),
+              child: Column(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.accent,
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Expanding search radius...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 80),
+              child: Column(
+                children: [
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.search_off_rounded,
+                        color: AppColors.primary,
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "No Blood Banks Found",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "No blood banks available within 20km",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final fallbackBanks = snapshot.data ?? [];
+        if (fallbackBanks.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 80),
+              child: Column(
+                children: [
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.search_off_rounded,
+                        color: AppColors.primary,
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "No Results in Your Area",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Try using the map view to explore nearby areas",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return _buildListView(fallbackBanks);
+      },
+    );
+  }
+
+  Widget _buildListView(List<BloodBank> banks) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: banks.length,
+      itemBuilder: (_, index) {
+        final bank = banks[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: BloodBankCard(bank: bank),
+        );
+      },
     );
   }
 }

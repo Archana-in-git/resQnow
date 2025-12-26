@@ -39,6 +39,7 @@ import 'features/shopping_cart/presentation/controllers/cart_controller.dart';
 
 import 'domain/usecases/register_donor.dart';
 import 'domain/usecases/update_donor.dart';
+import 'domain/usecases/delete_donor.dart';
 import 'domain/usecases/get_my_donor_profile.dart';
 import 'domain/usecases/get_donors.dart' as get_donors;
 import 'domain/usecases/get_all_donors.dart';
@@ -55,25 +56,61 @@ import 'features/blood_donor/presentation/controllers/donor_details_controller.d
 import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
+  print('✅ STEP 1: main() started');
+
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('✅ STEP 2: WidgetsFlutterBinding.ensureInitialized()');
+
+  // Initialize ThemeManager to load saved theme preference
+  final themeManager = ThemeManager();
+  await themeManager.initTheme();
+  print('✅ STEP 2.5: ThemeManager initialized with saved preference');
+
+  try {
+    // Try to initialize Firebase - it may already be initialized
+    if (Firebase.apps.isEmpty) {
+      print('✅ STEP 3a: Firebase apps list is empty, initializing...');
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      print('✅ STEP 3: Firebase initialized');
+    } else {
+      print('✅ STEP 3: Firebase already initialized, skipping init');
+    }
+  } catch (e) {
+    if (e.toString().contains('duplicate-app')) {
+      print('✅ STEP 3: Firebase already initialized (caught exception)');
+    } else {
+      print('❌ STEP 3: Firebase init error: $e');
+      rethrow;
+    }
+  }
 
   final firestore = FirebaseFirestore.instance;
+  print('✅ STEP 4: Firestore instance created');
+
   final categoryService = CategoryService();
+  print('✅ STEP 5: CategoryService created');
 
   final resourceRemoteDataSource = ResourceRemoteDataSourceImpl(
     firestore: firestore,
   );
+  print('✅ STEP 6: ResourceRemoteDataSource created');
+
   final resourceRepository = ResourceRepositoryImpl(
     remoteDataSource: resourceRemoteDataSource,
   );
-  final getResourcesUseCase = GetResources(resourceRepository);
+  print('✅ STEP 7: ResourceRepository created');
 
+  final getResourcesUseCase = GetResources(resourceRepository);
+  print('✅ STEP 8: GetResourcesUseCase created');
+
+  print('✅ STEP 9: Starting runApp with MultiProvider');
   runApp(
     MultiProvider(
       providers: [
         // THEME
-        ChangeNotifierProvider(create: (_) => ThemeManager()),
+        ChangeNotifierProvider.value(value: themeManager),
 
         // LOCATION
         ChangeNotifierProvider(create: (_) => LocationController()),
@@ -95,7 +132,7 @@ Future<void> main() async {
         // ⭐ BLOOD BANK MODULE
         Provider(
           create: (_) => BloodBankService(
-            apiKey: "AIzaSyD3A_U1IQPf-JvQwl22AKD0F9CVSJnM0fI",
+            apiKey: "AIzaSyDZxL1FwXcsvoFFTJ3aHJNNOq3r4Bk_pFs",
           ),
         ),
         Provider(
@@ -132,6 +169,10 @@ Future<void> main() async {
         Provider(
           create: (context) =>
               GetMyDonorProfile(context.read<BloodDonorRepositoryImpl>()),
+        ),
+        Provider(
+          create: (context) =>
+              DeleteDonor(context.read<BloodDonorRepositoryImpl>()),
         ),
 
         Provider(
@@ -173,6 +214,7 @@ Future<void> main() async {
           create: (context) => DonorProfileController(
             getMyDonorProfileUseCase: context.read<GetMyDonorProfile>(),
             updateDonorUseCase: context.read<UpdateDonor>(),
+            deleteDonorUseCase: context.read<DeleteDonor>(),
           ),
         ),
         ChangeNotifierProvider(
@@ -201,6 +243,7 @@ Future<void> main() async {
       child: const ResQNowApp(),
     ),
   );
+  print('✅ STEP 10: runApp completed successfully');
 }
 
 class ResQNowApp extends StatelessWidget {
@@ -208,7 +251,14 @@ class ResQNowApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('🔨 ResQNowApp.build() called');
+
+    // Initialize router only once on first build
+    AppRouter.init(context);
+
+    // Watch theme changes for smooth transitions
     final themeManager = context.watch<ThemeManager>();
+    print('🔨 ThemeManager accessed - Theme: ${themeManager.themeMode}');
 
     return MaterialApp.router(
       title: 'ResQNow',
@@ -217,8 +267,8 @@ class ResQNowApp extends StatelessWidget {
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
 
-      // ✅ CORRECT ROUTER INJECTION
-      routerConfig: AppRouter.createRouter(context),
+      // ✅ USE STATIC ROUTER INSTANCE (prevents recreation on theme change)
+      routerConfig: AppRouter.getRouter(),
     );
   }
 }

@@ -8,6 +8,9 @@ class BloodBank {
   final double? rating;
   final bool? openNow;
   final double? distanceInKm;
+  final String? photoUrl;
+  final int? userRatingsTotal;
+  final bool? isOpenNow;
 
   const BloodBank({
     required this.id,
@@ -19,5 +22,8 @@ class BloodBank {
     this.rating,
     this.openNow,
     this.distanceInKm,
+    this.photoUrl,
+    this.userRatingsTotal,
+    this.isOpenNow,
   });
 }

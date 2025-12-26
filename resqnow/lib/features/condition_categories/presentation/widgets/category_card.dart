@@ -13,6 +13,8 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -24,10 +26,12 @@ class CategoryCard extends StatelessWidget {
             width: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.cardShadow,
+                  color: isDarkMode
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : AppColors.cardShadow,
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -41,7 +45,9 @@ class CategoryCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             category.name,
-            style: AppTextStyles.cardTitle,
+            style: AppTextStyles.cardTitle.copyWith(
+              color: isDarkMode ? Colors.white : AppColors.textPrimary,
+            ),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

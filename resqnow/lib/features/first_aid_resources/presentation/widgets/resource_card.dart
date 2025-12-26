@@ -24,6 +24,8 @@ class _ResourceCardState extends State<ResourceCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -33,13 +35,15 @@ class _ResourceCardState extends State<ResourceCard> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: isDarkMode ? const Color(0xFF1E1E1E) : AppColors.white,
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: AppColors.cardShadow.withOpacity(
-                  _isHovered ? 0.12 : 0.08,
-                ),
+                color: isDarkMode
+                    ? Colors.black.withValues(alpha: _isHovered ? 0.4 : 0.2)
+                    : AppColors.cardShadow.withValues(
+                        alpha: _isHovered ? 0.12 : 0.08,
+                      ),
                 blurRadius: _isHovered ? 12 : 6,
                 offset: Offset(0, _isHovered ? 6 : 3),
               ),
@@ -74,7 +78,12 @@ class _ResourceCardState extends State<ResourceCard> {
                       Expanded(
                         child: Text(
                           widget.resource.name,
-                          style: AppTextStyles.cardTitle?.copyWith(height: 1.3),
+                          style: AppTextStyles.cardTitle.copyWith(
+                            height: 1.3,
+                            color: isDarkMode
+                                ? Colors.white
+                                : AppColors.textPrimary,
+                          ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -94,14 +103,18 @@ class _ResourceCardState extends State<ResourceCard> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
+                                  color: isDarkMode
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   widget.resource.tags.first,
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: AppColors.textSecondary,
+                                    color: isDarkMode
+                                        ? Colors.grey.shade400
+                                        : AppColors.textSecondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   maxLines: 1,
@@ -121,8 +134,8 @@ class _ResourceCardState extends State<ResourceCard> {
                                 color: AppColors.primary,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(
-                                      _isHovered ? 0.4 : 0.2,
+                                    color: AppColors.primary.withValues(
+                                      alpha: _isHovered ? 0.4 : 0.2,
                                     ),
                                     blurRadius: _isHovered ? 8 : 4,
                                     offset: Offset(0, _isHovered ? 2 : 1),

@@ -18,7 +18,13 @@ import 'package:resqnow/features/presentation/pages/notification_page.dart';
 // 🤖 AI Chat
 import 'package:resqnow/features/presentation/pages/ai_chat_coming_soon_page.dart';
 
-// 🚨 Emergency & Categories
+// 💾 Saved Topics
+import 'package:resqnow/features/saved_topics/presentation/pages/saved_topics_page.dart';
+
+// ⚙️ Settings
+import 'package:resqnow/features/settings/presentation/pages/settings_page.dart';
+
+// �🚨 Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
@@ -42,8 +48,35 @@ import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_filt
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_details_page.dart';
 
 class AppRouter {
-  static GoRouter createRouter(BuildContext context) {
+  static late GoRouter _router;
+  static GoRouter? _routerInstance;
+
+  // Initialize router only once
+  static void init(BuildContext context) {
+    if (_routerInstance != null) return;
+
+    print('🔨 AppRouter.init() called - Creating router instance');
     final authController = context.read<AuthController>();
+    print('🔨 AuthController accessed');
+    _routerInstance = _createRouter(context);
+  }
+
+  // Get the static router instance
+  static GoRouter getRouter() {
+    if (_routerInstance == null) {
+      throw Exception(
+        'AppRouter not initialized. Call AppRouter.init() first.',
+      );
+    }
+    return _routerInstance!;
+  }
+
+  // Create router (private)
+  static GoRouter _createRouter(BuildContext context) {
+    print('🔨 AppRouter._createRouter() called');
+
+    final authController = context.read<AuthController>();
+    print('🔨 AuthController accessed');
 
     return GoRouter(
       initialLocation: '/splash',
@@ -51,6 +84,7 @@ class AppRouter {
 
       redirect: (context, state) {
         final location = state.matchedLocation;
+        print('🔄 Router redirect: $location');
 
         final user = FirebaseAuth.instance.currentUser;
         final loggedIn = user != null;
@@ -128,6 +162,18 @@ class AppRouter {
         GoRoute(
           path: '/ai-chat-coming-soon',
           builder: (context, state) => const AiChatComingSoonPage(),
+        ),
+
+        /// SAVED TOPICS
+        GoRoute(
+          path: '/saved-topics',
+          builder: (context, state) => const SavedTopicsPage(),
+        ),
+
+        /// SETTINGS
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsPage(),
         ),
 
         /// DONORS
@@ -216,5 +262,11 @@ class AppRouter {
         GoRoute(path: '/cart', builder: (context, state) => const CartPage()),
       ],
     );
+  }
+
+  // Legacy method for backward compatibility
+  static GoRouter createRouter(BuildContext context) {
+    init(context);
+    return getRouter();
   }
 }

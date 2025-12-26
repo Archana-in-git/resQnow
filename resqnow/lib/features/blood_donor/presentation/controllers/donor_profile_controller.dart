@@ -2,16 +2,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:resqnow/domain/entities/blood_donor.dart';
+import 'package:resqnow/domain/usecases/delete_donor.dart';
 import 'package:resqnow/domain/usecases/get_my_donor_profile.dart';
 import 'package:resqnow/domain/usecases/update_donor.dart';
 
 class DonorProfileController extends ChangeNotifier {
   final GetMyDonorProfile getMyDonorProfileUseCase;
   final UpdateDonor updateDonorUseCase;
+  final DeleteDonor deleteDonorUseCase;
 
   DonorProfileController({
     required this.getMyDonorProfileUseCase,
     required this.updateDonorUseCase,
+    required this.deleteDonorUseCase,
   });
 
   BloodDonor? donor;
@@ -98,6 +101,26 @@ class DonorProfileController extends ChangeNotifier {
 
       await updateDonorUseCase(donor!);
 
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      isLoading = false;
+      errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Delete the donor profile
+  Future<bool> deleteProfile() async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      await deleteDonorUseCase();
+
+      donor = null;
       isLoading = false;
       notifyListeners();
       return true;

@@ -28,29 +28,29 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDarkMode
+          ? const Color(0xFF121212)
+          : AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : AppColors.white,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(widget.resource.name, style: AppTextStyles.appTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bookmark_outline, color: AppColors.primary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("${widget.resource.name} saved to favorites!"),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
+        title: Text(
+          widget.resource.name,
+          style: AppTextStyles.appTitle.copyWith(
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
           ),
-        ],
+        ),
+        actions: [],
       ),
 
       body: SingleChildScrollView(
@@ -101,7 +101,9 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                             decoration: BoxDecoration(
                               color: _currentImageIndex == index
                                   ? AppColors.primary
-                                  : Colors.white.withOpacity(0.7),
+                                  : (isDarkMode
+                                        ? Colors.grey.shade600
+                                        : Colors.white.withOpacity(0.7)),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -119,10 +121,10 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 widget.resource.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: isDarkMode ? Colors.white : AppColors.textPrimary,
                   letterSpacing: -0.5,
                 ),
               ),
@@ -175,9 +177,9 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                   const SizedBox(height: 8),
                   Text(
                     widget.resource.description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textPrimary,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
                       height: 1.6,
                       letterSpacing: -0.2,
                     ),
@@ -261,7 +263,9 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: isDarkMode
+                                    ? AppColors.primary.withOpacity(0.2)
+                                    : AppColors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: AppColors.primary.withOpacity(0.3),
@@ -389,12 +393,16 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
     required String title,
     required String description,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(isDarkMode ? 0.3 : 0.2),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +410,7 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withOpacity(isDarkMode ? 0.2 : 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.primary, size: 20),
@@ -414,10 +422,10 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: isDarkMode ? Colors.white : AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -425,7 +433,9 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                   description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDarkMode
+                        ? Colors.grey.shade400
+                        : AppColors.textSecondary,
                     height: 1.5,
                   ),
                 ),

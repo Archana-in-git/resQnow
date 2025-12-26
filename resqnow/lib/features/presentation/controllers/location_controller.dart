@@ -258,9 +258,26 @@ class LocationController extends ChangeNotifier {
             latitude = position.latitude;
             longitude = position.longitude;
 
+            // Store previous values to check if anything actually changed
+            final previousDistrict = detectedDistrict;
+            final previousPincode = detectedPincode;
+            final previousTown = selectedTown;
+
             await _resolveDistrictAndTown(position);
 
-            notifyListeners();
+            // Only notify if district or pincode actually changed
+            if (detectedDistrict != previousDistrict ||
+                detectedPincode != previousPincode ||
+                (selectedTown != previousTown && !_userManuallySelectedTown)) {
+              debugPrint(
+                "📍 Location changed: District=$detectedDistrict, Pincode=$detectedPincode",
+              );
+              notifyListeners();
+            } else {
+              debugPrint(
+                "⏭️ Location update received but no district/pincode/town change - skipping notify",
+              );
+            }
           },
           onError: (_) {
             _locationText = 'Location unavailable';

@@ -135,7 +135,7 @@ class BloodDonor extends Equatable {
       notes: notes ?? this.notes,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
 
-      createdAt: this.createdAt,
+      createdAt: createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
   }

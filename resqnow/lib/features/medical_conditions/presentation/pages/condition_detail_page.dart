@@ -6,10 +6,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/condition_model.dart';
 import '../controllers/condition_controller.dart';
 import '../widgets/severity_indicator.dart';
-import '../widgets/faq_accordion.dart';
 import '../widgets/video_player_widget.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../saved_topics/data/models/saved_condition_model.dart';
+import '../../../saved_topics/data/services/saved_topics_service.dart';
 
 class ConditionDetailPage extends StatefulWidget {
   final String conditionId;
@@ -23,12 +24,13 @@ class ConditionDetailPage extends StatefulWidget {
 class _ConditionDetailPageState extends State<ConditionDetailPage>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   final ConditionController controller = ConditionController();
+  late final SavedTopicsService _savedTopicsService;
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _carouselTimer;
-  bool _isUserInteracting = false;
   late TabController _tabController;
   late TabController _firstAidTabController;
+  bool _isConditionSaved = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -36,12 +38,77 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   @override
   void initState() {
     super.initState();
+    _savedTopicsService = SavedTopicsService();
     _tabController = TabController(length: 2, vsync: this);
     _firstAidTabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchCondition(widget.conditionId);
+      _checkIfConditionSaved();
       _startAutoPlay();
     });
+  }
+
+  /// Check if the current condition is already saved
+  Future<void> _checkIfConditionSaved() async {
+    try {
+      final isSaved = await _savedTopicsService.isConditionSaved(
+        widget.conditionId,
+      );
+      if (mounted) {
+        setState(() {
+          _isConditionSaved = isSaved;
+        });
+      }
+    } catch (e) {
+      print('⚠️ Error checking if condition is saved: $e');
+      // If there's an error, assume not saved
+      if (mounted) {
+        setState(() {
+          _isConditionSaved = false;
+        });
+      }
+    }
+  }
+
+  /// Toggle save state
+  Future<void> _toggleSaveCondition(ConditionModel condition) async {
+    try {
+      if (_isConditionSaved) {
+        // Delete if already saved
+        await _savedTopicsService.deleteCondition(condition.id);
+        if (mounted) {
+          setState(() => _isConditionSaved = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Condition removed from saved'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        // Save if not already saved
+        final savedCondition = SavedConditionModel.fromCondition(condition);
+        await _savedTopicsService.saveCondition(savedCondition);
+        if (mounted) {
+          setState(() => _isConditionSaved = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Condition saved successfully'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   void _startAutoPlay() {
@@ -50,10 +117,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   }
 
   void _pauseAutoPlayTemporarily() {
-    _isUserInteracting = true;
-    Future.delayed(const Duration(seconds: 5), () {
-      _isUserInteracting = false;
-    });
+    Future.delayed(const Duration(seconds: 5), () {});
   }
 
   void _goToPreviousImage() {
@@ -95,8 +159,10 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       appBar: null,
       body: ValueListenableBuilder<bool>(
         valueListenable: controller.isLoading,
@@ -172,7 +238,9 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.4),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -196,7 +264,9 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.4),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -238,8 +308,16 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.bookmark_border),
-                          onPressed: () {},
+                          icon: Icon(
+                            _isConditionSaved
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            color: _isConditionSaved ? AppColors.primary : null,
+                          ),
+                          onPressed: () => _toggleSaveCondition(condition),
+                          tooltip: _isConditionSaved
+                              ? 'Remove from saved'
+                              : 'Save condition',
                         ),
                         IconButton(
                           icon: const Icon(Icons.call),
@@ -273,13 +351,19 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 Container(
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(color: Colors.grey.shade300),
+                      bottom: BorderSide(
+                        color: isDarkMode
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
+                      ),
                     ),
                   ),
                   child: TabBar(
                     controller: _firstAidTabController,
                     labelColor: AppColors.primary,
-                    unselectedLabelColor: Colors.grey.shade600,
+                    unselectedLabelColor: isDarkMode
+                        ? Colors.grey.shade500
+                        : Colors.grey.shade600,
                     indicatorColor: AppColors.primary,
                     isScrollable: false,
                     tabs: const [
@@ -326,13 +410,19 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 Container(
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(color: Colors.grey.shade300),
+                      bottom: BorderSide(
+                        color: isDarkMode
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
+                      ),
                     ),
                   ),
                   child: TabBar(
                     controller: _tabController,
                     labelColor: AppColors.primary,
-                    unselectedLabelColor: Colors.grey.shade600,
+                    unselectedLabelColor: isDarkMode
+                        ? Colors.grey.shade500
+                        : Colors.grey.shade600,
                     indicatorColor: AppColors.primary,
                     isScrollable: false,
                     tabs: const [
@@ -404,6 +494,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   }
 
   Widget _buildPageIndicator(int count) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (index) {
@@ -413,7 +504,9 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
           height: _currentPage == index ? 10 : 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _currentPage == index ? Colors.blue : Colors.grey.shade400,
+            color: _currentPage == index
+                ? AppColors.primary
+                : (isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400),
           ),
         );
       }),
@@ -423,43 +516,29 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   // ═══════════════════════════════════════════════════════════════════════════
   // TAB 1: FIRST AID
   // ═══════════════════════════════════════════════════════════════════════════
-  Widget _buildFirstAidTab(ConditionModel condition) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildStepsSection(
-            "What to Do",
-            condition.firstAidDescription,
-            color: Colors.green,
-            icon: Icons.check_circle,
-          ),
-          const SizedBox(height: 24),
-          _buildStepsSection(
-            "What NOT to Do",
-            condition.doNotDo,
-            color: Colors.red,
-            icon: Icons.cancel,
-          ),
-        ],
-      ),
-    );
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // TAB 2: RESOURCES - Compact text-only list with navigation indicators
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildResourcesTab(ConditionModel condition) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     if (condition.requiredKits.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.info_outline, size: 48, color: Colors.grey.shade400),
+            Icon(
+              Icons.info_outline,
+              size: 48,
+              color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
+            ),
             const SizedBox(height: 12),
             Text(
               "No resources listed",
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(
+                color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600,
+              ),
             ),
           ],
         ),
@@ -480,9 +559,15 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
               padding: const EdgeInsets.only(bottom: 8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: isDarkMode
+                      ? const Color(0xFF1E1E1E)
+                      : Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(
+                    color: isDarkMode
+                        ? Colors.grey.shade700
+                        : Colors.grey.shade200,
+                  ),
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
@@ -491,10 +576,10 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                   ),
                   title: Text(
                     kit.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
                     ),
                   ),
                   trailing: Icon(
@@ -509,7 +594,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -519,6 +604,8 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   // TAB 3: VIDEO
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildVideoTab(ConditionModel condition) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     if (condition.videoUrl.isEmpty) {
       return Center(
         child: Column(
@@ -527,12 +614,14 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
             Icon(
               Icons.video_library_outlined,
               size: 48,
-              color: Colors.grey.shade400,
+              color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
             ),
             const SizedBox(height: 12),
             Text(
               "No video available",
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(
+                color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600,
+              ),
             ),
           ],
         ),
@@ -554,28 +643,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
     );
   }
 
-  Widget _buildSection(
-    String title,
-    List<String> items, {
-    required IconData icon,
-    required Color color,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: _sectionTitleStyle(context, fontSize: 18)),
-        const SizedBox(height: 8),
-        ...items.map(
-          (step) => ListTile(
-            leading: Icon(icon, color: color),
-            title: Text(step),
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // NUMBERED STEPS SECTION - Optimized for readability
   // ═══════════════════════════════════════════════════════════════════════════
@@ -585,6 +652,8 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
     required Color color,
     required IconData icon,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -594,7 +663,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: isDarkMode ? 0.25 : 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 20),
@@ -618,7 +687,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
         ...List.generate(steps.length, (index) {
           final stepNumber = index + 1;
           final step = steps[index];
-          final isLast = index == steps.length - 1;
 
           return Column(
             children: [
@@ -631,7 +699,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                     height: 36,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: color.withOpacity(0.2),
+                      color: color.withValues(alpha: isDarkMode ? 0.25 : 0.2),
                       border: Border.all(color: color, width: 2),
                     ),
                     child: Center(
@@ -655,15 +723,23 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        border: Border.all(color: color.withOpacity(0.2)),
+                        color: isDarkMode
+                            ? const Color(0xFF1E1E1E)
+                            : Colors.grey.shade50,
+                        border: Border.all(
+                          color: color.withValues(
+                            alpha: isDarkMode ? 0.3 : 0.2,
+                          ),
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         step,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textPrimary,
+                          color: isDarkMode
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           height: 1.5,
                         ),
                       ),

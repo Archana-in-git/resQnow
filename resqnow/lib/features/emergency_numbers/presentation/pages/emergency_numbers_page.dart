@@ -65,20 +65,34 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDarkMode
+          ? const Color(0xFF121212)
+          : AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: isDarkMode ? AppColors.secondary : AppColors.white,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
           onPressed: () => context.go('/home'),
         ),
-        title: const Text("Emergency Numbers", style: AppTextStyles.appTitle),
+        title: Text(
+          "Emergency Numbers",
+          style: AppTextStyles.appTitle.copyWith(
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
+        ),
       ),
       body: FutureBuilder<List<EmergencyNumberModel>>(
         future: _emergencyNumbersFuture,
         builder: (context, snapshot) {
+          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -89,13 +103,18 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                   Icon(
                     Icons.error_rounded,
                     size: 64,
-                    color: Colors.red.shade300,
+                    color: isDarkMode
+                        ? Colors.red.shade200
+                        : Colors.red.shade300,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Error: ${snapshot.error}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -108,12 +127,15 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                   Icon(
                     Icons.phone_disabled_rounded,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'No emergency numbers found',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
@@ -130,7 +152,9 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: isDarkMode
+                        ? Colors.blue.shade900.withValues(alpha: 0.2)
+                        : Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: Colors.blue.withOpacity(0.2),
@@ -147,7 +171,9 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                         ),
                         child: Icon(
                           Icons.info_rounded,
-                          color: Colors.blue.shade700,
+                          color: isDarkMode
+                              ? Colors.blue.shade300
+                              : Colors.blue.shade700,
                           size: 20,
                         ),
                       ),
@@ -157,7 +183,9 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                           'Tap the call button to make a direct call',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.blue.shade900,
+                            color: isDarkMode
+                                ? Colors.blue.shade200
+                                : Colors.blue.shade900,
                             fontWeight: FontWeight.w500,
                             height: 1.4,
                           ),
@@ -179,7 +207,9 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: isDarkMode
+                            ? const Color(0xFF1E1E1E)
+                            : AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: color.withOpacity(0.2),
@@ -187,7 +217,9 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: color.withOpacity(0.08),
+                            color: isDarkMode
+                                ? Colors.black.withValues(alpha: 0.3)
+                                : color.withOpacity(0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -219,10 +251,12 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                                 children: [
                                   Text(
                                     item.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,

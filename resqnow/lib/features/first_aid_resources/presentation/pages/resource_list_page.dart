@@ -46,16 +46,22 @@ class _ResourceListPageState extends State<ResourceListPage> {
   @override
   Widget build(BuildContext context) {
     debugPrint('ResourceListPage built');
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final controller = context.watch<ResourceController>();
     final hasFilters = controller.activeCategories.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDarkMode
+          ? const Color(0xFF121212)
+          : AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : AppColors.white,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
           onPressed: () {
             // Clear filters and search before navigating back
             context.read<ResourceController>().clearCategoryFilters();
@@ -63,17 +69,13 @@ class _ResourceListPageState extends State<ResourceListPage> {
             context.pop();
           },
         ),
-        title: const Text("Resources", style: AppTextStyles.appTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bookmark, color: AppColors.primary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Saved resources coming soon.')),
-              );
-            },
+        title: Text(
+          "Resources",
+          style: AppTextStyles.appTitle.copyWith(
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
           ),
-        ],
+        ),
+        actions: [],
       ),
 
       body: Padding(
@@ -86,12 +88,30 @@ class _ResourceListPageState extends State<ResourceListPage> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
                     decoration: InputDecoration(
                       hintText: "Search resources...",
-                      prefixIcon: const Icon(Icons.search),
+                      hintStyle: TextStyle(
+                        color: isDarkMode
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade600,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: isDarkMode
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade600,
+                      ),
                       suffixIcon: _lastQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear),
+                              icon: Icon(
+                                Icons.clear,
+                                color: isDarkMode
+                                    ? Colors.grey.shade500
+                                    : Colors.grey.shade600,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 context
@@ -101,7 +121,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                             )
                           : null,
                       filled: true,
-                      fillColor: AppColors.white,
+                      fillColor: isDarkMode
+                          ? const Color(0xFF2A2A2A)
+                          : AppColors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -119,7 +141,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                     Icons.filter_list,
                     color: hasFilters
                         ? AppColors.primary
-                        : AppColors.textPrimary,
+                        : (isDarkMode
+                              ? Colors.grey.shade500
+                              : AppColors.textPrimary),
                   ),
                   onPressed: _showFilterSheet,
                 ),
@@ -132,12 +156,25 @@ class _ResourceListPageState extends State<ResourceListPage> {
               child: controller.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : controller.error != null
-                  ? Center(child: Text("Error: ${controller.error}"))
+                  ? Center(
+                      child: Text(
+                        "Error: ${controller.error}",
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.white
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                    )
                   : controller.resources.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         "No resources found.",
-                        style: AppTextStyles.bodyText,
+                        style: AppTextStyles.bodyText.copyWith(
+                          color: isDarkMode
+                              ? Colors.grey.shade400
+                              : AppColors.textPrimary,
+                        ),
                       ),
                     )
                   : GridView.builder(
@@ -186,6 +223,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
         return const SizedBox.shrink();
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
         return SlideTransition(
           position: Tween<Offset>(
             begin: const Offset(1, 0),
@@ -199,13 +237,15 @@ class _ResourceListPageState extends State<ResourceListPage> {
               return Align(
                 alignment: Alignment.centerRight,
                 child: Material(
-                  color: Colors.white,
+                  color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.75,
                     height: MediaQuery.of(context).size.height,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(24),
                         bottomLeft: Radius.circular(24),
                       ),
@@ -308,14 +348,17 @@ class _ResourceListPageState extends State<ResourceListPage> {
                                         style: TextStyle(
                                           color: selected
                                               ? Colors.white
-                                              : AppColors.textPrimary,
+                                              : (isDarkMode
+                                                    ? Colors.white
+                                                    : AppColors.textPrimary),
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                       selected: selected,
                                       selectedColor: AppColors.primary,
-                                      backgroundColor: AppColors.primary
-                                          .withOpacity(0.1),
+                                      backgroundColor: isDarkMode
+                                          ? AppColors.primary.withOpacity(0.2)
+                                          : AppColors.primary.withOpacity(0.1),
                                       checkmarkColor: Colors.white,
                                       side: BorderSide(
                                         color: AppColors.primary.withOpacity(
@@ -338,7 +381,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                             decoration: BoxDecoration(
                               border: Border(
                                 top: BorderSide(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  color: isDarkMode
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.withOpacity(0.2),
                                   width: 1,
                                 ),
                               ),

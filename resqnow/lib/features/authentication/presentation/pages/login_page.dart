@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -385,7 +385,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal,
                                   disabledBackgroundColor: Colors.teal
-                                      .withOpacity(0.6),
+                                      .withValues(alpha: 0.6),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -515,27 +515,32 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
               if (!mounted) return;
 
+              // Close dialog and show snackbar in next frame
               Navigator.pop(dialogContext);
 
-              if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Password reset email sent! Check your inbox.',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Error: ${auth.errorMessage ?? "Failed to send reset email"}',
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Password reset email sent! Check your inbox.',
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Error: ${auth.errorMessage ?? "Failed to send reset email"}',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              });
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
             child: const Text(

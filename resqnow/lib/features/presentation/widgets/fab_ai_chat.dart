@@ -56,7 +56,7 @@ class _FloatingAiChatButtonState extends State<FloatingAiChatButton>
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.accent.withOpacity(0.4),
+              color: AppColors.accent.withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),

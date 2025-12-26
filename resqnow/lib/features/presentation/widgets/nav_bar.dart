@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
-import 'package:resqnow/core/constants/ui_constants.dart';
 import 'package:resqnow/features/authentication/presentation/controllers/auth_controller.dart';
 
 class ResQNowNavBar extends StatefulWidget {
@@ -89,7 +88,10 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                           icon: Icons.favorite_rounded,
                           label: "Saved Conditions",
                           color: const Color(0xFFD32F2F),
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/saved-topics');
+                          },
                         ),
                         _buildMenuItem(
                           icon: Icons.psychology_rounded,
@@ -122,7 +124,10 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                           icon: Icons.settings_rounded,
                           label: "Settings",
                           color: const Color(0xFF455A64),
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/settings');
+                          },
                         ),
                       ],
                     ),
@@ -144,7 +149,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -154,7 +159,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -168,7 +173,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               border: Border.all(color: Colors.white, width: 2),
             ),
             child: const Icon(
@@ -200,7 +205,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white30, width: 1),
             ),
@@ -231,8 +236,8 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          hoverColor: color.withOpacity(0.1),
-          splashColor: color.withOpacity(0.2),
+          hoverColor: color.withValues(alpha: 0.1),
+          splashColor: color.withValues(alpha: 0.2),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
@@ -241,10 +246,10 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: color.withOpacity(0.3),
+                      color: color.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -263,7 +268,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                 ),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: color.withOpacity(0.4),
+                  color: color.withValues(alpha: 0.4),
                   size: 16,
                 ),
               ],
@@ -278,7 +283,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
     return Column(
       children: [
         Divider(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           thickness: 1,
           indent: 16,
           endIndent: 16,
@@ -293,8 +298,8 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                 await context.read<AuthController>().signOut();
               },
               borderRadius: BorderRadius.circular(12),
-              hoverColor: const Color(0xFFD32F2F).withOpacity(0.1),
-              splashColor: const Color(0xFFD32F2F).withOpacity(0.2),
+              hoverColor: const Color(0xFFD32F2F).withValues(alpha: 0.1),
+              splashColor: const Color(0xFFD32F2F).withValues(alpha: 0.2),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -306,10 +311,10 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD32F2F).withOpacity(0.15),
+                        color: const Color(0xFFD32F2F).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xFFD32F2F).withOpacity(0.3),
+                          color: const Color(0xFFD32F2F).withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -332,7 +337,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                     ),
                     Icon(
                       Icons.arrow_forward_ios_rounded,
-                      color: const Color(0xFFD32F2F).withOpacity(0.4),
+                      color: const Color(0xFFD32F2F).withValues(alpha: 0.4),
                       size: 16,
                     ),
                   ],

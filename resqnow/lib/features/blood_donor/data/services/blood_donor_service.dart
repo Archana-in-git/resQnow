@@ -163,6 +163,16 @@ class BloodDonorService {
   }
 
   // -------------------------------------------------------------------------
+  // DELETE DONOR
+  // -------------------------------------------------------------------------
+  Future<void> deleteDonor() async {
+    final uid = auth.currentUser?.uid;
+    if (uid == null) throw Exception('User not authenticated');
+
+    await _donorRef.doc(uid).delete();
+  }
+
+  // -------------------------------------------------------------------------
   // GET ALL DONORS
   // -------------------------------------------------------------------------
   Future<List<BloodDonor>> getAllDonors() async {

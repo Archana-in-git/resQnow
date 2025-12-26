@@ -474,12 +474,16 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
   TextStyle _inputTextStyle(BuildContext context) {
     final base = Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
-    return base.copyWith(color: Colors.black);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return base.copyWith(color: isDark ? Colors.white : Colors.black);
   }
 
   TextStyle _labelTextStyle(BuildContext context) {
     final base = Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
-    return base.copyWith(color: Colors.grey.shade700);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return base.copyWith(
+      color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+    );
   }
 
   Future<void> _loadAddressData() async {
@@ -612,8 +616,11 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         context: context,
         barrierDismissible: false,
         builder: (_) {
+          final isDarkDialog = Theme.of(context).brightness == Brightness.dark;
           return AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkDialog
+                ? const Color(0xFF1E1E1E)
+                : Colors.white,
             contentPadding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -700,6 +707,10 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       builder: (context, controller, _) {
         final notesEnabled = !noneSelected;
         final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final scaffoldBg = isDark
+            ? const Color(0xFF121212)
+            : const Color(0xFFFAFAFA);
 
         // Compute button enabled state
         final canSubmit =
@@ -712,7 +723,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             !_isUploadingImage; // disable submit while uploading image
 
         return Scaffold(
-          backgroundColor: const Color(0xFFFAFAFA),
+          backgroundColor: scaffoldBg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -725,16 +736,23 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary.withValues(alpha: 0.08),
-                            AppColors.primary.withValues(alpha: 0.03),
-                          ],
+                          colors: isDark
+                              ? [
+                                  AppColors.primary.withValues(alpha: 0.12),
+                                  AppColors.primary.withValues(alpha: 0.05),
+                                ]
+                              : [
+                                  AppColors.primary.withValues(alpha: 0.08),
+                                  AppColors.primary.withValues(alpha: 0.03),
+                                ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.1),
+                          color: AppColors.primary.withValues(
+                            alpha: isDark ? 0.15 : 0.1,
+                          ),
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(
@@ -785,7 +803,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                             "Become a Donor",
                             style: theme.textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                               fontSize: 32,
                               height: 1.2,
                             ),
@@ -797,13 +815,17 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                               Icon(
                                 Icons.info_outline,
                                 size: 16,
-                                color: Colors.grey.shade500,
+                                color: isDark
+                                    ? Colors.grey.shade400
+                                    : Colors.grey.shade500,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 "Join our community and help save lives",
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey.shade600,
+                                  color: isDark
+                                      ? Colors.grey.shade400
+                                      : Colors.grey.shade600,
                                   fontSize: 13,
                                   height: 1.4,
                                 ),
@@ -819,11 +841,13 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                     // Profile picture section - Elegant card matching section width
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.3 : 0.06,
+                            ),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -922,7 +946,9 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                               style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.black87,
+                                    color: isDark
+                                        ? Colors.white
+                                        : Colors.black87,
                                     fontSize: 15,
                                   ),
                             ),
@@ -1003,9 +1029,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                           child: IntlPhoneField(
                             controller: phoneCtrl,
                             initialCountryCode: selectedCountryIsoCode,
-                            style: _inputTextStyle(
-                              context,
-                            ).copyWith(fontSize: 15),
                             decoration: InputDecoration(
                               labelText: 'Phone Number',
                               border: InputBorder.none,
@@ -1071,9 +1094,15 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                             vertical: 16,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade50,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade200),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade200,
+                            ),
                           ),
                           child: Wrap(
                             spacing: 10,
@@ -1099,8 +1128,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                                             alpha: 0.15,
                                           )
                                         : disabled
-                                        ? Colors.grey.shade200
-                                        : Colors.white,
+                                        ? (isDark
+                                              ? Colors.grey.shade800
+                                              : Colors.grey.shade200)
+                                        : (isDark
+                                              ? Colors.grey.shade900
+                                              : Colors.white),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: selected
@@ -1108,8 +1141,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                                               alpha: 0.5,
                                             )
                                           : disabled
-                                          ? Colors.grey.shade300
-                                          : Colors.grey.shade300,
+                                          ? (isDark
+                                                ? Colors.grey.shade700
+                                                : Colors.grey.shade300)
+                                          : (isDark
+                                                ? Colors.grey.shade800
+                                                : Colors.grey.shade300),
                                       width: selected ? 1.5 : 1,
                                     ),
                                   ),
@@ -1122,8 +1159,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                                       color: selected
                                           ? AppColors.primary
                                           : disabled
-                                          ? Colors.grey.shade500
-                                          : Colors.grey.shade700,
+                                          ? (isDark
+                                                ? Colors.grey.shade600
+                                                : Colors.grey.shade500)
+                                          : (isDark
+                                                ? Colors.grey.shade300
+                                                : Colors.grey.shade700),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -1258,13 +1299,14 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     required String title,
     required List<Widget> children,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -1278,7 +1320,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: Colors.black87,
+              color: isDark ? Colors.white : Colors.black87,
               fontSize: 16,
               letterSpacing: 0.2,
             ),
@@ -1292,11 +1334,16 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
   // ===== MODERN BOX DECORATION =====
   BoxDecoration _modernBoxDecoration({bool dimmed = false}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BoxDecoration(
-      color: dimmed ? Colors.grey.shade100 : Colors.grey.shade50,
+      color: isDark
+          ? (dimmed ? Colors.grey.shade900 : Colors.grey.shade800)
+          : (dimmed ? Colors.grey.shade100 : Colors.grey.shade50),
       borderRadius: BorderRadius.circular(12),
       border: Border.all(
-        color: dimmed ? Colors.grey.shade300 : Colors.grey.shade200,
+        color: isDark
+            ? (dimmed ? Colors.grey.shade700 : Colors.grey.shade800)
+            : (dimmed ? Colors.grey.shade300 : Colors.grey.shade200),
       ),
     );
   }
@@ -1304,6 +1351,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   // ===== COUNTRY SELECTOR =====
   Widget _countrySelector() {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         showCountryPicker(
@@ -1330,9 +1378,25 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
           },
           countryListTheme: CountryListThemeData(
             flagSize: 20,
-            backgroundColor: theme.colorScheme.surface,
+            backgroundColor: isDark
+                ? const Color(0xFF1E1E1E)
+                : theme.colorScheme.surface,
             textStyle: theme.textTheme.bodyMedium,
             bottomSheetHeight: 520,
+            searchTextStyle: theme.textTheme.bodyMedium,
+            inputDecoration: InputDecoration(
+              labelText: 'Search country',
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+            ),
           ),
         );
       },
@@ -1396,40 +1460,98 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
   // ===== STATE DROPDOWN =====
   Widget _stateDropdown() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final items = _addressDataLoaded && statesList.isNotEmpty
         ? statesList
         : ['Kerala'];
 
-    return DropdownSearch<String>(
-      popupProps: PopupProps.modalBottomSheet(
-        showSearchBox: true,
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(hintText: "Search state"),
+    return Container(
+      decoration: _modernBoxDecoration(),
+      child: DropdownSearch<String>(
+        popupProps: PopupProps.modalBottomSheet(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              hintText: "Search state",
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+            ),
+          ),
+          containerBuilder: (ctx, popupWidget) {
+            return Container(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              child: popupWidget,
+            );
+          },
+          itemBuilder: (context, item, isSelected) {
+            return Container(
+              color: isSelected
+                  ? (isDark
+                        ? AppColors.primary.withValues(alpha: 0.2)
+                        : AppColors.primary.withValues(alpha: 0.1))
+                  : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                item,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            );
+          },
         ),
-      ),
-      items: items,
-      selectedItem: selectedState,
-      onChanged: (v) {
-        setState(() {
-          selectedState = v;
-          // reset dependent selections
-          selectedDistrict = null;
-          selectedCity = null;
-          cityManualCtrl.clear();
-        });
-      },
-      dropdownDecoratorProps: DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          hintText: "Select State",
-          border: InputBorder.none,
-          prefixIcon: Icon(Icons.map, color: AppColors.primary),
+        items: items,
+        selectedItem: selectedState,
+        onChanged: (v) {
+          setState(() {
+            selectedState = v;
+            // reset dependent selections
+            selectedDistrict = null;
+            selectedCity = null;
+            cityManualCtrl.clear();
+          });
+        },
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            hintText: "Select State",
+            hintStyle: TextStyle(
+              color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+            ),
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.map, color: AppColors.primary),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
+            isDense: true,
+          ),
         ),
+        dropdownBuilder: (context, selectedItem) {
+          return Text(
+            selectedItem ?? "Select State",
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
+              fontSize: 14,
+            ),
+          );
+        },
+        validator: (s) =>
+            s == null || s.isEmpty ? "Please select a state" : null,
       ),
-      validator: (s) => s == null || s.isEmpty ? "Please select a state" : null,
     );
   }
 
   Widget _districtDropdown() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     // Only show districts when Kerala is selected and data loaded
     final districts =
         (selectedState != null &&
@@ -1438,39 +1560,95 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         ? keralaDistricts
         : <String>[];
 
-    return DropdownSearch<String>(
-      popupProps: PopupProps.modalBottomSheet(
-        showSearchBox: true,
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(hintText: "Search district"),
+    return Container(
+      decoration: _modernBoxDecoration(),
+      child: DropdownSearch<String>(
+        popupProps: PopupProps.modalBottomSheet(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              hintText: "Search district",
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                ),
+              ),
+            ),
+          ),
+          containerBuilder: (ctx, popupWidget) {
+            return Container(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              child: popupWidget,
+            );
+          },
+          itemBuilder: (context, item, isSelected) {
+            return Container(
+              color: isSelected
+                  ? (isDark
+                        ? AppColors.primary.withValues(alpha: 0.2)
+                        : AppColors.primary.withValues(alpha: 0.1))
+                  : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                item,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            );
+          },
         ),
-      ),
-      items: districts,
-      selectedItem: selectedDistrict,
-      onChanged: (v) {
-        setState(() {
-          selectedDistrict = v;
-          selectedCity = null;
-          cityManualCtrl.clear();
-        });
-      },
-      dropdownDecoratorProps: DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          hintText: "Select District",
-          border: InputBorder.none,
-          prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
+        items: districts,
+        selectedItem: selectedDistrict,
+        onChanged: (v) {
+          setState(() {
+            selectedDistrict = v;
+            selectedCity = null;
+            cityManualCtrl.clear();
+          });
+        },
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            hintText: "Select District",
+            hintStyle: TextStyle(
+              color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+            ),
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
+            isDense: true,
+          ),
         ),
+        dropdownBuilder: (context, selectedItem) {
+          return Text(
+            selectedItem ?? "Select District",
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
+              fontSize: 14,
+            ),
+          );
+        },
+        validator: (s) =>
+            (selectedState != null &&
+                selectedState!.toLowerCase() == 'kerala' &&
+                (s == null || s.isEmpty))
+            ? "Please select a district"
+            : null,
       ),
-      validator: (s) =>
-          (selectedState != null &&
-              selectedState!.toLowerCase() == 'kerala' &&
-              (s == null || s.isEmpty))
-          ? "Please select a district"
-          : null,
     );
   }
 
   Widget _citySelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cities =
         (selectedState != null &&
             selectedState!.toLowerCase() == 'kerala' &&
@@ -1484,34 +1662,98 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Dropdown for known cities
-        DropdownSearch<String>(
-          popupProps: PopupProps.modalBottomSheet(
-            showSearchBox: true,
-            searchFieldProps: TextFieldProps(
-              decoration: const InputDecoration(hintText: "Search city/town"),
+        Container(
+          decoration: _modernBoxDecoration(),
+          child: DropdownSearch<String>(
+            popupProps: PopupProps.modalBottomSheet(
+              showSearchBox: true,
+              searchFieldProps: TextFieldProps(
+                decoration: InputDecoration(
+                  hintText: "Search city/town",
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                ),
+              ),
+              containerBuilder: (ctx, popupWidget) {
+                return Container(
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  child: popupWidget,
+                );
+              },
+              itemBuilder: (context, item, isSelected) {
+                return Container(
+                  color: isSelected
+                      ? (isDark
+                            ? AppColors.primary.withValues(alpha: 0.2)
+                            : AppColors.primary.withValues(alpha: 0.1))
+                      : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Text(
+                    item,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
-          items: cities,
-          selectedItem: selectedCity,
-          onChanged: (v) {
-            setState(() {
-              selectedCity = v;
-              cityManualCtrl
-                  .clear(); // clear manual entry when selecting from dropdown
-            });
-          },
-          dropdownDecoratorProps: DropDownDecoratorProps(
-            dropdownSearchDecoration: InputDecoration(
-              hintText: "Select City/Town",
-              border: InputBorder.none,
-              prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
+            items: cities,
+            selectedItem: selectedCity,
+            onChanged: (v) {
+              setState(() {
+                selectedCity = v;
+                cityManualCtrl
+                    .clear(); // clear manual entry when selecting from dropdown
+              });
+            },
+            dropdownDecoratorProps: DropDownDecoratorProps(
+              dropdownSearchDecoration: InputDecoration(
+                hintText: "Select City/Town",
+                hintStyle: TextStyle(
+                  color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+                ),
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.location_city, color: AppColors.primary),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                isDense: true,
+              ),
             ),
-          ),
+            dropdownBuilder: (context, selectedItem) {
+              return Text(
+                selectedItem ?? "Select City/Town",
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 14,
+                ),
+              );
+            },
 
-          // Validator: Always returns null (optional field)
-          validator: (value) {
-            return null;
-          },
+            // Validator: Always returns null (optional field)
+            validator: (value) {
+              return null;
+            },
+          ),
         ),
 
         const SizedBox(height: 8),
@@ -1588,15 +1830,18 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   }
 
   Widget _genderSelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(
+              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+            ),
           ),
           child: Column(
             children: genderList.map((g) {
@@ -1628,7 +1873,9 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                             border: Border.all(
                               color: selected
                                   ? AppColors.primary
-                                  : Colors.grey.shade400,
+                                  : (isDark
+                                        ? Colors.grey.shade600
+                                        : Colors.grey.shade400),
                               width: selected ? 2 : 1.5,
                             ),
                           ),
@@ -1653,8 +1900,10 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                                 ? FontWeight.w600
                                 : FontWeight.w500,
                             color: selected
-                                ? Colors.black87
-                                : Colors.grey.shade700,
+                                ? (isDark ? AppColors.primary : Colors.black87)
+                                : (isDark
+                                      ? Colors.grey.shade300
+                                      : Colors.grey.shade700),
                             fontSize: 14,
                           ),
                         ),
@@ -1671,6 +1920,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   }
 
   Widget _bloodGroupSelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1679,9 +1929,11 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
           constraints: const BoxConstraints(minHeight: 72),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(
+              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+            ),
           ),
           child: Wrap(
             spacing: 10,
@@ -1701,12 +1953,14 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                   decoration: BoxDecoration(
                     color: selected
                         ? AppColors.primary.withValues(alpha: 0.15)
-                        : Colors.white,
+                        : (isDark ? Colors.grey.shade900 : Colors.white),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: selected
                           ? AppColors.primary.withValues(alpha: 0.5)
-                          : Colors.grey.shade300,
+                          : (isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade300),
                       width: selected ? 1.5 : 1,
                     ),
                   ),
@@ -1716,7 +1970,9 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                       color: selected
                           ? AppColors.primary
-                          : Colors.grey.shade700,
+                          : (isDark
+                                ? Colors.grey.shade300
+                                : Colors.grey.shade700),
                       fontSize: 13,
                     ),
                   ),
