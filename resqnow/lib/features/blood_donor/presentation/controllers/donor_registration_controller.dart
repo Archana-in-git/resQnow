@@ -81,17 +81,6 @@ class DonorRegistrationController extends ChangeNotifier {
         updatedAt: DateTime.now(),
       );
 
-      print("📍 FLATTENED LOCATION CHECK:");
-      print({
-        "state": donor.state,
-        "district": donor.district,
-        "town": donor.town,
-        "pincode": donor.pincode,
-      });
-
-      print("🩸 DONOR REGISTRATION PAYLOAD:");
-      print(donor.toMap());
-
       await registerDonorUseCase(donor);
 
       isLoading = false;

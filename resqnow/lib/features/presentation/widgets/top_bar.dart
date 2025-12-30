@@ -10,6 +10,8 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -20,13 +22,9 @@ class TopBar extends StatelessWidget {
             Text(
               locationText,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textPrimary,
+                color: isDarkMode ? Colors.white : AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
-            ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              color: AppColors.textSecondary,
             ),
           ],
         ),
@@ -35,9 +33,12 @@ class TopBar extends StatelessWidget {
             context.push('/notifications');
           },
           borderRadius: BorderRadius.circular(12),
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Icons.notifications_none, color: AppColors.textPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.notifications_none,
+              color: isDarkMode ? Colors.white : AppColors.textPrimary,
+            ),
           ),
         ),
       ],

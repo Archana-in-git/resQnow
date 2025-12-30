@@ -106,10 +106,10 @@ class _DonorListPageState extends State<DonorListPage> {
                     // District & Town Display
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.2),
+                          color: AppColors.primary.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -167,8 +167,9 @@ class _DonorListPageState extends State<DonorListPage> {
                                         // 🔄 EDIT DISTRICT BUTTON
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.1,
+                                            ),
                                             borderRadius: BorderRadius.circular(
                                               6,
                                             ),
@@ -244,8 +245,9 @@ class _DonorListPageState extends State<DonorListPage> {
                                         // 🔄 EDIT TOWN BUTTON
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.1,
+                                            ),
                                             borderRadius: BorderRadius.circular(
                                               6,
                                             ),
@@ -377,7 +379,7 @@ class _DonorListPageState extends State<DonorListPage> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -508,7 +510,7 @@ class _DonorListPageState extends State<DonorListPage> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -591,7 +593,7 @@ class _DonorListPageState extends State<DonorListPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -606,7 +608,7 @@ class _DonorListPageState extends State<DonorListPage> {
               border: Border.all(
                 color: isSelected
                     ? AppColors.primary
-                    : Colors.grey.withOpacity(0.2),
+                    : Colors.grey.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -616,7 +618,7 @@ class _DonorListPageState extends State<DonorListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(icon, color: AppColors.primary, size: 20),
@@ -674,7 +676,7 @@ class _DonorListPageState extends State<DonorListPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -689,7 +691,7 @@ class _DonorListPageState extends State<DonorListPage> {
               border: Border.all(
                 color: isSelected
                     ? AppColors.primary
-                    : Colors.grey.withOpacity(0.2),
+                    : Colors.grey.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -699,7 +701,7 @@ class _DonorListPageState extends State<DonorListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(icon, color: AppColors.primary, size: 20),
@@ -755,7 +757,7 @@ class _DonorListPageState extends State<DonorListPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -770,7 +772,7 @@ class _DonorListPageState extends State<DonorListPage> {
               border: Border.all(
                 color: isSelected
                     ? AppColors.primary
-                    : Colors.grey.withOpacity(0.2),
+                    : Colors.grey.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -780,7 +782,7 @@ class _DonorListPageState extends State<DonorListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -841,7 +843,7 @@ class _DonorListPageState extends State<DonorListPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -856,7 +858,7 @@ class _DonorListPageState extends State<DonorListPage> {
               border: Border.all(
                 color: isSelected
                     ? AppColors.primary
-                    : Colors.grey.withOpacity(0.2),
+                    : Colors.grey.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(12),
@@ -866,7 +868,7 @@ class _DonorListPageState extends State<DonorListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(

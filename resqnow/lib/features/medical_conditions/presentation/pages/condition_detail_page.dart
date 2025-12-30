@@ -39,7 +39,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   void initState() {
     super.initState();
     _savedTopicsService = SavedTopicsService();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
     _firstAidTabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchCondition(widget.conditionId);
@@ -405,86 +405,103 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 const SizedBox(height: 24),
 
                 // ═══════════════════════════════════════════════════════════
-                // TABBED CONTENT SECTION (Resources, Video)
+                // VIDEO SECTION
                 // ═══════════════════════════════════════════════════════════
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isDarkMode
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
-                      ),
+                if (condition.videoUrl.isNotEmpty) ...[
+                  Text(
+                    'First Aid Video',
+                    style: _sectionTitleStyle(context, fontSize: 18),
+                  ),
+                  const SizedBox(height: 16),
+                  VideoPlayerWidget(videoUrl: condition.videoUrl),
+                  const SizedBox(height: 24),
+                ] else ...[
+                  Center(
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.video_library_outlined,
+                          size: 48,
+                          color: isDarkMode
+                              ? Colors.grey.shade600
+                              : Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No video available',
+                          style: TextStyle(
+                            color: isDarkMode
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: isDarkMode
-                        ? Colors.grey.shade500
-                        : Colors.grey.shade600,
-                    indicatorColor: AppColors.primary,
-                    isScrollable: false,
-                    tabs: const [
-                      Tab(text: 'Resources'),
-                      Tab(text: 'Video'),
-                    ],
-                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // ═══════════════════════════════════════════════════════════
+                // QUICK ACCESS CARDS SECTION
+                // ═══════════════════════════════════════════════════════════
+                Text(
+                  'Explore More',
+                  style: _sectionTitleStyle(context, fontSize: 16),
                 ),
 
                 const SizedBox(height: 16),
 
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      // TAB 1: Resources (Required Kits)
-                      _buildResourcesTab(condition),
+                Row(
+                  children: [
+                    // Resources Card
+                    Expanded(
+                      child: _buildQuickAccessCard(
+                        icon: Icons.medical_services,
+                        iconColor: Colors.blue,
+                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                        label: 'Resources',
+                        onTap: () => context.push('/resources'),
+                        isDarkMode: isDarkMode,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
 
-                      // TAB 2: Video
-                      _buildVideoTab(condition),
-                    ],
-                  ),
+                    // FAQ Card
+                    if (condition.faqs.isNotEmpty)
+                      Expanded(
+                        child: _buildQuickAccessCard(
+                          icon: Icons.help_outline,
+                          iconColor: Colors.orange,
+                          backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                          label: 'FAQs',
+                          onTap: () {
+                            context.push(
+                              '/categories/condition/${widget.conditionId}/faqs',
+                              extra: condition,
+                            );
+                          },
+                          isDarkMode: isDarkMode,
+                        ),
+                      ),
+
+                    const SizedBox(width: 12),
+
+                    // Hospital Card
+                    if (condition.hospitalLocatorLink.isNotEmpty)
+                      Expanded(
+                        child: _buildQuickAccessCard(
+                          icon: Icons.local_hospital,
+                          iconColor: Colors.red,
+                          backgroundColor: Colors.red.withValues(alpha: 0.1),
+                          label: 'Hospitals',
+                          onTap: () => launchUrl(
+                            Uri.parse(condition.hospitalLocatorLink),
+                          ),
+                          isDarkMode: isDarkMode,
+                        ),
+                      ),
+                  ],
                 ),
-
-                const SizedBox(height: 24),
-
-                // ═══════════════════════════════════════════════════════════
-                // FAQ SECTION - Link to separate FAQ page
-                // ═══════════════════════════════════════════════════════════
-                if (condition.faqs.isNotEmpty)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.help_outline),
-                      label: const Text("View Frequently Asked Questions"),
-                      onPressed: () {
-                        context.push(
-                          '/condition/${widget.conditionId}/faqs',
-                          extra: condition,
-                        );
-                      },
-                    ),
-                  ),
-
-                const SizedBox(height: 24),
-
-                // ═══════════════════════════════════════════════════════════
-                // FOOTER: Find Help Button
-                // ═══════════════════════════════════════════════════════════
-                if (condition.hospitalLocatorLink.isNotEmpty)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.local_hospital),
-                      label: const Text("Find nearby help"),
-                      onPressed: () =>
-                          launchUrl(Uri.parse(condition.hospitalLocatorLink)),
-                    ),
-                  ),
-
-                const SizedBox(height: 24),
               ],
             ),
           );
@@ -516,132 +533,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   // ═══════════════════════════════════════════════════════════════════════════
   // TAB 1: FIRST AID
   // ═══════════════════════════════════════════════════════════════════════════
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // TAB 2: RESOURCES - Compact text-only list with navigation indicators
-  // ═══════════════════════════════════════════════════════════════════════════
-  Widget _buildResourcesTab(ConditionModel condition) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    if (condition.requiredKits.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline,
-              size: 48,
-              color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              "No resources listed",
-              style: TextStyle(
-                color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Required Medical Kits",
-            style: _sectionTitleStyle(context, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          ...condition.requiredKits.map((kit) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? const Color(0xFF1E1E1E)
-                      : Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isDarkMode
-                        ? Colors.grey.shade700
-                        : Colors.grey.shade200,
-                  ),
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  title: Text(
-                    kit.name,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: AppColors.primary,
-                  ),
-                  onTap: () {
-                    // Navigate to resources page
-                    context.push('/resources');
-                  },
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // TAB 3: VIDEO
-  // ═══════════════════════════════════════════════════════════════════════════
-  Widget _buildVideoTab(ConditionModel condition) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    if (condition.videoUrl.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.video_library_outlined,
-              size: 48,
-              color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              "No video available",
-              style: TextStyle(
-                color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "First Aid Video",
-            style: _sectionTitleStyle(context, fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          VideoPlayerWidget(videoUrl: condition.videoUrl),
-        ],
-      ),
-    );
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // NUMBERED STEPS SECTION - Optimized for readability
@@ -763,6 +654,38 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
     return baseStyle.copyWith(
       fontSize: fontSize ?? baseStyle.fontSize,
       color: isDark ? Colors.white : (baseStyle.color ?? AppColors.textPrimary),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // QUICK ACCESS CARD BUILDER
+  // ═══════════════════════════════════════════════════════════════════════════
+  Widget _buildQuickAccessCard({
+    required IconData icon,
+    required Color iconColor,
+    required Color backgroundColor,
+    required String label,
+    required VoidCallback onTap,
+    required bool isDarkMode,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: iconColor, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

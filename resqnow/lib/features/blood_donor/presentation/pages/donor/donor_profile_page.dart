@@ -50,436 +50,521 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
 
         return Scaffold(
           backgroundColor: AppColors.background,
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // ============ PROFILE HEADER CARD ============
-                const SizedBox(height: 12),
-                // Back Button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_rounded,
-                        color: AppColors.textPrimary,
-                        size: 20,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      padding: const EdgeInsets.all(6),
-                      constraints: const BoxConstraints(
-                        minWidth: 40,
-                        minHeight: 40,
-                      ),
-                    ),
-                  ),
+          body: CustomScrollView(
+            slivers: [
+              // ============ ADVANCED HERO HEADER ============
+              SliverAppBar(
+                expandedHeight: 280,
+                pinned: true,
+                elevation: 0,
+                backgroundColor: AppColors.background,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: _buildAdvancedHeroSection(context, donor),
                 ),
-
-                // Edit Button
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.edit_rounded,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
-                          onPressed: () =>
-                              _showEditBottomSheet(context, controller, donor),
-                          padding: const EdgeInsets.all(6),
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.delete_rounded,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                          onPressed: () => _showDeleteConfirmationDialog(
-                            context,
-                            controller,
-                          ),
-                          padding: const EdgeInsets.all(6),
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Profile Picture with Status Badge
-                Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
-                          width: 3,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        backgroundImage: donor.profileImageUrl != null
-                            ? NetworkImage(donor.profileImageUrl!)
-                            : null,
-                        child: donor.profileImageUrl == null
-                            ? Icon(
-                                Icons.person,
-                                size: 50,
-                                color: AppColors.primary,
-                              )
-                            : null,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: donor.isAvailable
-                              ? AppColors.success
-                              : AppColors.textSecondary,
-                          border: Border.all(color: AppColors.white, width: 4),
-                        ),
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Name
-                Text(
-                  donor.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Age & Gender
-                Text(
-                  '${donor.age} • ${donor.gender}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Blood Group Badge - Rectangular with rounded corners
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 14,
-                  ),
+                leading: Container(
+                  margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade600,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: Text(
-                    donor.bloodGroup,
-                    style: const TextStyle(
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: AppColors.textPrimary,
+                      size: 20,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                actions: [
+                  Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 22,
-                      letterSpacing: 1.0,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Availability Toggle
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.2),
-                      width: 1,
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.favorite_rounded,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            "Available for Donation",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.edit_rounded,
+                        color: AppColors.primary,
+                        size: 20,
                       ),
-                      Switch(
-                        value: donor.isAvailable,
-                        onChanged: (v) {
-                          controller.updateAvailability(v);
-                        },
-                        activeColor: AppColors.success,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // ============ DETAILS SECTION ============
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.2),
-                      width: 1,
+                      onPressed: () =>
+                          _showEditBottomSheet(context, controller, donor),
                     ),
                   ),
+                ],
+              ),
+
+              // ============ MAIN CONTENT ============
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.info_rounded,
-                            color: AppColors.primary,
-                            size: 22,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            "Personal Details",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      _detailRow(
-                        Icons.calendar_today_rounded,
-                        "Age",
-                        donor.age.toString(),
-                      ),
-                      _detailRow(Icons.person_rounded, "Gender", donor.gender),
-                      _detailRow(Icons.phone_rounded, "Phone", donor.phone),
-                      _detailRow(
-                        Icons.location_on_rounded,
-                        "Address",
-                        donor.addressString,
-                      ),
-                      _detailRow(
-                        Icons.history_rounded,
-                        "Last Donation",
-                        donor.lastDonationDate == null
-                            ? "Not yet donated"
-                            : donor.lastDonationDate!.toString().substring(
-                                0,
-                                10,
-                              ),
-                      ),
-                      _detailRow(
-                        Icons.bloodtype_rounded,
-                        "Total Donations",
-                        donor.totalDonations.toString(),
-                      ),
+                      const SizedBox(height: 20),
+
+                      // ============ KEY STATS SECTION ============
+                      _buildStatsSection(donor),
+
+                      const SizedBox(height: 24),
+
+                      // ============ STATUS & AVAILABILITY ============
+                      _buildStatusSection(context, controller, donor),
+
+                      const SizedBox(height: 24),
+
+                      // ============ DETAILED INFORMATION CARDS ============
+                      _buildDetailedInfoCards(donor),
+
+                      const SizedBox(height: 24),
+
+                      // ============ MEDICAL CONDITIONS ============
+                      if (donor.medicalConditions.isNotEmpty)
+                        _buildMedicalConditionsCard(donor),
+
+                      if (donor.medicalConditions.isNotEmpty)
+                        const SizedBox(height: 24),
+
+                      // ============ NOTES SECTION ============
+                      if (donor.notes != null && donor.notes!.isNotEmpty)
+                        _buildNotesCard(donor),
+
+                      if (donor.notes != null && donor.notes!.isNotEmpty)
+                        const SizedBox(height: 24),
+
+                      // ============ DANGER ZONE ============
+                      _buildDangerZoneSection(context, controller),
+
+                      const SizedBox(height: 28),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
-                // ============ MEDICAL CONDITIONS ============
-                if (donor.medicalConditions.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.green.shade200,
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.local_hospital_rounded,
-                              color: Colors.green.shade700,
-                              size: 22,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Medical Conditions",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.green.shade900,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        ...donor.medicalConditions.map((condition) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.green.shade700,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  condition,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.green.shade900,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 20),
-
-                // ============ NOTES ============
-                if (donor.notes != null && donor.notes!.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.orange.shade200,
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.note_rounded,
-                              color: Colors.orange.shade700,
-                              size: 22,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Notes",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.orange.shade900,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          donor.notes!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.orange.shade900,
-                            height: 1.6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  // ============ ADVANCED HERO SECTION ============
+  Widget _buildAdvancedHeroSection(BuildContext context, BloodDonor donor) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.primary.withValues(alpha: 0.85),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
         children: [
-          Icon(icon, size: 18, color: AppColors.primary),
+          Positioned(
+            right: -50,
+            top: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.1),
+              ),
+            ),
+          ),
+          Positioned(
+            left: -30,
+            bottom: -30,
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.1),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Profile Picture with Badge
+                    Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              width: 4,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.2,
+                            ),
+                            backgroundImage: donor.profileImageUrl != null
+                                ? NetworkImage(donor.profileImageUrl!)
+                                : null,
+                            child: donor.profileImageUrl == null
+                                ? Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.white,
+                                  )
+                                : null,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: donor.isAvailable
+                                  ? AppColors.success
+                                  : Colors.grey,
+                              border: Border.all(color: Colors.white, width: 3),
+                            ),
+                            child: Icon(
+                              donor.isAvailable
+                                  ? Icons.check_rounded
+                                  : Icons.close_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      donor.name,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(
+                        donor.isAvailable
+                            ? '✓ Available for Donation'
+                            : '✗ Not Available',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ STATS SECTION ============
+  Widget _buildStatsSection(BloodDonor donor) {
+    return Row(
+      children: [
+        _buildStatCard(
+          icon: Icons.bloodtype_rounded,
+          label: 'Blood Group',
+          value: donor.bloodGroup,
+          color: Colors.red,
+        ),
+        const SizedBox(width: 12),
+        _buildStatCard(
+          icon: Icons.favorite_rounded,
+          label: 'Total Donations',
+          value: donor.totalDonations.toString(),
+          color: AppColors.primary,
+        ),
+        const SizedBox(width: 12),
+        _buildStatCard(
+          icon: Icons.calendar_today_rounded,
+          label: 'Last Donation',
+          value: donor.lastDonationDate == null
+              ? 'Never'
+              : donor.lastDonationDate!.toString().substring(0, 10),
+          color: Colors.orange,
+          isSmall: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    bool isSmall = false,
+  }) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: isSmall ? 13 : 15,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ STATUS SECTION ============
+  Widget _buildStatusSection(
+    BuildContext context,
+    DonorProfileController controller,
+    BloodDonor donor,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.08),
+            AppColors.primary.withValues(alpha: 0.03),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.15),
+          width: 1.5,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.favorite_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    "Availability Status",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                donor.isAvailable
+                    ? "You are available for donations"
+                    : "You are not currently available",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          Switch(
+            value: donor.isAvailable,
+            onChanged: (v) {
+              controller.updateAvailability(v);
+            },
+            activeColor: AppColors.success,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ BLOOD GROUP HIGHLIGHT ============
+  Widget _buildBloodGroupHighlight(BloodDonor donor) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.red.shade400, Colors.red.shade600],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withValues(alpha: 0.2),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Your Blood Type",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                donor.bloodGroup,
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+          Icon(
+            Icons.bloodtype_rounded,
+            size: 60,
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ DETAILED INFO CARDS ============
+  Widget _buildDetailedInfoCards(BloodDonor donor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Personal Information",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 14),
+        _buildInfoCard(Icons.person_rounded, "Full Name", donor.name),
+        const SizedBox(height: 10),
+        _buildInfoCard(Icons.phone_rounded, "Phone Number", donor.phone),
+        const SizedBox(height: 10),
+        _buildInfoCard(
+          Icons.location_on_rounded,
+          "Address",
+          donor.addressString,
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _buildInfoCard(
+                Icons.calendar_today_rounded,
+                "Age",
+                donor.age.toString(),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildInfoCard(
+                Icons.person_outline_rounded,
+                "Gender",
+                donor.gender,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -488,24 +573,286 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.3,
+                    color: Colors.grey.shade600,
+                    letterSpacing: 0.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ MEDICAL CONDITIONS CARD ============
+  Widget _buildMedicalConditionsCard(BloodDonor donor) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.green.shade50,
+            Colors.green.shade50.withValues(alpha: 0.5),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.green.shade200, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green.shade100, Colors.green.shade200],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.local_hospital_rounded,
+                  color: Colors.green.shade700,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Medical Conditions",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.green.shade900,
+                    ),
+                  ),
+                  Text(
+                    "${donor.medicalConditions.length} condition${donor.medicalConditions.length > 1 ? 's' : ''}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.green.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 12,
+            children: donor.medicalConditions.map((condition) {
+              final conditionIcons = {
+                'Diabetes': Icons.water_drop_rounded,
+                'Blood Pressure': Icons.favorite_rounded,
+                'Thyroid': Icons.medication_rounded,
+                'Asthma': Icons.air_rounded,
+              };
+
+              final conditionColors = {
+                'Diabetes': Colors.blue,
+                'Blood Pressure': Colors.red,
+                'Thyroid': Colors.purple,
+                'Asthma': Colors.orange,
+              };
+
+              final icon = conditionIcons[condition] ?? Icons.circle_rounded;
+              final color = conditionColors[condition] ?? Colors.green;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.1),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 18, color: color),
+                    const SizedBox(width: 8),
+                    Text(
+                      condition,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ NOTES CARD ============
+  Widget _buildNotesCard(BloodDonor donor) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.shade200, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.note_rounded,
+                  color: Colors.orange.shade700,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Additional Notes",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.orange.shade900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            donor.notes ?? "",
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.orange.shade900,
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============ DANGER ZONE ============
+  Widget _buildDangerZoneSection(
+    BuildContext context,
+    DonorProfileController controller,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.shade200, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.warning_rounded,
+                  color: Colors.red.shade700,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Danger Zone",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.red.shade900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Permanently delete your donor profile. This action cannot be undone and you can register again anytime.",
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.red.shade800,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 14),
+          GestureDetector(
+            onTap: () => _showDeleteConfirmationDialog(context, controller),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.red.shade600,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.delete_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Delete Profile",
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -810,7 +1157,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                   onTap: () => Navigator.pop(context),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(10),
@@ -920,8 +1267,8 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                         gradient: selected
                             ? LinearGradient(
                                 colors: [
-                                  AppColors.primary.withOpacity(0.15),
-                                  AppColors.primary.withOpacity(0.08),
+                                  AppColors.primary.withValues(alpha: 0.15),
+                                  AppColors.primary.withValues(alpha: 0.08),
                                 ],
                               )
                             : null,
@@ -929,14 +1276,16 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                           color: selected
-                              ? AppColors.primary.withOpacity(0.6)
+                              ? AppColors.primary.withValues(alpha: 0.6)
                               : Colors.grey.shade300,
                           width: selected ? 1.5 : 1,
                         ),
                         boxShadow: selected
                             ? [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.1),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -1009,7 +1358,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                       gradient: LinearGradient(
                         colors: [
                           AppColors.primary,
-                          AppColors.primary.withOpacity(0.85),
+                          AppColors.primary.withValues(alpha: 0.85),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -1017,7 +1366,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.25),
+                          color: AppColors.primary.withValues(alpha: 0.25),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -1073,7 +1422,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 20, color: AppColors.primary),

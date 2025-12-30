@@ -21,186 +21,265 @@ class WelcomePage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Decorative top elements
-                SizedBox(
-                  height: 120,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Transform.translate(
-                        offset: const Offset(0, 35),
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.teal.withOpacity(0.08),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        height: 80,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.teal.withOpacity(0.12),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Transform.translate(
-                        offset: const Offset(0, 40),
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.teal.withOpacity(0.08),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Animation and Text Section
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Medical Shield Animation
-                      SizedBox(
-                        height: 240,
-                        width: 240,
-                        child: Lottie.asset(
-                          'assets/animation/Medical Shield.json',
-                          repeat: true,
-                          reverse: false,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // App Title
-                      ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [Colors.teal.shade700, Colors.teal.shade400],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'ResQnow',
-                          style: TextStyle(
-                            fontSize: 44,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Subtitle
-                      const Text(
-                        "Let's Get Started",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Buttons Section
-                Column(
+          child: Stack(
+            children: [
+              // Decorative bokeh background
+              Positioned.fill(
+                child: Column(
                   children: [
-                    // Login Button
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.teal.withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
+                    SizedBox(
+                      height: 200,
+                      child: Stack(
+                        children: [
+                          // Top left bokeh circle
+                          Positioned(
+                            left: -30,
+                            top: -20,
+                            child: Container(
+                              height: 120,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue.withOpacity(0.08),
+                              ),
+                            ),
+                          ),
+                          // Top right bokeh circle
+                          Positioned(
+                            right: -40,
+                            top: 30,
+                            child: Container(
+                              height: 140,
+                              width: 140,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.cyan.withOpacity(0.06),
+                              ),
+                            ),
+                          ),
+                          // Center top bokeh
+                          Positioned(
+                            left: 130,
+                            top: 30,
+                            child: Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.teal.withOpacity(0.1),
+                              ),
+                            ),
                           ),
                         ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.go('/login');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // Sign Up Button
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.teal.withOpacity(0.15),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          // Middle right bokeh
+                          Positioned(
+                            right: -50,
+                            top: 100,
+                            child: Container(
+                              height: 150,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.teal.withOpacity(0.07),
+                              ),
+                            ),
+                          ),
+                          // Bottom left bokeh
+                          Positioned(
+                            left: -60,
+                            bottom: 50,
+                            child: Container(
+                              height: 130,
+                              width: 130,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue.withOpacity(0.09),
+                              ),
+                            ),
+                          ),
+                          // Bottom right bokeh
+                          Positioned(
+                            right: 10,
+                            bottom: -30,
+                            child: Container(
+                              height: 110,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.cyan.withOpacity(0.07),
+                              ),
+                            ),
+                          ),
+                          // Center bokeh
+                          Positioned(
+                            left: 80,
+                            top: 150,
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.teal.withOpacity(0.05),
+                              ),
+                            ),
                           ),
                         ],
-                      ),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          context.go('/signup');
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: Colors.teal.shade600,
-                            width: 2.5,
-                          ),
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          backgroundColor: Colors.white.withOpacity(0.7),
-                        ),
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.teal.shade700,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 36,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Animation and Text Section
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Medical Shield Animation
+                          SizedBox(
+                            height: 240,
+                            width: 240,
+                            child: Lottie.asset(
+                              'assets/animation/Medical Shield.json',
+                              repeat: true,
+                              reverse: false,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
+                          // App Title
+                          ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [
+                                Colors.teal.shade700,
+                                Colors.teal.shade400,
+                              ],
+                            ).createShader(bounds),
+                            child: const Text(
+                              'ResQnow',
+                              style: TextStyle(
+                                fontSize: 44,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Subtitle
+                          const Text(
+                            "Let's Get Started",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Buttons Section
+                    Column(
+                      children: [
+                        // Login Button
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.teal.withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.go('/login');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              minimumSize: const Size(double.infinity, 56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Sign Up Button
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.teal.withOpacity(0.15),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: OutlinedButton(
+                            onPressed: () {
+                              context.go('/signup');
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: Colors.teal.shade600,
+                                width: 2.5,
+                              ),
+                              minimumSize: const Size(double.infinity, 56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor: Colors.white.withOpacity(0.7),
+                            ),
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.teal.shade700,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

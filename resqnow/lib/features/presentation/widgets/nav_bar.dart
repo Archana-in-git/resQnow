@@ -45,19 +45,21 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SlideTransition(
         position: _slideAnimation,
         child: Drawer(
           width: MediaQuery.of(context).size.width * 0.75,
-          backgroundColor: Colors.white,
+          backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 🔹 Enhanced Header Section
-                _buildHeaderSection(context),
+                _buildHeaderSection(context, isDarkMode),
 
                 const SizedBox(height: 8),
 
@@ -135,7 +137,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                 ),
 
                 // 🔹 Footer Section with Logout
-                _buildFooterSection(context),
+                _buildFooterSection(context, isDarkMode),
               ],
             ),
           ),
@@ -144,12 +146,14 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context) {
+  Widget _buildHeaderSection(BuildContext context, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+          colors: isDarkMode
+              ? [Colors.grey.shade800, Colors.grey.shade900]
+              : [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -159,7 +163,9 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
+            color: isDarkMode
+                ? Colors.black26
+                : AppColors.primary.withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -183,19 +189,19 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             "Welcome to",
             style: TextStyle(
-              color: Colors.white70,
+              color: isDarkMode ? Colors.grey.shade300 : Colors.white70,
               fontSize: 13,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.5,
             ),
           ),
-          const Text(
+          Text(
             "ResQNow",
             style: TextStyle(
-              color: Colors.white,
+              color: isDarkMode ? Colors.white : Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
@@ -205,9 +211,14 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white30, width: 1),
+              border: Border.all(
+                color: isDarkMode ? Colors.white12 : Colors.white30,
+                width: 1,
+              ),
             ),
             child: const Text(
               "🚑 Emergency Medical Assistance",
@@ -229,6 +240,8 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
     required Color color,
     required VoidCallback onTap,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Material(
@@ -260,7 +273,7 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                   child: Text(
                     label,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textPrimary,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
                     ),
@@ -279,11 +292,13 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
     );
   }
 
-  Widget _buildFooterSection(BuildContext context) {
+  Widget _buildFooterSection(BuildContext context, bool isDarkMode) {
     return Column(
       children: [
         Divider(
-          color: Colors.grey.withValues(alpha: 0.3),
+          color: isDarkMode
+              ? Colors.grey.shade700
+              : Colors.grey.withValues(alpha: 0.3),
           thickness: 1,
           indent: 16,
           endIndent: 16,
@@ -329,7 +344,9 @@ class _ResQNowNavBarState extends State<ResQNowNavBar>
                       child: Text(
                         "Logout",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFFD32F2F),
+                          color: isDarkMode
+                              ? Colors.red.shade400
+                              : const Color(0xFFD32F2F),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.3,
                         ),

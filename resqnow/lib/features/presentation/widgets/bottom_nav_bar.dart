@@ -10,6 +10,8 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) {
@@ -23,7 +25,7 @@ class CustomBottomNavBar extends StatelessWidget {
             context.push('/categories');
             break;
           case 2:
-            context.push('/emergency-numbers');
+            context.push('/emergency');
             break;
           case 3:
             context.push('/saved-topics');
@@ -35,8 +37,10 @@ class CustomBottomNavBar extends StatelessWidget {
       },
       type: BottomNavigationBarType.fixed,
       selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textSecondary,
-      backgroundColor: Colors.white,
+      unselectedItemColor: isDarkMode
+          ? Colors.grey.shade500
+          : AppColors.textSecondary,
+      backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
         BottomNavigationBarItem(

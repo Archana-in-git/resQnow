@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -71,77 +70,9 @@ class AuthService {
   }
 
   // ---------------------------------------------------------------------------
-  // 🟢 GOOGLE SIGN-IN
-  // ---------------------------------------------------------------------------
-  Future<User?> signInWithGoogle() async {
-    try {
-      final googleSignIn = GoogleSignIn();
-      await googleSignIn.signOut(); // avoid cached account
-
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
-
-      final googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await _auth.signInWithCredential(credential);
-      final user = userCredential.user;
-
-      if (user != null) {
-        final docRef = _firestore.collection(usersCollection).doc(user.uid);
-        final doc = await docRef.get();
-
-        if (!doc.exists) {
-          await docRef.set({
-            'uid': user.uid,
-            'name': user.displayName ?? '',
-            'email': user.email,
-            'role': 'user',
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }
-      }
-      return user;
-    } on FirebaseAuthException {
-      rethrow;
-    } catch (e) {
-      throw FirebaseAuthException(
-        code: 'google-sign-in-failed',
-        message: e.toString(),
-      );
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // 👤 ANONYMOUS SIGN-IN (Guest)
-  // ---------------------------------------------------------------------------
-  Future<User?> signInAnonymously() async {
-    try {
-      final credential = await _auth.signInAnonymously();
-      final user = credential.user;
-
-      if (user != null) {
-        await _firestore.collection(usersCollection).doc(user.uid).set({
-          'uid': user.uid,
-          'role': 'guest',
-          'createdAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-      }
-      return user;
-    } on FirebaseAuthException {
-      rethrow;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
   // 🚪 SIGN OUT
   // ---------------------------------------------------------------------------
   Future<void> signOut() async {
-    await GoogleSignIn().signOut();
     await _auth.signOut();
   }
 

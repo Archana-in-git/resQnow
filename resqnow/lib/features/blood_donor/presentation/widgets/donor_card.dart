@@ -18,7 +18,7 @@ class DonorCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.12),
+              color: AppColors.primary.withValues(alpha: 0.12),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -48,14 +48,14 @@ class DonorCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 width: 2,
                               ),
                             ),
                             child: CircleAvatar(
                               radius: 36,
-                              backgroundColor: AppColors.primary.withOpacity(
-                                0.1,
+                              backgroundColor: AppColors.primary.withValues(
+                                alpha: 0.1,
                               ),
                               backgroundImage: donor.profileImageUrl != null
                                   ? NetworkImage(donor.profileImageUrl!)
@@ -167,7 +167,7 @@ class DonorCard extends StatelessWidget {
                       // Right Action Icon
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         padding: const EdgeInsets.all(8),
@@ -186,8 +186,8 @@ class DonorCard extends StatelessWidget {
                   Container(
                     height: 1,
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey.withOpacity(0.2)
-                        : AppColors.primary.withOpacity(0.1),
+                        ? Colors.grey.withValues(alpha: 0.2)
+                        : AppColors.primary.withValues(alpha: 0.1),
                   ),
 
                   const SizedBox(height: 12),
@@ -236,7 +236,7 @@ class DonorCard extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(

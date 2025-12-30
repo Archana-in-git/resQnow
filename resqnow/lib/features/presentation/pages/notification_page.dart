@@ -91,17 +91,26 @@ class _NotificationPageState extends State<NotificationPage> {
         : _notifications.where((n) => n.type == _selectedFilter).toList();
 
     final unreadCount = _notifications.where((n) => !n.isRead).length;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDarkMode ? Colors.grey.shade900 : AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: isDarkMode ? Colors.grey.shade800 : AppColors.white,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
           onPressed: () => context.pop(),
         ),
-        title: const Text("Notifications", style: AppTextStyles.appTitle),
+        title: Text(
+          "Notifications",
+          style: AppTextStyles.appTitle.copyWith(
+            color: isDarkMode ? Colors.white : AppColors.textPrimary,
+          ),
+        ),
         actions: [
           if (unreadCount > 0)
             Padding(
@@ -139,27 +148,35 @@ class _NotificationPageState extends State<NotificationPage> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _filterOptions.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (_, index) {
                   final filter = _filterOptions[index];
                   final isSelected = _selectedFilter == filter;
+                  final isDarkMode =
+                      Theme.of(context).brightness == Brightness.dark;
                   return FilterChip(
                     label: Text(
                       filter,
                       style: TextStyle(
                         color: isSelected
                             ? Colors.white
-                            : AppColors.textPrimary,
+                            : (isDarkMode
+                                  ? Colors.white70
+                                  : AppColors.textPrimary),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     selected: isSelected,
                     selectedColor: AppColors.primary,
-                    backgroundColor: Colors.grey.shade100,
+                    backgroundColor: isDarkMode
+                        ? Colors.grey.shade700
+                        : Colors.grey.shade100,
                     side: BorderSide(
                       color: isSelected
                           ? AppColors.primary
-                          : Colors.grey.shade300,
+                          : (isDarkMode
+                                ? Colors.grey.shade600
+                                : Colors.grey.shade300),
                       width: 1,
                     ),
                     onSelected: (value) {
@@ -197,6 +214,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildEmptyState() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -206,12 +224,14 @@ class _NotificationPageState extends State<NotificationPage> {
             height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primary.withOpacity(0.1),
+              color: isDarkMode
+                  ? AppColors.primary.withValues(alpha: 0.2)
+                  : AppColors.primary.withValues(alpha: 0.1),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.notifications_off_outlined,
               size: 40,
-              color: AppColors.primary,
+              color: isDarkMode ? AppColors.primary : AppColors.primary,
             ),
           ),
           const SizedBox(height: 16),
@@ -219,16 +239,18 @@ class _NotificationPageState extends State<NotificationPage> {
             'No Notifications Yet',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: isDarkMode ? Colors.white : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'You\'re all caught up! We\'ll notify you when\nsomething important happens.',
             textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: isDarkMode
+                  ? Colors.grey.shade400
+                  : AppColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -282,6 +304,8 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Dismissible(
       key: Key(notification.id),
       direction: DismissDirection.endToStart,
@@ -299,11 +323,11 @@ class _NotificationCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow,
+              color: isDarkMode ? Colors.black26 : AppColors.cardShadow,
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -326,7 +350,7 @@ class _NotificationCard extends StatelessWidget {
                     height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: notification.color.withOpacity(0.15),
+                      color: notification.color.withValues(alpha: 0.15),
                     ),
                     child: Center(
                       child: Icon(
@@ -349,10 +373,12 @@ class _NotificationCard extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 notification.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
-                                  color: AppColors.textPrimary,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : AppColors.textPrimary,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -374,7 +400,9 @@ class _NotificationCard extends StatelessWidget {
                           notification.description,
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: isDarkMode
+                                ? Colors.grey.shade400
+                                : AppColors.textSecondary,
                             height: 1.4,
                           ),
                           maxLines: 2,
@@ -388,7 +416,11 @@ class _NotificationCard extends StatelessWidget {
                               _formatTime(notification.timestamp),
                               style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.textSecondary.withOpacity(0.7),
+                                color: isDarkMode
+                                    ? Colors.grey.shade500
+                                    : AppColors.textSecondary.withValues(
+                                        alpha: 0.7,
+                                      ),
                               ),
                             ),
                             Container(
@@ -397,7 +429,9 @@ class _NotificationCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: notification.color.withOpacity(0.1),
+                                color: notification.color.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(

@@ -378,10 +378,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       "profileImageUrl": _uploadedImageUrl,
     };
 
-    print("🩸🩸🩸 DONOR REGISTRATION PAYLOAD START");
-    print(registrationData);
-    print("🩸🩸🩸 DONOR REGISTRATION PAYLOAD END");
-
     final success = await controller.register(
       name: nameCtrl.text.trim(),
       age: computedAge,
@@ -399,37 +395,20 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     if (!mounted) return;
 
     // --------------------------
-    // SUCCESS DIALOG
+    // SUCCESS - AUTO REDIRECT TO HOME
     // --------------------------
     if (success) {
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content: SizedBox(
-            height: 160,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.check_circle, size: 64, color: Colors.green),
-                SizedBox(height: 10),
-                Text(
-                  "Registration Successful!",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 6),
-                Text("Your donor profile has been created."),
-              ],
-            ),
-          ),
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text("Registration Successful! Redirecting..."),
+          duration: Duration(seconds: 2),
         ),
       );
 
+      // Auto-redirect to home page after brief delay
+      await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
-      context.go('/donor-profile');
+      context.go('/');
     } else {
       if (!mounted) return;
       messenger.showSnackBar(

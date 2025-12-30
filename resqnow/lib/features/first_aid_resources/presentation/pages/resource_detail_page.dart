@@ -103,7 +103,7 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                                   ? AppColors.primary
                                   : (isDarkMode
                                         ? Colors.grey.shade600
-                                        : Colors.white.withOpacity(0.7)),
+                                        : Colors.white.withValues(alpha: 0.7)),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -264,11 +264,13 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
                               ),
                               decoration: BoxDecoration(
                                 color: isDarkMode
-                                    ? AppColors.primary.withOpacity(0.2)
-                                    : AppColors.primary.withOpacity(0.1),
+                                    ? AppColors.primary.withValues(alpha: 0.2)
+                                    : AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Text(
@@ -401,7 +403,7 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
         color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.primary.withOpacity(isDarkMode ? 0.3 : 0.2),
+          color: AppColors.primary.withValues(alpha: isDarkMode ? 0.3 : 0.2),
         ),
       ),
       child: Row(
@@ -410,7 +412,9 @@ class _ResourceDetailPageState extends State<ResourceDetailPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(isDarkMode ? 0.2 : 0.1),
+              color: AppColors.primary.withValues(
+                alpha: isDarkMode ? 0.2 : 0.1,
+              ),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.primary, size: 20),

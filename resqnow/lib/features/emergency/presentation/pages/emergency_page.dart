@@ -16,7 +16,8 @@ class EmergencyPage extends StatefulWidget {
   State<EmergencyPage> createState() => _EmergencyPageState();
 }
 
-class _EmergencyPageState extends State<EmergencyPage> {
+class _EmergencyPageState extends State<EmergencyPage>
+    with TickerProviderStateMixin {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final AudioPlayer _audioPlayer = AudioPlayer();
   final FlutterTts _tts = FlutterTts();
@@ -26,10 +27,19 @@ class _EmergencyPageState extends State<EmergencyPage> {
   bool _micPermissionGranted = false;
   bool _showListeningPrompt = false;
 
+  late AnimationController _pulseController;
+
   @override
   void initState() {
     super.initState();
     _tts.awaitSpeakCompletion(true);
+
+    // Pulse animation for SOS button
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+
     _initVoiceSystem();
   }
 
@@ -122,6 +132,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
     _speech.stop();
     _tts.stop();
     _audioPlayer.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -132,106 +143,303 @@ class _EmergencyPageState extends State<EmergencyPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Center(child: EmergencyButton()),
+            // Background gradient overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black,
+                    Colors.black87,
+                    Colors.red.shade900.withValues(alpha: 0.1),
+                  ],
+                ),
+              ),
+            ),
 
-            // Close button
+            // Close button with enhanced styling
             Positioned(
               top: 16,
               right: 16,
               child: GestureDetector(
                 onTap: () => context.go('/home'),
-                child: const Icon(Icons.close, color: Colors.white, size: 28),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(20),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
+                ),
               ),
             ),
 
-            const Positioned(
+            // Header section
+            Positioned(
               top: 24,
               left: 0,
               right: 0,
-              child: Center(
-                child: Text(
-                  'EMERGENCY',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+              child: Column(
+                children: [
+                  const Text(
+                    'EMERGENCY',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.5,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'One Tap to Save',
+                    style: TextStyle(
+                      color: Colors.red.shade300,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
             ),
 
-            // 🔵 Voice command banner + animation
-            if (_micPermissionGranted && _showListeningPrompt)
-              Positioned(
-                bottom: 180,
-                left: 0,
-                right: 0,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Lottie.asset(
-                        'assets/animation/Audio&Voice-A-002.json',
-                        repeat: true,
+            // Main SOS button with pulse animation
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Pulse ring animation
+                      ScaleTransition(
+                        scale: Tween(
+                          begin: 0.8,
+                          end: 1.2,
+                        ).animate(_pulseController),
+                        child: Container(
+                          width: 280,
+                          height: 280,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.red.withAlpha(100),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Inner pulse ring
+                      ScaleTransition(
+                        scale: Tween(begin: 0.9, end: 1.1).animate(
+                          CurvedAnimation(
+                            parent: _pulseController,
+                            curve: const Interval(0.2, 1.0),
+                          ),
+                        ),
+                        child: Container(
+                          width: 240,
+                          height: 240,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.red.withAlpha(150),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Main SOS button
+                      const SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: EmergencyButton(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  // Instruction text - unified section
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(8),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withAlpha(30),
+                        width: 1,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '🎙️ Listening for “Rescue me now”...',
-                      style: TextStyle(color: Colors.white70, fontSize: 15),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'TAP THE BUTTON',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'OR SAY',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white.withAlpha(180),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'RESCUE ME NOW',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-
-            if (!_micPermissionGranted)
-              Positioned(
-                bottom: 170,
-                left: 0,
-                right: 0,
-                child: const Center(
-                  child: Text(
-                    '🎤 Microphone permission denied.\nEnable it in settings to use voice rescue.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.redAccent, fontSize: 14),
                   ),
-                ),
-              ),
-
-            const Positioned(
-              bottom: 100,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
-                  'If you need help, say “Rescue me now”',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
+                ],
               ),
             ),
 
-            Positioned(
-              bottom: 40,
-              left: 32,
-              right: 32,
-              child: ElevatedButton(
-                onPressed: () => context.go('/home'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withAlpha(40),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: const BorderSide(color: Colors.white30),
+            // Voice recording animation
+            if (_micPermissionGranted && _showListeningPrompt)
+              Positioned(
+                bottom: 160,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: Lottie.asset(
+                      'assets/animation/Audio&Voice-A-002.json',
+                      repeat: true,
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Get First Aid Help',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+
+            // Microphone permission denied message
+            if (!_micPermissionGranted)
+              Positioned(
+                bottom: 160,
+                left: 0,
+                right: 0,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade900.withAlpha(100),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.orange.shade400, width: 1),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.mic_off_rounded,
+                        color: Colors.orange.shade300,
+                        size: 32,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Microphone Permission Denied',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Enable microphone in settings to use voice rescue',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.orange.shade200,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+
+            // Bottom section with First Aid button
+            Positioned(
+              bottom: 24,
+              left: 24,
+              right: 24,
+              child: Column(
+                children: [
+                  const Text(
+                    'Need guidance on first aid?',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => context.go('/home'),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.red.shade600, Colors.red.shade800],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.shade600.withAlpha(100),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.local_hospital,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Get First Aid Help',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

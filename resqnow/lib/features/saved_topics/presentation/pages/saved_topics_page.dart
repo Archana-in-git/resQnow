@@ -31,221 +31,366 @@ class _SavedTopicsPageState extends State<SavedTopicsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Saved Medical Conditions'),
+        title: const Text('Saved Conditions'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: isDarkMode ? Colors.white : AppColors.textPrimary,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary.withValues(alpha: 0.8),
+                AppColors.primary.withValues(alpha: 0.6),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (_controller.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppColors.accent,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _controller.error!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.textPrimary),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      _controller.loadSavedConditions();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (_controller.savedConditions.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.bookmark_outline,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No Saved Conditions Yet',
-                    style: AppTextStyles.sectionTitle.copyWith(
-                      fontSize: 18,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Save medical conditions to access them quickly',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.push('/categories');
-                    },
-                    child: const Text('Browse Conditions'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _controller.savedConditions.length,
-            itemBuilder: (context, index) {
-              final condition = _controller.savedConditions[index];
-
-              return _buildConditionCard(context, condition, index);
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildConditionCard(
-    BuildContext context,
-    dynamic condition,
-    int index,
-  ) {
-    // Get first image or use placeholder
-    final String imageUrl = condition.imageUrls.isNotEmpty
-        ? condition.imageUrls[0].replaceFirst('resqnow/lib/', '')
-        : '';
-
-    // Format saved date
-    final DateTime savedDate = DateTime.fromMillisecondsSinceEpoch(
-      condition.savedAt,
-    );
-    final String formattedDate = _formatDate(savedDate);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {
-          context.push('/categories/condition/${condition.id}');
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon Container
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.medical_information,
-                      size: 48,
-                      color: Colors.white,
-                    ),
-                  ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: isDarkMode
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.grey.shade900,
+                    Colors.grey.shade800,
+                    Colors.grey.shade900,
+                  ],
+                )
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.blue.shade50,
+                    Colors.teal.shade50,
+                    Colors.blue.shade50,
+                  ],
                 ),
-              ),
-              const SizedBox(width: 12),
-              // Content
-              Expanded(
+        ),
+        child: ListenableBuilder(
+          listenable: _controller,
+          builder: (context, _) {
+            if (_controller.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (_controller.error != null) {
+              return Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.accent.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: AppColors.accent,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Text(
-                      condition.name,
-                      style: AppTextStyles.sectionTitle.copyWith(
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
+                      _controller.error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: isDarkMode
                             ? Colors.white
                             : AppColors.textPrimary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    // Severity badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getSeverityColor(
-                          condition.severity,
-                        ).withValues(alpha: 0.1),
-                        border: Border.all(
-                          color: _getSeverityColor(condition.severity),
-                        ),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        condition.severity.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: _getSeverityColor(condition.severity),
-                        ),
+                        fontSize: 16,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // Saved date
-                    Text(
-                      'Saved: $formattedDate',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                    const SizedBox(height: 28),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _controller.loadSavedConditions();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ],
                 ),
+              );
+            }
+
+            if (_controller.savedConditions.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(28),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.15),
+                            AppColors.primary.withValues(alpha: 0.05),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.bookmark_outline,
+                        size: 64,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'No Saved Conditions',
+                      style: AppTextStyles.sectionTitle.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: isDarkMode
+                            ? Colors.white
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Bookmark medical conditions to access them instantly',
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.grey.shade400
+                            : AppColors.textSecondary,
+                        fontSize: 15,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.push('/categories');
+                      },
+                      icon: const Icon(Icons.explore),
+                      label: const Text('Explore Conditions'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _controller.savedConditions.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  // Simple count header
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      '${_controller.savedConditions.length} Saved',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: isDarkMode
+                            ? Colors.grey.shade500
+                            : Colors.grey.shade600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  );
+                }
+
+                final condition = _controller.savedConditions[index - 1];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildAdvancedConditionCard(
+                    context,
+                    condition,
+                    index - 1,
+                    isDarkMode,
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdvancedConditionCard(
+    BuildContext context,
+    dynamic condition,
+    int index,
+    bool isDarkMode,
+  ) {
+    final DateTime savedDate = DateTime.fromMillisecondsSinceEpoch(
+      condition.savedAt,
+    );
+    final String formattedDate = _formatDate(savedDate);
+    final severityColor = _getSeverityColor(condition.severity);
+
+    return GestureDetector(
+      onTap: () {
+        context.push('/categories/condition/${condition.id}');
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: isDarkMode
+              ? Colors.grey.shade800.withValues(alpha: 0.4)
+              : Colors.white.withValues(alpha: 0.85),
+          border: Border.all(
+            color: severityColor.withValues(alpha: 0.25),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: severityColor.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Row(
+            children: [
+              // Left colored accent bar
+              Container(
+                width: 4,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: severityColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                ),
+              ),
+              // Content area
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Title and severity
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            condition.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: isDarkMode ? Colors.white : Colors.black87,
+                              height: 1.2,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          // Severity badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: severityColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: severityColor.withValues(alpha: 0.25),
+                              ),
+                            ),
+                            child: Text(
+                              condition.severity.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: severityColor,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Date info
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            size: 12,
+                            color: isDarkMode
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade500,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            formattedDate,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDarkMode
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
               // Delete button
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      _showDeleteConfirmation(
-                        context,
-                        condition.id,
-                        condition.name,
-                      );
-                    },
-                    icon: const Icon(Icons.delete_outline),
-                    color: AppColors.accent,
-                    tooltip: 'Remove from saved',
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: InkWell(
+                  onTap: () {
+                    _showDeleteConfirmation(
+                      context,
+                      condition.id,
+                      condition.name,
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.accent.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: AppColors.accent,
+                    ),
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -257,14 +402,14 @@ class _SavedTopicsPageState extends State<SavedTopicsPage> {
   Color _getSeverityColor(String severity) {
     switch (severity.toLowerCase()) {
       case 'critical':
-        return AppColors.accent;
+        return const Color(0xFFD32F2F);
       case 'high':
         return const Color(0xFFFF9800);
       case 'medium':
         return const Color(0xFFFFB74D);
       case 'low':
       default:
-        return AppColors.success;
+        return const Color(0xFF4CAF50);
     }
   }
 
@@ -278,7 +423,7 @@ class _SavedTopicsPageState extends State<SavedTopicsPage> {
       }
       return '${difference.inHours}h ago';
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return 'yesterday';
     } else if (difference.inDays < 7) {
       return '${difference.inDays}d ago';
     } else {
@@ -294,30 +439,61 @@ class _SavedTopicsPageState extends State<SavedTopicsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove from Saved?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.warning_rounded,
+                color: AppColors.accent,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text('Remove from Saved?'),
+          ],
+        ),
         content: Text(
-          'Are you sure you want to remove "$conditionName" from your saved conditions?',
+          'Are you sure you want to remove "$conditionName" from your saved conditions? You can save it again anytime.',
+          style: const TextStyle(height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Keep It'),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () {
               Navigator.pop(context);
               _controller.deleteCondition(conditionId);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Condition removed from saved'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      const Text('Condition removed from saved'),
+                    ],
+                  ),
+                  backgroundColor: AppColors.accent,
+                  duration: const Duration(seconds: 2),
                 ),
               );
             },
-            child: const Text(
-              'Remove',
-              style: TextStyle(color: AppColors.accent),
-            ),
+            child: const Text('Remove'),
           ),
         ],
       ),

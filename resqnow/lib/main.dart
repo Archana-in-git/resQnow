@@ -56,56 +56,40 @@ import 'features/blood_donor/presentation/controllers/donor_details_controller.d
 import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
-  print('✅ STEP 1: main() started');
-
   WidgetsFlutterBinding.ensureInitialized();
-  print('✅ STEP 2: WidgetsFlutterBinding.ensureInitialized()');
 
   // Initialize ThemeManager to load saved theme preference
   final themeManager = ThemeManager();
   await themeManager.initTheme();
-  print('✅ STEP 2.5: ThemeManager initialized with saved preference');
 
   try {
     // Try to initialize Firebase - it may already be initialized
     if (Firebase.apps.isEmpty) {
-      print('✅ STEP 3a: Firebase apps list is empty, initializing...');
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      print('✅ STEP 3: Firebase initialized');
-    } else {
-      print('✅ STEP 3: Firebase already initialized, skipping init');
-    }
+    } else {}
   } catch (e) {
     if (e.toString().contains('duplicate-app')) {
-      print('✅ STEP 3: Firebase already initialized (caught exception)');
+      // Firebase already initialized
     } else {
-      print('❌ STEP 3: Firebase init error: $e');
       rethrow;
     }
   }
 
   final firestore = FirebaseFirestore.instance;
-  print('✅ STEP 4: Firestore instance created');
 
   final categoryService = CategoryService();
-  print('✅ STEP 5: CategoryService created');
 
   final resourceRemoteDataSource = ResourceRemoteDataSourceImpl(
     firestore: firestore,
   );
-  print('✅ STEP 6: ResourceRemoteDataSource created');
 
   final resourceRepository = ResourceRepositoryImpl(
     remoteDataSource: resourceRemoteDataSource,
   );
-  print('✅ STEP 7: ResourceRepository created');
 
   final getResourcesUseCase = GetResources(resourceRepository);
-  print('✅ STEP 8: GetResourcesUseCase created');
-
-  print('✅ STEP 9: Starting runApp with MultiProvider');
   runApp(
     MultiProvider(
       providers: [
@@ -243,7 +227,6 @@ Future<void> main() async {
       child: const ResQNowApp(),
     ),
   );
-  print('✅ STEP 10: runApp completed successfully');
 }
 
 class ResQNowApp extends StatelessWidget {
@@ -251,14 +234,11 @@ class ResQNowApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('🔨 ResQNowApp.build() called');
-
     // Initialize router only once on first build
     AppRouter.init(context);
 
     // Watch theme changes for smooth transitions
     final themeManager = context.watch<ThemeManager>();
-    print('🔨 ThemeManager accessed - Theme: ${themeManager.themeMode}');
 
     return MaterialApp.router(
       title: 'ResQNow',

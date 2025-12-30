@@ -32,12 +32,18 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(
+          'Settings',
+          style: TextStyle(color: isDarkMode ? Colors.white : Colors.white),
+        ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.primary,
+        backgroundColor: isDarkMode ? Colors.grey.shade800 : AppColors.primary,
         foregroundColor: Colors.white,
       ),
       body: ListenableBuilder(
@@ -75,6 +81,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Row(
@@ -83,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(width: 12),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
@@ -98,12 +106,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildThemeSection(BuildContext context) {
     final themeManager = context.watch<ThemeManager>();
     final isDarkMode = themeManager.themeMode == ThemeMode.dark;
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        color: Colors.white,
+        color: isAppDarkMode ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
@@ -134,7 +143,9 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -166,11 +177,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildNotificationSection(BuildContext context) {
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        color: Colors.white,
+        color: isAppDarkMode ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
@@ -188,7 +201,9 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -213,11 +228,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildPermissionsSection(BuildContext context) {
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        color: Colors.white,
+        color: isAppDarkMode ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
@@ -225,11 +242,13 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.location_on_rounded,
               iconColor: AppColors.accent,
               title: 'Location',
-              subtitle: 'For finding nearby hospitals',
+              subtitle: '',
               onTap: () => _requestPermission(Permission.location),
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -238,11 +257,13 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.camera_alt_rounded,
               iconColor: const Color(0xFF1976D2),
               title: 'Camera',
-              subtitle: 'For image analysis',
+              subtitle: '',
               onTap: () => _requestPermission(Permission.camera),
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -251,11 +272,13 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.mic_rounded,
               iconColor: const Color(0xFF6A4C93),
               title: 'Microphone',
-              subtitle: 'For voice features',
+              subtitle: '',
               onTap: () => _requestPermission(Permission.microphone),
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -264,7 +287,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.photo_library_rounded,
               iconColor: const Color(0xFFFFA000),
               title: 'Photo Library',
-              subtitle: 'For selecting images',
+              subtitle: '',
               onTap: () => _requestPermission(Permission.photos),
             ),
           ],
@@ -274,11 +297,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildAboutSection(BuildContext context) {
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        color: Colors.white,
+        color: isAppDarkMode ? Colors.grey.shade800 : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
@@ -290,7 +315,9 @@ class _SettingsPageState extends State<SettingsPage> {
               trailing: null,
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -312,7 +339,9 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             Divider(
-              color: Colors.grey.shade200,
+              color: isAppDarkMode
+                  ? Colors.grey.shade700
+                  : Colors.grey.shade200,
               height: 1,
               indent: 16,
               endIndent: 16,
@@ -349,6 +378,8 @@ class _SettingsPageState extends State<SettingsPage> {
     Widget? trailing,
     VoidCallback? onTap,
   }) {
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -371,18 +402,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: AppColors.textPrimary,
+                      color: isAppDarkMode
+                          ? Colors.white
+                          : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: isAppDarkMode
+                          ? Colors.grey.shade400
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -402,6 +437,8 @@ class _SettingsPageState extends State<SettingsPage> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final isAppDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -419,26 +456,13 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: isAppDarkMode ? Colors.white : AppColors.textPrimary,
+                ),
               ),
             ),
             Icon(

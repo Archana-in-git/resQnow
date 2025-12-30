@@ -35,12 +35,12 @@ class _ResourceCardState extends State<ResourceCard> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isDarkMode ? const Color(0xFF1E1E1E) : AppColors.white,
+            color: isDarkMode ? Colors.grey.shade800 : AppColors.white,
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
                 color: isDarkMode
-                    ? Colors.black.withValues(alpha: _isHovered ? 0.4 : 0.2)
+                    ? Colors.black26.withValues(alpha: _isHovered ? 0.4 : 0.2)
                     : AppColors.cardShadow.withValues(
                         alpha: _isHovered ? 0.12 : 0.08,
                       ),

@@ -196,12 +196,12 @@ class _CategoryListPageState extends State<CategoryListPage>
                             : Colors.grey[100],
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.2),
+                          color: AppColors.primary.withValues(alpha: 0.2),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.08),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -244,7 +244,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                           IconButton(
                             icon: Icon(
                               Icons.mic,
-                              color: AppColors.primary.withOpacity(0.7),
+                              color: AppColors.primary.withValues(alpha: 0.7),
                               size: 20,
                             ),
                             onPressed: () {
@@ -270,7 +270,9 @@ class _CategoryListPageState extends State<CategoryListPage>
                                   )
                                 : Icon(
                                     Icons.camera_alt,
-                                    color: AppColors.primary.withOpacity(0.7),
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.7,
+                                    ),
                                     size: 20,
                                   ),
                             onPressed: _isAnalyzing
@@ -288,7 +290,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Material(
@@ -324,7 +326,7 @@ class _CategoryListPageState extends State<CategoryListPage>
             end: Alignment.bottomRight,
             colors: isDarkMode
                 ? [const Color(0xFF121212), const Color(0xFF1A1A1A)]
-                : [Colors.white, AppColors.primary.withOpacity(0.01)],
+                : [Colors.white, AppColors.primary.withValues(alpha: 0.01)],
           ),
         ),
         child: AnimatedBuilder(

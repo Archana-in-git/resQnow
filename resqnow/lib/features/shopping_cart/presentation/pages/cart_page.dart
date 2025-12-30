@@ -37,7 +37,7 @@ class CartPage extends StatelessWidget {
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 80,
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -128,7 +128,7 @@ class _CartItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -140,7 +140,7 @@ class _CartItemCard extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
               ),
               child: item.imageUrl != null && item.imageUrl.isNotEmpty
                   ? ClipRRect(
@@ -151,14 +151,14 @@ class _CartItemCard extends StatelessWidget {
                         errorBuilder: (context, error, stackTrace) {
                           return Icon(
                             Icons.shopping_bag,
-                            color: AppColors.primary.withOpacity(0.5),
+                            color: AppColors.primary.withValues(alpha: 0.5),
                           );
                         },
                       ),
                     )
                   : Icon(
                       Icons.shopping_bag,
-                      color: AppColors.primary.withOpacity(0.5),
+                      color: AppColors.primary.withValues(alpha: 0.5),
                     ),
             ),
             const SizedBox(width: 12),
@@ -200,7 +200,7 @@ class _CartItemCard extends StatelessWidget {
                           height: 24,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -226,7 +226,7 @@ class _CartItemCard extends StatelessWidget {
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             border: Border.all(color: AppColors.primary),
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -269,7 +269,7 @@ class _CartSummary extends StatelessWidget {
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         border: Border(
-          top: BorderSide(color: AppColors.primary.withOpacity(0.1)),
+          top: BorderSide(color: AppColors.primary.withValues(alpha: 0.1)),
         ),
       ),
       child: Column(
@@ -311,7 +311,7 @@ class _CartSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Divider(color: AppColors.primary.withOpacity(0.1)),
+          Divider(color: AppColors.primary.withValues(alpha: 0.1)),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -157,7 +157,7 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                         : Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: Colors.blue.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -166,7 +166,7 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -212,14 +212,14 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                             : AppColors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: color.withOpacity(0.2),
+                          color: color.withValues(alpha: 0.2),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
                             color: isDarkMode
                                 ? Colors.black.withValues(alpha: 0.3)
-                                : color.withOpacity(0.08),
+                                : color.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -234,7 +234,7 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.1),
+                                color: color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -283,7 +283,7 @@ class _EmergencyNumbersPageState extends State<EmergencyNumbersPage> {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: color.withOpacity(0.3),
+                                    color: color.withValues(alpha: 0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),

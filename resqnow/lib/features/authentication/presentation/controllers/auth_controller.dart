@@ -66,24 +66,6 @@ class AuthController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // 🟢 GOOGLE SIGN-IN
-  // ---------------------------------------------------------------------------
-  Future<User?> signInWithGoogle() async {
-    return _runAuthAction(() async {
-      return await _authService.signInWithGoogle();
-    }, defaultError: 'Google sign-in failed');
-  }
-
-  // ---------------------------------------------------------------------------
-  // 👤 ANONYMOUS SIGN-IN
-  // ---------------------------------------------------------------------------
-  Future<User?> signInAnonymously() async {
-    return _runAuthAction(() async {
-      return await _authService.signInAnonymously();
-    }, defaultError: 'Guest login failed');
-  }
-
-  // ---------------------------------------------------------------------------
   // 🚪 SIGN OUT
   // ---------------------------------------------------------------------------
   Future<void> signOut() async {

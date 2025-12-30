@@ -217,7 +217,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Filter sheet',
-      barrierColor: Colors.black.withOpacity(0.3),
+      barrierColor: Colors.black.withValues(alpha: 0.3),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation1, animation2) {
         return const SizedBox.shrink();
@@ -261,7 +261,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
                               gradient: LinearGradient(
                                 colors: [
                                   AppColors.primary,
-                                  AppColors.primary.withOpacity(0.8),
+                                  AppColors.primary.withValues(alpha: 0.8),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -271,7 +271,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.2),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -299,7 +301,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                                         width: 40,
                                         height: 40,
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           shape: BoxShape.circle,
                                           border: Border.all(
                                             color: Colors.white,
@@ -357,12 +361,16 @@ class _ResourceListPageState extends State<ResourceListPage> {
                                       selected: selected,
                                       selectedColor: AppColors.primary,
                                       backgroundColor: isDarkMode
-                                          ? AppColors.primary.withOpacity(0.2)
-                                          : AppColors.primary.withOpacity(0.1),
+                                          ? AppColors.primary.withValues(
+                                              alpha: 0.2,
+                                            )
+                                          : AppColors.primary.withValues(
+                                              alpha: 0.1,
+                                            ),
                                       checkmarkColor: Colors.white,
                                       side: BorderSide(
-                                        color: AppColors.primary.withOpacity(
-                                          0.3,
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.3,
                                         ),
                                         width: 1.5,
                                       ),
@@ -383,7 +391,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
                                 top: BorderSide(
                                   color: isDarkMode
                                       ? Colors.grey.shade800
-                                      : Colors.grey.withOpacity(0.2),
+                                      : Colors.grey.withValues(alpha: 0.2),
                                   width: 1,
                                 ),
                               ),
@@ -427,8 +435,8 @@ class _ResourceListPageState extends State<ResourceListPage> {
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.primary,
                                       side: BorderSide(
-                                        color: AppColors.primary.withOpacity(
-                                          0.5,
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.5,
                                         ),
                                         width: 1.5,
                                       ),
