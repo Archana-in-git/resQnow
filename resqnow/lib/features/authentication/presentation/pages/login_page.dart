@@ -63,6 +63,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
   }
 
+  String _getUserFriendlyErrorMessage(String backendError) {
+    final errorLower = backendError.toLowerCase();
+
+    if (errorLower.contains('user-not-found') ||
+        errorLower.contains('wrong-password') ||
+        errorLower.contains('invalid-credential') ||
+        errorLower.contains('user not found') ||
+        errorLower.contains('wrong password')) {
+      return 'Invalid email or password. Please check and try again.';
+    } else if (errorLower.contains('user-disabled')) {
+      return 'This account has been disabled. Please contact support.';
+    } else if (errorLower.contains('too-many-requests')) {
+      return 'Too many login attempts. Please try again later.';
+    } else if (errorLower.contains('network') ||
+        errorLower.contains('connection')) {
+      return 'Network error. Please check your internet connection.';
+    } else {
+      return 'Login failed. Please try again.';
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -99,8 +120,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              const Color(0xFFE8F5F3),
-                              const Color(0xFFF1F8F7),
+                              Colors.teal.shade50,
+                              Colors.cyan.shade50,
+                              Colors.teal.shade100,
                             ],
                           ),
                           borderRadius: const BorderRadius.only(
@@ -116,38 +138,88 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ],
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 40),
-                        child: Column(
+                        child: Stack(
+                          alignment: Alignment.center,
                           children: [
-                            // Medical Care Animation
-                            Lottie.asset(
-                              'assets/animation/Medical Care.json',
-                              height: 150,
-                              width: 150,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Title
-                            const Text(
-                              'Welcome Back!',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primary,
-                                letterSpacing: 0.5,
+                            // Top-left decorative blob
+                            Positioned(
+                              top: -30,
+                              left: -30,
+                              child: Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.teal.withValues(alpha: 0.08),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 8),
 
-                            // Subtitle
-                            Text(
-                              'Login to your account',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.2,
+                            // Top-right decorative blob
+                            Positioned(
+                              top: -20,
+                              right: -25,
+                              child: Container(
+                                width: 110,
+                                height: 110,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.cyan.withValues(alpha: 0.09),
+                                ),
                               ),
+                            ),
+
+                            // Bottom-right decorative blob
+                            Positioned(
+                              bottom: -40,
+                              right: -30,
+                              child: Container(
+                                width: 150,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.cyan.withValues(alpha: 0.05),
+                                ),
+                              ),
+                            ),
+
+                            // Main content
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Medical Care Animation
+                                Lottie.asset(
+                                  'assets/animation/Doctor, Medical, Surgeon, Healthcare Animation.json',
+                                  height: 150,
+                                  width: 150,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Title
+                                const Text(
+                                  'Welcome Back!',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.primary,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+
+                                // Subtitle
+                                Text(
+                                  'Login to your account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -376,9 +448,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
                                         if (user == null &&
                                             auth.errorMessage != null) {
+                                          // Convert backend error to user-friendly message
+                                          String userFriendlyError =
+                                              _getUserFriendlyErrorMessage(
+                                                auth.errorMessage ?? '',
+                                              );
                                           setState(
                                             () =>
-                                                _loginError = auth.errorMessage,
+                                                _loginError = userFriendlyError,
                                           );
                                         }
                                       },

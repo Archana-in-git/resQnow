@@ -26,6 +26,10 @@ class DonorListController extends ChangeNotifier {
   String? errorMessage;
   List<BloodDonor> donors = [];
 
+  /// Filter properties
+  String? selectedBloodGroup;
+  bool? isAvailable;
+
   /// NEW — holds current district & town selection
   String? detectedDistrict;
   String? selectedTown;
@@ -265,6 +269,8 @@ class DonorListController extends ChangeNotifier {
   Future<void> clearAllFilters() async {
     detectedDistrict = null;
     selectedTown = null;
+    selectedBloodGroup = null;
+    isAvailable = null;
     errorMessage = null;
     userClearedDistrict = true; // Prevent auto-detection from overriding this
 
@@ -291,5 +297,25 @@ class DonorListController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // APPLY FILTERS (Blood Group + Availability)
+  // ---------------------------------------------------------------------------
+  List<BloodDonor> _applyFilters(List<BloodDonor> donorList) {
+    return donorList.where((donor) {
+      // Filter by blood group
+      if (selectedBloodGroup != null &&
+          donor.bloodGroup != selectedBloodGroup) {
+        return false;
+      }
+
+      // Filter by availability
+      if (isAvailable == true && !(donor.isAvailable ?? false)) {
+        return false;
+      }
+
+      return true;
+    }).toList();
   }
 }

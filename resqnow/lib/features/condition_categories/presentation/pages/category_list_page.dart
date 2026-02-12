@@ -321,13 +321,7 @@ class _CategoryListPageState extends State<CategoryListPage>
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDarkMode
-                ? [const Color(0xFF121212), const Color(0xFF1A1A1A)]
-                : [Colors.white, AppColors.primary.withValues(alpha: 0.01)],
-          ),
+          color: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade50,
         ),
         child: AnimatedBuilder(
           animation: _controller,

@@ -4,9 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 
 class TopBar extends StatelessWidget {
-  final String locationText;
-
-  const TopBar({super.key, required this.locationText});
+  const TopBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,18 +13,13 @@ class TopBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            const Icon(Icons.location_on, color: AppColors.primary),
-            const SizedBox(width: 6),
-            Text(
-              locationText,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isDarkMode ? Colors.white : AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        Text(
+          'ResQnow',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
         ),
         InkWell(
           onTap: () {

@@ -43,17 +43,16 @@ import 'domain/usecases/delete_donor.dart';
 import 'domain/usecases/get_my_donor_profile.dart';
 import 'domain/usecases/get_donors.dart' as get_donors;
 import 'domain/usecases/get_all_donors.dart';
-import 'domain/usecases/filter_donors.dart';
 import 'domain/usecases/is_user_donor.dart';
 import 'domain/usecases/get_donor_by_id.dart';
 
 import 'features/blood_donor/presentation/controllers/donor_registration_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_profile_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_list_controller.dart';
-import 'features/blood_donor/presentation/controllers/donor_filter_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_details_controller.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'features/chat/presentation/controllers/chat_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -176,10 +175,7 @@ Future<void> main() async {
             return GetAllDonors(repository);
           },
         ),
-        Provider(
-          create: (context) =>
-              FilterDonors(context.read<BloodDonorRepositoryImpl>()),
-        ),
+
         Provider(
           create: (context) =>
               IsUserDonor(context.read<BloodDonorRepositoryImpl>()),
@@ -211,11 +207,6 @@ Future<void> main() async {
           ),
         ),
         ChangeNotifierProvider(
-          create: (context) => DonorFilterController(
-            filterDonorsUseCase: context.read<FilterDonors>(),
-          ),
-        ),
-        ChangeNotifierProvider(
           create: (context) => DonorDetailsController(
             getDonorByIdUseCase: context.read<GetDonorById>(),
           ),
@@ -223,6 +214,9 @@ Future<void> main() async {
 
         // 🛒 SHOPPING CART
         ChangeNotifierProvider(create: (_) => CartController()),
+
+        // 💬 CHAT MODULE
+        ChangeNotifierProvider(create: (_) => ChatController()),
       ],
       child: const ResQNowApp(),
     ),

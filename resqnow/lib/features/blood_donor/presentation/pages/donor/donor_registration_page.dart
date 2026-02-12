@@ -103,6 +103,9 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
   List<String> keralaDistricts = []; // loaded from districts_kerala.json
   bool _addressDataLoaded = false;
 
+  // Flag to skip "already donor" check during registration success flow
+  bool _skipDonorCheck = false;
+
   @override
   void initState() {
     super.initState();
@@ -112,13 +115,13 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
   /// Check if user is already registered as a donor
   Future<void> _checkIfAlreadyDonor() async {
-    if (!mounted) return;
+    if (!mounted || _skipDonorCheck) return;
 
     try {
       final profileController = context.read<DonorProfileController>();
       final isDonor = await profileController.isDonor();
 
-      if (isDonor && mounted) {
+      if (isDonor && mounted && !_skipDonorCheck) {
         // User is already a donor, show dialog and redirect
         _showAlreadyDonorDialog();
       }
@@ -163,7 +166,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             ),
             onPressed: () {
               Navigator.pop(context);
-              context.go('/donor-profile');
+              context.go('/donor/profile');
             },
             child: const Text('View Profile'),
           ),
@@ -395,9 +398,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     if (!mounted) return;
 
     // --------------------------
-    // SUCCESS - AUTO REDIRECT TO HOME
+    // SUCCESS - AUTO REDIRECT TO PROFILE
     // --------------------------
     if (success) {
+      // Set flag to skip "already donor" check during redirect
+      _skipDonorCheck = true;
+
       messenger.showSnackBar(
         const SnackBar(
           content: Text("Registration Successful! Redirecting..."),
@@ -405,10 +411,14 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         ),
       );
 
-      // Auto-redirect to home page after brief delay
+      // Auto-redirect to donor profile page after brief delay
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
-      context.go('/');
+      // Use pushReplacement to pass extra data indicating just registered
+      context.pushReplacement(
+        '/donor/profile',
+        extra: {'justRegistered': true},
+      );
     } else {
       if (!mounted) return;
       messenger.showSnackBar(
@@ -701,569 +711,542 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             phoneCtrl.text.trim().isNotEmpty &&
             !_isUploadingImage; // disable submit while uploading image
 
-        return Scaffold(
-          backgroundColor: scaffoldBg,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Enhanced Header Section
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isDark
-                              ? [
-                                  AppColors.primary.withValues(alpha: 0.12),
-                                  AppColors.primary.withValues(alpha: 0.05),
-                                ]
-                              : [
-                                  AppColors.primary.withValues(alpha: 0.08),
-                                  AppColors.primary.withValues(alpha: 0.03),
-                                ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(
-                            alpha: isDark ? 0.15 : 0.1,
-                          ),
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 20,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.15,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      size: 14,
-                                      color: AppColors.primary,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "Save Lives",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
+        return WillPopScope(
+          onWillPop: () async {
+            // When back is pressed, navigate to home instead of popping
+            context.go('/home');
+            return false;
+          },
+          child: Scaffold(
+            backgroundColor: scaffoldBg,
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Enhanced Header Section
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isDark
+                                ? [
+                                    AppColors.primary.withValues(alpha: 0.12),
+                                    AppColors.primary.withValues(alpha: 0.05),
+                                  ]
+                                : [
+                                    AppColors.primary.withValues(alpha: 0.08),
+                                    AppColors.primary.withValues(alpha: 0.03),
                                   ],
-                                ),
-                              ),
-                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Become a Donor",
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : Colors.black87,
-                              fontSize: 32,
-                              height: 1.2,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(
+                              alpha: isDark ? 0.15 : 0.1,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 16,
-                                color: isDark
-                                    ? Colors.grey.shade400
-                                    : Colors.grey.shade500,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Become a Donor",
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                                fontSize: 32,
+                                height: 1.2,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "Join our community and help save lives",
-                                style: theme.textTheme.bodySmall?.copyWith(
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 16,
                                   color: isDark
                                       ? Colors.grey.shade400
-                                      : Colors.grey.shade600,
-                                  fontSize: 13,
-                                  height: 1.4,
+                                      : Colors.grey.shade500,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Profile picture section - Elegant card matching section width
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: isDark ? 0.3 : 0.06,
-                            ),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 28,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Center(
-                            child: Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        AppColors.primary.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        AppColors.primary.withValues(
-                                          alpha: 0.06,
-                                        ),
-                                      ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        blurRadius: 20,
-                                        offset: const Offset(0, 6),
-                                      ),
-                                    ],
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 60,
-                                    backgroundColor: Colors.white,
-                                    backgroundImage: _pickedImageFile != null
-                                        ? FileImage(_pickedImageFile!)
-                                              as ImageProvider
-                                        : null,
-                                    child: _pickedImageFile == null
-                                        ? Icon(
-                                            Icons.person_outline,
-                                            size: 52,
-                                            color: AppColors.primary.withValues(
-                                              alpha: 0.25,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  bottom: 0,
-                                  child: GestureDetector(
-                                    onTap: _showImageSourceSheet,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppColors.primary.withValues(
-                                              alpha: 0.35,
-                                            ),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Icon(
-                                        _pickedImageFile == null
-                                            ? Icons.add
-                                            : Icons.edit,
-                                        size: 18,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "Join our community and help save lives",
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: isDark
+                                        ? Colors.grey.shade400
+                                        : Colors.grey.shade600,
+                                    fontSize: 13,
+                                    height: 1.4,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: Text(
-                              "Profile Photo",
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: isDark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                    fontSize: 15,
-                                  ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Profile picture section - Elegant card matching section width
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.3 : 0.06,
+                              ),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
-                          if (_isUploadingImage) ...[
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.primary,
-                                ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 28,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Center(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AppColors.primary.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          AppColors.primary.withValues(
+                                            alpha: 0.06,
+                                          ),
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 60,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: _pickedImageFile != null
+                                          ? FileImage(_pickedImageFile!)
+                                                as ImageProvider
+                                          : null,
+                                      child: _pickedImageFile == null
+                                          ? Icon(
+                                              Icons.person_outline,
+                                              size: 52,
+                                              color: AppColors.primary
+                                                  .withValues(alpha: 0.25),
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 0,
+                                    child: GestureDetector(
+                                      onTap: _showImageSourceSheet,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.primary
+                                                  .withValues(alpha: 0.35),
+                                              blurRadius: 12,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Icon(
+                                          _pickedImageFile == null
+                                              ? Icons.add
+                                              : Icons.edit,
+                                          size: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Uploading...",
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                  ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Text(
+                                "Profile Photo",
+                                style: Theme.of(context).textTheme.titleSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                      fontSize: 15,
+                                    ),
+                              ),
                             ),
+                            if (_isUploadingImage) ...[
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Uploading...",
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // PERSONAL DETAILS SECTION
+                      _buildSectionCard(
+                        title: "Your Details",
+                        children: [
+                          _modernInput(
+                            "Full Name",
+                            Icons.person_outline,
+                            nameCtrl,
+                          ),
+                          const SizedBox(height: 14),
+                          _modernInput(
+                            "Date of Birth",
+                            Icons.calendar_today_outlined,
+                            dobCtrl,
+                            readOnly: true,
+                            onTap: _onSelectDob,
+                          ),
+                          const SizedBox(height: 14),
+                          _modernInput(
+                            "Age",
+                            Icons.cake_outlined,
+                            ageCtrl,
+                            keyboardType: TextInputType.number,
+                            readOnly: true,
+                          ),
+                          const SizedBox(height: 18),
+                          _genderSelector(),
+                          const SizedBox(height: 18),
+                          _bloodGroupSelector(),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // CONTACT INFORMATION
+                      _buildSectionCard(
+                        title: "Contact Information",
+                        children: [
+                          Container(
+                            decoration: _modernBoxDecoration(),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 4,
+                            ),
+                            child: IntlPhoneField(
+                              controller: phoneCtrl,
+                              initialCountryCode: selectedCountryIsoCode,
+                              decoration: InputDecoration(
+                                labelText: 'Phone Number',
+                                border: InputBorder.none,
+                                prefixIcon: Icon(
+                                  Icons.phone_outlined,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
+                                labelStyle: _labelTextStyle(context),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                ),
+                              ),
+                              dropdownIcon: Icon(
+                                Icons.arrow_drop_down,
+                                color: AppColors.primary,
+                                size: 24,
+                              ),
+                              onChanged: (phone) {
+                                selectedCountryCode = phone.countryCode;
+                                phoneCtrl.text = phone.number;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // PERMANENT ADDRESS SECTION
+                      _buildSectionCard(
+                        title: "Permanent Address",
+                        children: [
+                          _countrySelector(),
+                          const SizedBox(height: 14),
+                          if (selectedCountryName == "India") ...[
+                            _stateDropdown(),
+                            const SizedBox(height: 14),
+                            _districtDropdown(),
+                            const SizedBox(height: 14),
+                            _citySelector(),
+                            const SizedBox(height: 14),
+                            _modernInput(
+                              "PIN Code",
+                              Icons.pin_drop_outlined,
+                              pincodeCtrl,
+                              keyboardType: TextInputType.number,
+                            ),
+                          ] else ...[
+                            _nonIndiaAddressSection(),
                           ],
                         ],
                       ),
-                    ),
 
-                    const SizedBox(height: 32),
-
-                    // PERSONAL DETAILS SECTION
-                    _buildSectionCard(
-                      title: "Your Details",
-                      children: [
-                        _modernInput(
-                          "Full Name",
-                          Icons.person_outline,
-                          nameCtrl,
-                        ),
-                        const SizedBox(height: 14),
-                        _modernInput(
-                          "Date of Birth",
-                          Icons.calendar_today_outlined,
-                          dobCtrl,
-                          readOnly: true,
-                          onTap: _onSelectDob,
-                        ),
-                        const SizedBox(height: 14),
-                        _modernInput(
-                          "Age",
-                          Icons.cake_outlined,
-                          ageCtrl,
-                          keyboardType: TextInputType.number,
-                          readOnly: true,
-                        ),
-                        const SizedBox(height: 18),
-                        _genderSelector(),
-                        const SizedBox(height: 18),
-                        _bloodGroupSelector(),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // CONTACT INFORMATION
-                    _buildSectionCard(
-                      title: "Contact Information",
-                      children: [
-                        Container(
-                          decoration: _modernBoxDecoration(),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 4,
-                          ),
-                          child: IntlPhoneField(
-                            controller: phoneCtrl,
-                            initialCountryCode: selectedCountryIsoCode,
-                            decoration: InputDecoration(
-                              labelText: 'Phone Number',
-                              border: InputBorder.none,
-                              prefixIcon: Icon(
-                                Icons.phone_outlined,
-                                color: AppColors.primary,
-                                size: 20,
-                              ),
-                              labelStyle: _labelTextStyle(context),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 2,
-                              ),
+                      // MEDICAL CONDITIONS SECTION
+                      _buildSectionCard(
+                        title: "Medical Conditions",
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(minHeight: 72),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
                             ),
-                            dropdownIcon: Icon(
-                              Icons.arrow_drop_down,
-                              color: AppColors.primary,
-                              size: 24,
-                            ),
-                            onChanged: (phone) {
-                              selectedCountryCode = phone.countryCode;
-                              phoneCtrl.text = phone.number;
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // PERMANENT ADDRESS SECTION
-                    _buildSectionCard(
-                      title: "Permanent Address",
-                      children: [
-                        _countrySelector(),
-                        const SizedBox(height: 14),
-                        if (selectedCountryName == "India") ...[
-                          _stateDropdown(),
-                          const SizedBox(height: 14),
-                          _districtDropdown(),
-                          const SizedBox(height: 14),
-                          _citySelector(),
-                          const SizedBox(height: 14),
-                          _modernInput(
-                            "PIN Code",
-                            Icons.pin_drop_outlined,
-                            pincodeCtrl,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ] else ...[
-                          _nonIndiaAddressSection(),
-                        ],
-                      ],
-                    ),
-
-                    // MEDICAL CONDITIONS SECTION
-                    _buildSectionCard(
-                      title: "Medical Conditions",
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          constraints: const BoxConstraints(minHeight: 72),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? Colors.grey.shade800
-                                : Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
+                            decoration: BoxDecoration(
                               color: isDark
                                   ? Colors.grey.shade800
-                                  : Colors.grey.shade200,
+                                  : Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark
+                                    ? Colors.grey.shade800
+                                    : Colors.grey.shade200,
+                              ),
                             ),
-                          ),
-                          child: Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: conditions.map((c) {
-                              final selected = selectedConditions.contains(c);
-                              final disabled = noneSelected && c != "None";
+                            child: Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: conditions.map((c) {
+                                final selected = selectedConditions.contains(c);
+                                final disabled = noneSelected && c != "None";
 
-                              return GestureDetector(
-                                onTap: disabled
-                                    ? null
-                                    : () => _onConditionTap(c),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeOutCubic,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: selected
-                                        ? AppColors.primary.withValues(
-                                            alpha: 0.15,
-                                          )
-                                        : disabled
-                                        ? (isDark
-                                              ? Colors.grey.shade800
-                                              : Colors.grey.shade200)
-                                        : (isDark
-                                              ? Colors.grey.shade900
-                                              : Colors.white),
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
+                                return GestureDetector(
+                                  onTap: disabled
+                                      ? null
+                                      : () => _onConditionTap(c),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeOutCubic,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
                                       color: selected
                                           ? AppColors.primary.withValues(
-                                              alpha: 0.5,
+                                              alpha: 0.15,
                                             )
                                           : disabled
                                           ? (isDark
-                                                ? Colors.grey.shade700
-                                                : Colors.grey.shade300)
-                                          : (isDark
                                                 ? Colors.grey.shade800
-                                                : Colors.grey.shade300),
-                                      width: selected ? 1.5 : 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    c,
-                                    style: TextStyle(
-                                      fontWeight: selected
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                      color: selected
-                                          ? AppColors.primary
-                                          : disabled
-                                          ? (isDark
-                                                ? Colors.grey.shade600
-                                                : Colors.grey.shade500)
+                                                : Colors.grey.shade200)
                                           : (isDark
-                                                ? Colors.grey.shade300
-                                                : Colors.grey.shade700),
-                                      fontSize: 13,
+                                                ? Colors.grey.shade900
+                                                : Colors.white),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: selected
+                                            ? AppColors.primary.withValues(
+                                                alpha: 0.5,
+                                              )
+                                            : disabled
+                                            ? (isDark
+                                                  ? Colors.grey.shade700
+                                                  : Colors.grey.shade300)
+                                            : (isDark
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey.shade300),
+                                        width: selected ? 1.5 : 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      c,
+                                      style: TextStyle(
+                                        fontWeight: selected
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: selected
+                                            ? AppColors.primary
+                                            : disabled
+                                            ? (isDark
+                                                  ? Colors.grey.shade600
+                                                  : Colors.grey.shade500)
+                                            : (isDark
+                                                  ? Colors.grey.shade300
+                                                  : Colors.grey.shade700),
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          decoration: _modernBoxDecoration(
-                            dimmed: !notesEnabled,
-                          ),
-                          child: TextField(
-                            controller: notesCtrl,
-                            enabled: notesEnabled,
-                            maxLines: 2,
-                            style: _inputTextStyle(context),
-                            onChanged: (_) => setState(() {}),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: noneSelected
-                                  ? "Other (disabled)"
-                                  : "Other conditions (optional)",
-                              hintStyle: _labelTextStyle(context),
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 0,
-                                vertical: 2,
-                              ),
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Icon(
-                                  Icons.note_outlined,
-                                  size: 18,
-                                  color: notesEnabled
-                                      ? AppColors.primary
-                                      : Colors.grey.shade400,
-                                ),
-                              ),
-                              prefixIconConstraints: const BoxConstraints(
-                                minWidth: 0,
-                                minHeight: 0,
-                              ),
+                                );
+                              }).toList(),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // SUBMIT BUTTON - ELEGANT DESIGN
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary,
-                            AppColors.primary.withValues(alpha: 0.85),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.25),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: _modernBoxDecoration(
+                              dimmed: !notesEnabled,
+                            ),
+                            child: TextField(
+                              controller: notesCtrl,
+                              enabled: notesEnabled,
+                              maxLines: 2,
+                              style: _inputTextStyle(context),
+                              onChanged: (_) => setState(() {}),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: noneSelected
+                                    ? "Other (disabled)"
+                                    : "Other conditions (optional)",
+                                hintStyle: _labelTextStyle(context),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 0,
+                                  vertical: 2,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: Icon(
+                                    Icons.note_outlined,
+                                    size: 18,
+                                    color: notesEnabled
+                                        ? AppColors.primary
+                                        : Colors.grey.shade400,
+                                  ),
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 0,
+                                  minHeight: 0,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: canSubmit
-                              ? () => _onRegisterPressed(controller)
-                              : null,
+
+                      const SizedBox(height: 32),
+
+                      // SUBMIT BUTTON - ELEGANT DESIGN
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primary.withValues(alpha: 0.85),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                           borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Center(
-                              child: controller.isLoading
-                                  ? SizedBox(
-                                      height: 18,
-                                      width: 18,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white.withValues(
-                                                alpha: 0.9,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: canSubmit
+                                ? () => _onRegisterPressed(controller)
+                                : null,
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Center(
+                                child: controller.isLoading
+                                    ? SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white.withValues(
+                                                  alpha: 0.9,
+                                                ),
                                               ),
+                                        ),
+                                      )
+                                    : Text(
+                                        "Register as Donor",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                              letterSpacing: 0.3,
                                             ),
                                       ),
-                                    )
-                                  : Text(
-                                      "Register as Donor",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
-                                            letterSpacing: 0.3,
-                                          ),
-                                    ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 28),
-                  ],
+                      const SizedBox(height: 28),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -39,13 +39,18 @@ import 'package:resqnow/domain/entities/resource.dart';
 // 🛒 Shopping Cart
 import 'package:resqnow/features/shopping_cart/presentation/pages/cart_page.dart';
 
+// 🏥 Workshops
+import 'package:resqnow/features/workshops/presentation/pages/workshops_coming_soon_page.dart';
+
 // 🩸 Blood
 import 'package:resqnow/features/blood_donor/presentation/pages/bank/blood_bank_list_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_registration_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_profile_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_list_page.dart';
-import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_filter_page.dart';
 import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_details_page.dart';
+
+// 💬 Chat
+import 'package:resqnow/features/chat/presentation/pages/chat_screen.dart';
 
 class AppRouter {
   static late GoRouter _router;
@@ -101,7 +106,11 @@ class AppRouter {
             location == '/signup' ||
             location == '/success';
 
+        final bool isProtectedRoute =
+            location == '/workshops' || location.startsWith('/workshops/');
+
         debugPrint('isAuthRoute   : $isAuthRoute');
+        debugPrint('isProtectedRoute : $isProtectedRoute');
 
         // 🎬 ALLOW SPLASH TO SHOW FIRST
         // The splash screen will handle navigation after animation completes
@@ -110,6 +119,12 @@ class AppRouter {
             'Decision: stay on /splash (let animation complete first)',
           );
           return null;
+        }
+
+        // 🔐 PROTECTED ROUTES - Require login
+        if (isProtectedRoute && !loggedIn) {
+          debugPrint('Decision: redirect to /welcome (protected route)');
+          return '/welcome';
         }
 
         if (!loggedIn && !isAuthRoute) {
@@ -190,14 +205,28 @@ class AppRouter {
           builder: (context, state) => const DonorProfilePage(),
         ),
         GoRoute(
-          path: '/donor/filter',
-          builder: (context, state) => const DonorFilterPage(),
-        ),
-        GoRoute(
           path: '/donor/details/:id',
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return DonorDetailsPage(donorId: id);
+          },
+        ),
+
+        /// CHAT
+        GoRoute(
+          path: '/chat/:otherUserId',
+          builder: (context, state) {
+            final otherUserId = state.pathParameters['otherUserId']!;
+            final extra = state.extra as Map<String, dynamic>;
+            return ChatScreen(
+              otherUserId: otherUserId,
+              otherUserName: extra['otherUserName'] as String,
+              otherUserBloodGroup: extra['otherUserBloodGroup'] as String,
+              otherUserImageUrl: extra['otherUserImageUrl'] as String?,
+              currentUserName: extra['currentUserName'] as String,
+              currentUserBloodGroup: extra['currentUserBloodGroup'] as String,
+              currentUserImageUrl: extra['currentUserImageUrl'] as String?,
+            );
           },
         ),
 
@@ -260,6 +289,12 @@ class AppRouter {
 
         /// 🛒 SHOPPING CART
         GoRoute(path: '/cart', builder: (context, state) => const CartPage()),
+
+        /// 🏥 WORKSHOPS
+        GoRoute(
+          path: '/workshops',
+          builder: (context, state) => const WorkshopsComingSoonPage(),
+        ),
       ],
     );
   }

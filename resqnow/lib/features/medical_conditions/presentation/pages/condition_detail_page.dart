@@ -28,9 +28,9 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _carouselTimer;
-  late TabController _tabController;
-  late TabController _firstAidTabController;
   bool _isConditionSaved = false;
+  bool _isVideoLoaded = false; // Lazy load video
+  bool _showVideo = false; // Toggle video visibility
 
   @override
   bool get wantKeepAlive => true;
@@ -39,8 +39,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   void initState() {
     super.initState();
     _savedTopicsService = SavedTopicsService();
-    _tabController = TabController(length: 1, vsync: this);
-    _firstAidTabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchCondition(widget.conditionId);
       _checkIfConditionSaved();
@@ -151,8 +149,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   void dispose() {
     _carouselTimer?.cancel();
     _pageController.dispose();
-    _tabController.dispose();
-    _firstAidTabController.dispose();
     super.dispose();
   }
 
@@ -176,337 +172,348 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
             return const Center(child: Text("No data found"));
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ═══════════════════════════════════════════════════════════
-                // HEADER SECTION: Image, Name, Severity, Doctor Type
-                // ═══════════════════════════════════════════════════════════
-                if (condition.imageUrls.isNotEmpty) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: SizedBox(
-                      height: 220,
-                      child: Stack(
-                        children: [
-                          GestureDetector(
-                            onTapDown: (_) => _pauseAutoPlayTemporarily(),
-                            onPanDown: (_) => _pauseAutoPlayTemporarily(),
-                            child: PageView.builder(
-                              controller: _pageController,
-                              itemCount: condition.imageUrls.length,
-                              onPageChanged: (index) =>
-                                  setState(() => _currentPage = index),
-                              itemBuilder: (context, index) {
-                                final path = condition.imageUrls[index]
-                                    .replaceFirst('resqnow/lib/', '');
-                                if (path.startsWith('http')) {
-                                  return CachedNetworkImage(
-                                    imageUrl: path,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    placeholder: (context, url) => Container(
-                                      color: Colors.grey.shade200,
-                                      child: const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.broken_image),
-                                  );
-                                } else {
-                                  return Image.asset(
-                                    path,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          // Previous image button (left)
-                          if (condition.imageUrls.length > 1)
-                            Positioned(
-                              left: 8,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _goToPreviousImage,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.4,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.chevron_left,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          // Next image button (right)
-                          if (condition.imageUrls.length > 1)
-                            Positioned(
-                              right: 8,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _goToNextImage,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.4,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.chevron_right,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          // Page indicator (bottom)
-                          Positioned(
-                            bottom: 12,
-                            left: 0,
-                            right: 0,
-                            child: _buildPageIndicator(
-                              condition.imageUrls.length,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-
-                // Header Info Section with action buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        condition.name,
-                        style: _sectionTitleStyle(context, fontSize: 24),
-                      ),
-                    ),
-                    // Action buttons: Save and Call
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            _isConditionSaved
-                                ? Icons.bookmark
-                                : Icons.bookmark_border,
-                            color: _isConditionSaved ? AppColors.primary : null,
-                          ),
-                          onPressed: () => _toggleSaveCondition(condition),
-                          tooltip: _isConditionSaved
-                              ? 'Remove from saved'
-                              : 'Save condition',
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.call),
-                          onPressed: () => context.push('/emergency-numbers'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                // Doctor Type Chips
-                Wrap(
-                  spacing: 8,
-                  children: condition.doctorType
-                      .map((doc) => Chip(label: Text(doc)))
-                      .toList(),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Severity Indicator
-                SeverityIndicator(severity: condition.severity),
-
-                const SizedBox(height: 24),
-
-                // ═══════════════════════════════════════════════════════════
-                // FIRST AID SECTION (NOT IN TABS) - Tabbed Layout
-                // ═══════════════════════════════════════════════════════════
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isDarkMode
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
-                      ),
-                    ),
-                  ),
-                  child: TabBar(
-                    controller: _firstAidTabController,
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: isDarkMode
-                        ? Colors.grey.shade500
-                        : Colors.grey.shade600,
-                    indicatorColor: AppColors.primary,
-                    isScrollable: false,
-                    tabs: const [
-                      Tab(text: 'What to Do'),
-                      Tab(text: 'What NOT to Do'),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  child: TabBarView(
-                    controller: _firstAidTabController,
-                    children: [
-                      // TAB 1: What to Do
-                      SingleChildScrollView(
-                        child: _buildStepsSection(
-                          "What to Do",
-                          condition.firstAidDescription,
-                          color: Colors.green,
-                          icon: Icons.check_circle,
-                        ),
-                      ),
-                      // TAB 2: What NOT to Do
-                      SingleChildScrollView(
-                        child: _buildStepsSection(
-                          "What NOT to Do",
-                          condition.doNotDo,
-                          color: Colors.red,
-                          icon: Icons.cancel,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ═══════════════════════════════════════════════════════════
-                // VIDEO SECTION
-                // ═══════════════════════════════════════════════════════════
-                if (condition.videoUrl.isNotEmpty) ...[
-                  Text(
-                    'First Aid Video',
-                    style: _sectionTitleStyle(context, fontSize: 18),
-                  ),
-                  const SizedBox(height: 16),
-                  VideoPlayerWidget(videoUrl: condition.videoUrl),
-                  const SizedBox(height: 24),
-                ] else ...[
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.video_library_outlined,
-                          size: 48,
-                          color: isDarkMode
-                              ? Colors.grey.shade600
-                              : Colors.grey.shade400,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'No video available',
-                          style: TextStyle(
-                            color: isDarkMode
-                                ? Colors.grey.shade500
-                                : Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-
-                // ═══════════════════════════════════════════════════════════
-                // QUICK ACCESS CARDS SECTION
-                // ═══════════════════════════════════════════════════════════
-                Text(
-                  'Explore More',
-                  style: _sectionTitleStyle(context, fontSize: 16),
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    // Resources Card
-                    Expanded(
-                      child: _buildQuickAccessCard(
-                        icon: Icons.medical_services,
-                        iconColor: Colors.blue,
-                        backgroundColor: Colors.blue.withValues(alpha: 0.1),
-                        label: 'Resources',
-                        onTap: () => context.push('/resources'),
-                        isDarkMode: isDarkMode,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-
-                    // FAQ Card
-                    if (condition.faqs.isNotEmpty)
-                      Expanded(
-                        child: _buildQuickAccessCard(
-                          icon: Icons.help_outline,
-                          iconColor: Colors.orange,
-                          backgroundColor: Colors.orange.withValues(alpha: 0.1),
-                          label: 'FAQs',
-                          onTap: () {
-                            context.push(
-                              '/categories/condition/${widget.conditionId}/faqs',
-                              extra: condition,
-                            );
-                          },
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-
-                    const SizedBox(width: 12),
-
-                    // Hospital Card
-                    if (condition.hospitalLocatorLink.isNotEmpty)
-                      Expanded(
-                        child: _buildQuickAccessCard(
-                          icon: Icons.local_hospital,
-                          iconColor: Colors.red,
-                          backgroundColor: Colors.red.withValues(alpha: 0.1),
-                          label: 'Hospitals',
-                          onTap: () => launchUrl(
-                            Uri.parse(condition.hospitalLocatorLink),
-                          ),
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(16.0),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // ═══════════════════════════════════════════════════════════
+                    // HEADER SECTION - Wrapped in RepaintBoundary
+                    // ═══════════════════════════════════════════════════════════
+                    RepaintBoundary(
+                      child: _buildHeaderSection(condition, isDarkMode),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ═══════════════════════════════════════════════════════════
+                    // FIRST AID SECTION - Wrapped in RepaintBoundary
+                    // ═══════════════════════════════════════════════════════════
+                    RepaintBoundary(child: _buildFirstAidSection(condition)),
+
+                    const SizedBox(height: 24),
+
+                    // ═══════════════════════════════════════════════════════════
+                    // VIDEO SECTION - Lazy loaded with RepaintBoundary
+                    // ═══════════════════════════════════════════════════════════
+                    if (condition.videoUrl.isNotEmpty)
+                      RepaintBoundary(
+                        child: _buildVideoSection(condition, isDarkMode),
+                      )
+                    else
+                      RepaintBoundary(child: _buildNoVideoSection(isDarkMode)),
+
+                    const SizedBox(height: 24),
+
+                    // ═══════════════════════════════════════════════════════════
+                    // QUICK ACCESS CARDS - Wrapped in RepaintBoundary
+                    // ═══════════════════════════════════════════════════════════
+                    RepaintBoundary(
+                      child: _buildExploreMoreSection(condition, isDarkMode),
+                    ),
+                  ]),
+                ),
+              ),
+            ],
           );
         },
       ),
+    );
+  }
+
+  Widget _buildHeaderSection(ConditionModel condition, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Image Carousel
+        if (condition.imageUrls.isNotEmpty) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: 220,
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTapDown: (_) => _pauseAutoPlayTemporarily(),
+                    onPanDown: (_) => _pauseAutoPlayTemporarily(),
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: condition.imageUrls.length,
+                      onPageChanged: (index) =>
+                          setState(() => _currentPage = index),
+                      itemBuilder: (context, index) {
+                        final path = condition.imageUrls[index].replaceFirst(
+                          'resqnow/lib/',
+                          '',
+                        );
+                        if (path.startsWith('http')) {
+                          return CachedNetworkImage(
+                            imageUrl: path,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.broken_image),
+                            ),
+                            memCacheHeight: 250,
+                            memCacheWidth: 500,
+                          );
+                        } else {
+                          return Image.asset(
+                            path,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  // Previous image button
+                  if (condition.imageUrls.length > 1)
+                    Positioned(
+                      left: 8,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: _goToPreviousImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Next image button
+                  if (condition.imageUrls.length > 1)
+                    Positioned(
+                      right: 8,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: _goToNextImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_right,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Page indicator
+                  Positioned(
+                    bottom: 12,
+                    left: 0,
+                    right: 0,
+                    child: _buildPageIndicator(condition.imageUrls.length),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+
+        // Header info
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                condition.name,
+                style: _sectionTitleStyle(context, fontSize: 24),
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _isConditionSaved ? Icons.bookmark : Icons.bookmark_border,
+                    color: _isConditionSaved ? AppColors.primary : null,
+                  ),
+                  onPressed: () => _toggleSaveCondition(condition),
+                  tooltip: _isConditionSaved
+                      ? 'Remove from saved'
+                      : 'Save condition',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.call),
+                  onPressed: () => context.push('/emergency-numbers'),
+                ),
+              ],
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 8),
+
+        // Doctor type chips
+        Wrap(
+          spacing: 8,
+          children: condition.doctorType
+              .map((doc) => Chip(label: Text(doc)))
+              .toList(),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Severity indicator
+        SeverityIndicator(severity: condition.severity),
+      ],
+    );
+  }
+
+  Widget _buildFirstAidSection(ConditionModel condition) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // What to Do
+        _buildStepsSection(
+          "What to Do",
+          condition.firstAidDescription,
+          color: Colors.green,
+          icon: Icons.check_circle,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVideoSection(ConditionModel condition, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'First Aid Video',
+          style: _sectionTitleStyle(context, fontSize: 18),
+        ),
+        const SizedBox(height: 16),
+        VideoPlayerWidget(videoUrl: condition.videoUrl),
+      ],
+    );
+  }
+
+  Widget _buildNoVideoSection(bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'First Aid Video',
+          style: _sectionTitleStyle(context, fontSize: 18),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.video_library_outlined,
+                size: 48,
+                color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No video available',
+                style: TextStyle(
+                  color: isDarkMode
+                      ? Colors.grey.shade500
+                      : Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExploreMoreSection(ConditionModel condition, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Explore More', style: _sectionTitleStyle(context, fontSize: 16)),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            // Resources Card
+            Expanded(
+              child: _buildQuickAccessCard(
+                icon: Icons.medical_services,
+                iconColor: Colors.blue,
+                backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                label: 'Resources',
+                onTap: () => context.push('/resources'),
+                isDarkMode: isDarkMode,
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            // FAQ Card
+            if (condition.faqs.isNotEmpty)
+              Expanded(
+                child: _buildQuickAccessCard(
+                  icon: Icons.help_outline,
+                  iconColor: Colors.orange,
+                  backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                  label: 'FAQs',
+                  onTap: () {
+                    context.push(
+                      '/categories/condition/${widget.conditionId}/faqs',
+                      extra: condition,
+                    );
+                  },
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+
+            const SizedBox(width: 12),
+
+            // Hospital Card
+            if (condition.hospitalLocatorLink.isNotEmpty)
+              Expanded(
+                child: _buildQuickAccessCard(
+                  icon: Icons.local_hospital,
+                  iconColor: Colors.red,
+                  backgroundColor: Colors.red.withValues(alpha: 0.1),
+                  label: 'Hospitals',
+                  onTap: () =>
+                      launchUrl(Uri.parse(condition.hospitalLocatorLink)),
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 

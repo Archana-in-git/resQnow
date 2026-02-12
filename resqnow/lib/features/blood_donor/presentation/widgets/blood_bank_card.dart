@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:resqnow/domain/entities/blood_bank.dart';
 
@@ -15,65 +16,81 @@ class BloodBankCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            width: 1,
+            color: AppColors.accent.withValues(alpha: 0.15),
+            width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: AppColors.primary.withValues(alpha: 0.12),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E1E1E)
+              : Colors.white,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Card Content
+              // Header with gradient background
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFFF0FAF8).withValues(alpha: 0.8),
-                      const Color(0xFFE8F8F4).withValues(alpha: 0.6),
+                      Colors.teal.shade50.withValues(alpha: 0.6),
+                      Colors.teal.shade50.withValues(alpha: 0.2),
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            bank.name,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.3,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 3),
+                          _buildRatingSection(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildOpenStatusBadge(),
+                  ],
+                ),
+              ),
+
+              // Divider
+              Container(
+                height: 1,
+                color: AppColors.primary.withValues(alpha: 0.08),
+              ),
+
+              // Content section
+              Padding(
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top: Status badge
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [_buildOpenStatusBadge()],
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Hospital name
-                    Text(
-                      bank.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.3,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-
-                    // Rating and reviews
-                    _buildRatingSection(),
-                    const SizedBox(height: 6),
-
                     // Location
                     _buildLocationSection(),
                     const SizedBox(height: 10),
@@ -207,9 +224,7 @@ class BloodBankCard extends StatelessWidget {
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: () {
-          // Navigate to bank details or call
-        },
+        onPressed: () => _openGoogleMapsDirections(),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.accent,
           foregroundColor: Colors.white,
@@ -230,5 +245,36 @@ class BloodBankCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openGoogleMapsDirections() async {
+    final lat = bank.latitude;
+    final lng = bank.longitude;
+
+    if (lat == null || lng == null) {
+      // Fallback to address if coordinates not available
+      final String encodedAddress = Uri.encodeComponent(bank.address);
+      final String mapsUrl =
+          'https://www.google.com/maps/search/?api=1&query=$encodedAddress';
+
+      if (await canLaunchUrl(Uri.parse(mapsUrl))) {
+        await launchUrl(
+          Uri.parse(mapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      }
+      return;
+    }
+
+    // Use coordinates for directions (most accurate)
+    final String directionsUrl =
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
+
+    if (await canLaunchUrl(Uri.parse(directionsUrl))) {
+      await launchUrl(
+        Uri.parse(directionsUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    }
   }
 }

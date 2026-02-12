@@ -18,6 +18,17 @@ class DonorListPage extends StatefulWidget {
 }
 
 class _DonorListPageState extends State<DonorListPage> {
+  final List<String> bloodGroups = [
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "O+",
+    "O-",
+    "AB+",
+    "AB-",
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +55,7 @@ class _DonorListPageState extends State<DonorListPage> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.filter_list, color: AppColors.primary),
-                onPressed: () => context.push('/donor/filter'),
+                onPressed: _showFilterPanel,
               ),
             ],
           ),
@@ -317,7 +328,23 @@ class _DonorListPageState extends State<DonorListPage> {
       );
     }
 
-    if (controller.donors.isEmpty) {
+    // Apply filters to the donors list
+    final filteredDonors = controller.donors.where((donor) {
+      // Filter by blood group
+      if (controller.selectedBloodGroup != null &&
+          donor.bloodGroup != controller.selectedBloodGroup) {
+        return false;
+      }
+
+      // Filter by availability
+      if (controller.isAvailable == true && !(donor.isAvailable ?? false)) {
+        return false;
+      }
+
+      return true;
+    }).toList();
+
+    if (filteredDonors.isEmpty) {
       return const Center(
         child: Text(
           "No donors found in this area",
@@ -328,9 +355,9 @@ class _DonorListPageState extends State<DonorListPage> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: controller.donors.length,
+      itemCount: filteredDonors.length,
       itemBuilder: (context, index) {
-        final donor = controller.donors[index];
+        final donor = filteredDonors[index];
         return DonorCard(
           donor: donor,
           onTap: () => context.push('/donor/details/${donor.id}'),
@@ -916,6 +943,440 @@ class _DonorListPageState extends State<DonorListPage> {
           ),
         ),
       ),
+    );
+  }
+
+  // 🎯 INLINE FILTER PANEL
+  void _showFilterPanel() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Filter panel',
+      barrierColor: Colors.black.withValues(alpha: 0.3),
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation1, animation2) {
+        return const SizedBox.shrink();
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+          child: Consumer<DonorListController>(
+            builder: (context, controller, _) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: Material(
+                  color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        bottomLeft: Radius.circular(24),
+                      ),
+                    ),
+                    child: SafeArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header Section - Soft & Simple
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                            decoration: BoxDecoration(
+                              color: isDarkMode
+                                  ? AppColors.primary.withValues(alpha: 0.2)
+                                  : AppColors.primary.withValues(alpha: 0.08),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Filter',
+                                  style: TextStyle(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : AppColors.textPrimary,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    color: isDarkMode
+                                        ? Colors.white70
+                                        : AppColors.textSecondary,
+                                    size: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Filters Content - Compact
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Blood Group Filter Section
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: isDarkMode
+                                            ? Colors.grey.withValues(alpha: 0.1)
+                                            : AppColors.primary.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.withValues(
+                                                    alpha: 0.15,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Icon(
+                                                  Icons.bloodtype_rounded,
+                                                  color: Colors.red,
+                                                  size: 18,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                'Blood Group',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : AppColors.textPrimary,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 14),
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: bloodGroups.map((bg) {
+                                              final isSelected =
+                                                  controller
+                                                      .selectedBloodGroup ==
+                                                  bg;
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    controller
+                                                            .selectedBloodGroup =
+                                                        isSelected ? null : bg;
+                                                    controller
+                                                        .notifyListeners();
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 14,
+                                                        vertical: 9,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: isSelected
+                                                        ? AppColors.primary
+                                                        : (isDarkMode
+                                                              ? Colors.grey
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.2,
+                                                                    )
+                                                              : Colors.white),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: isSelected
+                                                          ? AppColors.primary
+                                                          : (isDarkMode
+                                                                ? Colors.grey
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.3,
+                                                                      )
+                                                                : AppColors
+                                                                      .primary
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.3,
+                                                                      )),
+                                                      width: isSelected
+                                                          ? 2.5
+                                                          : 1.5,
+                                                    ),
+                                                    boxShadow: isSelected
+                                                        ? [
+                                                            BoxShadow(
+                                                              color: AppColors
+                                                                  .primary
+                                                                  .withValues(
+                                                                    alpha: 0.15,
+                                                                  ),
+                                                              blurRadius: 8,
+                                                              spreadRadius: 0,
+                                                            ),
+                                                          ]
+                                                        : [],
+                                                  ),
+                                                  child: Text(
+                                                    bg,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : (isDarkMode
+                                                                ? Colors.white70
+                                                                : AppColors
+                                                                      .textPrimary),
+                                                      letterSpacing: 0.2,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 18),
+
+                                    // Availability Filter Section
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: isDarkMode
+                                            ? Colors.grey.withValues(alpha: 0.1)
+                                            : AppColors.success.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(
+                                          color: AppColors.success.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.success
+                                                      .withValues(alpha: 0.15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Icon(
+                                                  Icons.check_circle_rounded,
+                                                  color: AppColors.success,
+                                                  size: 18,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                'Availability',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : AppColors.textPrimary,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 14),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  "Available for Donation",
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: isDarkMode
+                                                        ? Colors.white
+                                                        : AppColors.textPrimary,
+                                                  ),
+                                                ),
+                                              ),
+                                              Switch(
+                                                value:
+                                                    controller.isAvailable ??
+                                                    false,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    controller.isAvailable =
+                                                        val;
+                                                    controller
+                                                        .notifyListeners();
+                                                  });
+                                                },
+                                                activeColor: AppColors.success,
+                                                inactiveTrackColor: Colors.grey
+                                                    .withValues(alpha: 0.3),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Footer Section - Clean & Simple
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                top: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.grey.withValues(alpha: 0.2)
+                                      : Colors.grey.withValues(alpha: 0.1),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      controller.notifyListeners();
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: const Text(
+                                      'Apply',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        controller.selectedBloodGroup = null;
+                                        controller.isAvailable = null;
+                                        controller.notifyListeners();
+                                      });
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppColors.primary,
+                                      side: BorderSide(
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        width: 1,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Clear',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

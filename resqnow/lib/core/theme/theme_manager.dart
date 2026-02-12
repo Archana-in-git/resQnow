@@ -18,11 +18,11 @@ class ThemeManager with ChangeNotifier {
       if (savedTheme != null) {
         _themeMode = savedTheme == 'dark' ? ThemeMode.dark : ThemeMode.light;
         debugPrint(
-          '🎨 ThemeManager.initTheme(): Loaded saved theme = $savedTheme (${_themeMode})',
+          '🎨 ThemeManager.initTheme(): Loaded saved theme = $savedTheme ($_themeMode)',
         );
       } else {
         debugPrint(
-          '🎨 ThemeManager.initTheme(): No saved theme found, using default = ${_themeMode}',
+          '🎨 ThemeManager.initTheme(): No saved theme found, using default = $_themeMode',
         );
       }
       notifyListeners();

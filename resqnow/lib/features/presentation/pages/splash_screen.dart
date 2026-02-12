@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -88,9 +87,9 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.blue.shade900,
-              Colors.teal.shade800,
-              Colors.blue.shade700,
+              Colors.teal.shade50,
+              Colors.cyan.shade50,
+              Colors.teal.shade100,
             ],
           ),
         ),
@@ -105,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: Colors.teal.withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -119,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 180,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.cyan.withValues(alpha: 0.12),
+                  color: Colors.cyan.withValues(alpha: 0.09),
                 ),
               ),
             ),
@@ -133,7 +132,7 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.teal.withValues(alpha: 0.1),
+                  color: Colors.teal.withValues(alpha: 0.06),
                 ),
               ),
             ),
@@ -147,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withValues(alpha: 0.08),
+                  color: Colors.cyan.withValues(alpha: 0.05),
                 ),
               ),
             ),
@@ -159,7 +158,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Premium logo container with enhanced shadow
+                    // Premium logo container with soft shadow
                     Transform.rotate(
                       angle: _rotateAnimation.value,
                       child: ScaleTransition(
@@ -169,16 +168,16 @@ class _SplashScreenState extends State<SplashScreen>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.cyan.withValues(alpha: 0.4),
-                                blurRadius: 40,
-                                spreadRadius: 15,
-                                offset: const Offset(0, 10),
+                                color: Colors.teal.withValues(alpha: 0.15),
+                                blurRadius: 30,
+                                spreadRadius: 8,
+                                offset: const Offset(0, 8),
                               ),
                               BoxShadow(
-                                color: Colors.blue.withValues(alpha: 0.2),
-                                blurRadius: 60,
-                                spreadRadius: 20,
-                                offset: const Offset(0, 15),
+                                color: Colors.cyan.withValues(alpha: 0.08),
+                                blurRadius: 50,
+                                spreadRadius: 12,
+                                offset: const Offset(0, 12),
                               ),
                             ],
                           ),
@@ -190,12 +189,12 @@ class _SplashScreenState extends State<SplashScreen>
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
+                                  Colors.white.withValues(alpha: 0.5),
                                   Colors.white.withValues(alpha: 0.3),
-                                  Colors.white.withValues(alpha: 0.15),
                                 ],
                               ),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.35),
+                                color: Colors.white.withValues(alpha: 0.4),
                                 width: 2,
                               ),
                             ),
@@ -212,7 +211,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const SizedBox(height: 60),
 
-                    // App name with premium styling
+                    // App name with soft styling
                     SlideTransition(
                       position: _slideAnimation,
                       child: Column(
@@ -222,13 +221,13 @@ class _SplashScreenState extends State<SplashScreen>
                             style: TextStyle(
                               fontSize: 52,
                               fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                              color: Colors.teal.shade700,
                               letterSpacing: 2.5,
                               shadows: [
                                 Shadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  offset: const Offset(0, 4),
-                                  blurRadius: 8,
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
                                 ),
                               ],
                             ),
@@ -239,7 +238,7 @@ class _SplashScreenState extends State<SplashScreen>
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.cyan.shade200,
+                              color: Colors.teal.shade600,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -249,55 +248,55 @@ class _SplashScreenState extends State<SplashScreen>
 
                     const SizedBox(height: 50),
 
-                    // Loading Animation
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Lottie.asset(
-                        'assets/animation/Loading animation.json',
-                        repeat: true,
+                    // Soft pulsing loading indicator
+                    ScaleTransition(
+                      scale: Tween<double>(begin: 0.8, end: 1.2).animate(
+                        CurvedAnimation(
+                          parent: _controller,
+                          curve: Curves.easeInOut,
+                        ),
+                      ),
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.teal.shade300.withValues(alpha: 0.4),
+                              Colors.cyan.shade300.withValues(alpha: 0.3),
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.teal.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                              spreadRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.teal.shade400,
+                                  Colors.cyan.shade400,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
-            ),
-
-            // Bottom branded text with fade
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          '🚑 First Aid at Your Fingertips',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withValues(alpha: 0.85),
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

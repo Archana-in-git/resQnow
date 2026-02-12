@@ -23,10 +23,11 @@ class LocationController extends ChangeNotifier {
 
   // NEW: final resolved values
   String? detectedDistrict; // always “Palakkad” for your region
-  String? selectedTown; // auto-detected from pincode
+  String?
+  selectedTown; // NOT auto-detected - user must manually select from donor list UI
   String? detectedPincode; // captured pincode from reverse geocoding
   List<String> availableTowns = [];
-  bool _userManuallySelectedTown = false; // prevent GPS override
+  bool _userManuallySelectedTown = false; // track user manual selection
 
   // JSON DATA
   Map<String, List<String>> _districtTownMap = {};
@@ -201,11 +202,7 @@ class LocationController extends ChangeNotifier {
 
             debugPrint("✅ Towns derived from pincode: $availableTowns");
 
-            // ✅ STEP 3: Auto-select town if only one available
-            if (availableTowns.length == 1 && !_userManuallySelectedTown) {
-              selectedTown = availableTowns.first;
-              debugPrint("✅ Auto-selected single town: $selectedTown");
-            }
+            // Town is NOT auto-selected - user must manually choose from available towns
           } else {
             debugPrint(
               "⚠️ Pincode $normalizedPostalCode not found in local dataset",
