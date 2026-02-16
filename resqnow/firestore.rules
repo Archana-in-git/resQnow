@@ -1,18 +1,63 @@
-rules_version='2'
-
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 8, 18);
+
+    // 🔐 Users collection
+    match /users/{userId} {
+
+      // User can read their own document
+      allow read: if request.auth != null;
+
+      // User can create their own document
+      allow create: if request.auth != null &&
+                    request.auth.uid == userId;
+
+      // User can update their own document BUT NOT role
+      allow update: if request.auth != null &&
+                    request.auth.uid == userId &&
+                    !("role" in request.resource.data.diff(resource.data).changedKeys());
+
+      // No one can delete users from client
+      allow delete: if false;
+    }
+
+    // 📖 Public read collections
+    match /categories/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /medical_conditions/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /resources/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /emergency_numbers/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 💬 Chats (only authenticated users)
+    match /chats/{doc} {
+      allow read, write: if request.auth != null;
+    }
+
+    // 👥 Donors
+    match /donors/{doc} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // 🔑 Admin check function
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid))
+          .data.role == "admin";
     }
   }
 }
