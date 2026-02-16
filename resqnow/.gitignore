@@ -1,27 +1,12 @@
-# ───────────── Miscellaneous ─────────────
-*.class
+# ───────────── General ─────────────
 *.log
 *.pyc
 *.swp
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# ───────────── IDEs ─────────────
-*.iml
-*.ipr
-*.iws
 .idea/
 .vscode/
-../.idea/
-../.vscode/
 
-# ───────────── Flutter / Dart / Pub ─────────────
+# ───────────── Flutter / Dart ─────────────
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -29,53 +14,28 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 build/
-**/doc/api/
-**/ios/Flutter/.last_build_id
-
-# ───────────── Firebase Functions (if using) ─────────────
-functions/node_modules/
 
 # ───────────── Android ─────────────
-android/app/debug/
-android/app/profile/
-android/app/release/
+android/.gradle/
+android/local.properties
 **/*.keystore
 *.jks
 
-# ───────────── iOS/macOS (not used, but ignore anyway) ─────────────
-ios/
-macos/
+# ───────────── iOS Build Files ─────────────
+ios/Pods/
+ios/Runner/GoogleService-Info.plist
 
-# ───────────── Linux ─────────────
-linux/
+# ───────────── Firebase Functions ─────────────
+functions/node_modules/
+functions/.env
 
-# ───────────── Web ─────────────
-web/
-
-# ───────────── Windows ─────────────
-windows/
-windows/flutter/ephemeral/
-windows/**/*.vcxproj.user
-windows/**/*.exe
-windows/**/*.obj
-windows/**/*.pdb
-windows/**/*.log
-
-# ───────────── Symbolication / Obfuscation ─────────────
-app.*.symbols
-app.*.map.json
-
-# ───────────── Firebase CLI / Web related ─────────────
+# ───────────── Firebase Debug ─────────────
 firebase-debug.log
-firebase.json
 
-# ───────────── Environment / Secrets ─────────────
+# ───────────── Environment Files ─────────────
 .env
 .env.*
 .env.local
 
 # ───────────── Google Services ─────────────
 android/app/google-services.json
-
-# Ignore the entire scripts folder
-/scripts/
