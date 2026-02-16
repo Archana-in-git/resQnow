@@ -9,7 +9,7 @@ class UserModel {
   final List<dynamic> medicalConditions;
   final List<dynamic> allergies;
   final List<dynamic> medications;
-
+  final String? profileImageUrl; 
   UserModel({
     required this.name,
     required this.email,
@@ -21,6 +21,7 @@ class UserModel {
     required this.medicalConditions,
     required this.allergies,
     required this.medications,
+    this.profileImageUrl,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -32,9 +33,10 @@ class UserModel {
       dob: map['dob'] ?? '',
       bloodGroup: map['bloodGroup'] ?? '',
       address: map['address'] ?? '',
-      medicalConditions: map['medicalConditions'] ?? [],
-      allergies: map['allergies'] ?? [],
-      medications: map['medications'] ?? [],
+      medicalConditions: List<String>.from(map['medicalConditions'] ?? []),
+      allergies: List<String>.from(map['allergies'] ?? []),
+      medications: List<String>.from(map['medications'] ?? []),
+      profileImageUrl: map['profileImageUrl'], 
     );
   }
 }

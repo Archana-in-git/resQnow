@@ -6,26 +6,47 @@ class ProfileService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Get current logged-in user
   User? get currentUser => _auth.currentUser;
 
+  /// ================= FETCH PROFILE =================
   Future<UserModel?> fetchUserProfile() async {
-    final doc = await _firestore
-        .collection('users')
-        .doc(currentUser!.uid)
-        .get();
+    final user = currentUser;
+    if (user == null) return null;
 
-    if (doc.exists) {
+    final doc =
+        await _firestore.collection('users').doc(user.uid).get();
+
+    if (doc.exists && doc.data() != null) {
       return UserModel.fromMap(doc.data()!);
     }
+
     return null;
   }
 
+  /// ================= UPDATE PROFILE =================
+  Future<void> updateProfile(Map<String, dynamic> data) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .set(data, SetOptions(merge: true)); 
+        // merge: true prevents overwriting entire document
+  }
+
+  /// ================= LOGOUT =================
   Future<void> logout() async {
     await _auth.signOut();
   }
 
+  /// ================= DELETE ACCOUNT =================
   Future<void> deleteAccount() async {
-    await _firestore.collection('users').doc(currentUser!.uid).delete();
-    await currentUser!.delete();
+    final user = currentUser;
+    if (user == null) return;
+
+    await _firestore.collection('users').doc(user.uid).delete();
+    await user.delete();
   }
 }
