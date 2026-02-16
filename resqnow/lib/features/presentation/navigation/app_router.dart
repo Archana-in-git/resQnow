@@ -55,6 +55,9 @@ import 'package:resqnow/features/chat/presentation/pages/chat_screen.dart';
 // 👤 Profile
 import 'package:resqnow/features/profile/presentation/profile_page.dart';
 
+// 🏥 Hospital Locator
+import 'package:resqnow/features/hospital_locator/presentation/pages/hospital_page.dart';
+
 class AppRouter {
   static late GoRouter _router;
   static GoRouter? _routerInstance;
@@ -237,6 +240,12 @@ class AppRouter {
               currentUserImageUrl: extra['currentUserImageUrl'] as String?,
             );
           },
+        ),
+
+        /// HOSPITALS
+        GoRoute(
+          path: '/hospitals',
+          builder: (context, state) => const HospitalPage(),
         ),
 
         /// BLOOD BANKS

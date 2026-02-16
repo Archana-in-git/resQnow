@@ -15,10 +15,9 @@ class HospitalPage extends StatefulWidget {
 }
 
 class _HospitalPageState extends State<HospitalPage> {
-
-  /// 🔐 REPLACE WITH YOUR REAL DEPLOYED FUNCTION URL
-  static const String backendUrl =
-      "https://us-central1-yourproject.cloudfunctions.net/nearbyHospitals";
+  /// 🔐 GOOGLE PLACES API KEY (from AndroidManifest.xml)
+  static const String googlePlacesApiKey =
+      "AIzaSyDZxL1FwXcsvoFFTJ3aHJNNOq3r4Bk_pFs";
 
   final Completer<GoogleMapController> _mapController = Completer();
   final PanelController _panelController = PanelController();
@@ -35,6 +34,7 @@ class _HospitalPageState extends State<HospitalPage> {
   String _query = "";
 
   static const double _initZoom = 15.0;
+  static const int _searchRadiusMeters = 5000; // 5km radius
 
   @override
   void initState() {
@@ -65,7 +65,9 @@ class _HospitalPageState extends State<HospitalPage> {
           markerId: const MarkerId("me"),
           position: _userLatLng!,
           infoWindow: const InfoWindow(title: "You are here"),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueAzure,
+          ),
         ),
       );
 
@@ -94,94 +96,109 @@ class _HospitalPageState extends State<HospitalPage> {
 
   /// ================= LOCATION =================
   Future<Position> _getUserLocation() async {
+    // Check if location services are enabled
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) throw "Enable Location Services";
+    if (!serviceEnabled) {
+      // Open location settings to enable GPS
+      await Geolocator.openLocationSettings();
+      throw 'Please enable location services and try again.';
+    }
 
-    var permission = await Geolocator.checkPermission();
+    // Request location permission - this shows native Android dialog
+    LocationPermission permission = await Geolocator.requestPermission();
+
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw "Location permission denied";
-      }
+      throw 'Location permission is required to find nearby hospitals.';
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw "Location permission permanently denied";
+      // Open app settings if permission is permanently denied
+      await Geolocator.openAppSettings();
+      throw 'Location permission is permanently denied. Please enable it in app settings.';
     }
 
-    return Geolocator.getCurrentPosition(
+    // Permission granted, get current position
+    return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
   }
 
-  /// ================= FETCH FROM FIREBASE BACKEND =================
+  /// ================= FETCH FROM GOOGLE PLACES API =================
   Future<void> _fetchNearbyHospitals() async {
     if (_userLatLng == null) return;
 
-    final url =
-        "$backendUrl?lat=${_userLatLng!.latitude}&lng=${_userLatLng!.longitude}";
+    try {
+      // Search for hospitals nearby using Google Places API
+      final url =
+          "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+          "?location=${_userLatLng!.latitude},${_userLatLng!.longitude}"
+          "&radius=$_searchRadiusMeters"
+          "&type=hospital"
+          "&key=$googlePlacesApiKey";
 
-    final res = await http.get(Uri.parse(url));
+      final res = await http.get(Uri.parse(url));
 
-    if (res.statusCode != 200) {
-      throw "Backend error (${res.statusCode})";
+      if (res.statusCode != 200) {
+        throw "Google Places API error (${res.statusCode})";
+      }
+
+      final data = jsonDecode(res.body);
+      final status = data["status"] ?? "UNKNOWN";
+
+      if (status != "OK" && status != "ZERO_RESULTS") {
+        throw "Places API status: $status";
+      }
+
+      final results =
+          List<Map<String, dynamic>>.from(data["results"] ?? []);
+
+      _hospitals.clear();
+      _markers.removeWhere((m) => m.markerId.value != "me");
+
+      for (final place in results) {
+        final lat =
+            (place["geometry"]["location"]["lat"] as num).toDouble();
+        final lng =
+            (place["geometry"]["location"]["lng"] as num).toDouble();
+
+        final name = (place["name"] ?? "") as String;
+        final rating = (place["rating"] is num)
+            ? (place["rating"] as num).toDouble()
+            : null;
+
+        final address = (place["vicinity"] ?? "") as String? ?? "";
+
+        final placeId = (place["place_id"] ?? "") as String;
+
+        final distMeters = Geolocator.distanceBetween(
+          _userLatLng!.latitude,
+          _userLatLng!.longitude,
+          lat,
+          lng,
+        );
+
+        final hospital = _Hospital(
+          placeId: placeId,
+          name: name,
+          latLng: LatLng(lat, lng),
+          rating: rating,
+          address: address,
+          distanceMeters: distMeters,
+        );
+
+        _hospitals.add(hospital);
+        _markers.add(_markerFor(hospital, selected: false));
+      }
+
+      _hospitals.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+
+      if (!mounted) return;
+      setState(() {});
+    } catch (e) {
+      debugPrint("Error fetching hospitals: $e");
+      if (!mounted) return;
+      setState(() {});
     }
-
-    final data = jsonDecode(res.body);
-    final status = data["status"] ?? "UNKNOWN";
-
-    if (status != "OK" && status != "ZERO_RESULTS") {
-      throw "Places API status: $status";
-    }
-
-    final results =
-        List<Map<String, dynamic>>.from(data["results"] ?? []);
-
-    _hospitals.clear();
-    _markers.removeWhere((m) => m.markerId.value != "me");
-
-    for (final place in results) {
-      final lat =
-          (place["geometry"]["location"]["lat"] as num).toDouble();
-      final lng =
-          (place["geometry"]["location"]["lng"] as num).toDouble();
-
-      final name = (place["name"] ?? "") as String;
-      final rating = (place["rating"] is num)
-          ? (place["rating"] as num).toDouble()
-          : null;
-
-      final address =
-          (place["vicinity"] ?? "") as String? ?? "";
-
-      final placeId = (place["place_id"] ?? "") as String;
-
-      final distMeters = Geolocator.distanceBetween(
-        _userLatLng!.latitude,
-        _userLatLng!.longitude,
-        lat,
-        lng,
-      );
-
-      final hospital = _Hospital(
-        placeId: placeId,
-        name: name,
-        latLng: LatLng(lat, lng),
-        rating: rating,
-        address: address,
-        distanceMeters: distMeters,
-      );
-
-      _hospitals.add(hospital);
-      _markers.add(_markerFor(hospital, selected: false));
-    }
-
-    _hospitals.sort(
-      (a, b) => a.distanceMeters.compareTo(b.distanceMeters),
-    );
-
-    if (!mounted) return;
-    setState(() {});
   }
 
   /// ================= MAP HELPERS =================
@@ -191,9 +208,7 @@ class _HospitalPageState extends State<HospitalPage> {
       position: h.latLng,
       infoWindow: InfoWindow(title: h.name, snippet: h.address),
       icon: BitmapDescriptor.defaultMarkerWithHue(
-        selected
-            ? BitmapDescriptor.hueGreen
-            : BitmapDescriptor.hueRed,
+        selected ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
       ),
       onTap: () {
         setState(() => _selectedPlaceId = h.placeId);
@@ -208,8 +223,7 @@ class _HospitalPageState extends State<HospitalPage> {
     }
   }
 
-  Future<void> _moveTo(LatLng target,
-      {double zoom = 17}) async {
+  Future<void> _moveTo(LatLng target, {double zoom = 17}) async {
     final controller = await _mapController.future;
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(
@@ -220,17 +234,16 @@ class _HospitalPageState extends State<HospitalPage> {
 
   Future<void> _openInGoogleMaps(_Hospital h) async {
     final uri = Uri.parse(
-        "https://www.google.com/maps/dir/?api=1&destination=${h.latLng.latitude},${h.latLng.longitude}&destination_place_id=${h.placeId}");
+      "https://www.google.com/maps/dir/?api=1&destination=${h.latLng.latitude},${h.latLng.longitude}&destination_place_id=${h.placeId}",
+    );
 
-    await launchUrl(uri,
-        mode: LaunchMode.externalApplication);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   List<_Hospital> get _filtered {
     if (_query.isEmpty) return _hospitals;
     return _hospitals
-        .where((h) =>
-            h.name.toLowerCase().contains(_query.toLowerCase()))
+        .where((h) => h.name.toLowerCase().contains(_query.toLowerCase()))
         .toList();
   }
 
@@ -243,18 +256,15 @@ class _HospitalPageState extends State<HospitalPage> {
         backgroundColor: Colors.teal,
       ),
       body: _loading
-          ? const Center(
-              child:
-                  CircularProgressIndicator(color: Colors.teal))
+          ? const Center(child: CircularProgressIndicator(color: Colors.teal))
           : _error != null
-              ? _buildError()
-              : _buildMap(),
+          ? _buildError()
+          : _buildMap(),
       floatingActionButton: _userLatLng == null
           ? null
           : FloatingActionButton(
               backgroundColor: Colors.teal,
-              onPressed: () =>
-                  _moveTo(_userLatLng!, zoom: 16),
+              onPressed: () => _moveTo(_userLatLng!, zoom: 16),
               child: const Icon(Icons.my_location),
             ),
     );
@@ -265,8 +275,7 @@ class _HospitalPageState extends State<HospitalPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(_error!,
-              textAlign: TextAlign.center),
+          Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -277,7 +286,7 @@ class _HospitalPageState extends State<HospitalPage> {
               _initFlow();
             },
             child: const Text("Retry"),
-          )
+          ),
         ],
       ),
     );
@@ -288,24 +297,20 @@ class _HospitalPageState extends State<HospitalPage> {
       children: [
         GoogleMap(
           initialCameraPosition: CameraPosition(
-            target: _userLatLng ??
-                const LatLng(20.5937, 78.9629),
+            target: _userLatLng ?? const LatLng(20.5937, 78.9629),
             zoom: _initZoom,
           ),
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
           markers: _markers,
-          onMapCreated: (c) =>
-              _mapController.complete(c),
+          onMapCreated: (c) => _mapController.complete(c),
         ),
 
         SlidingUpPanel(
           controller: _panelController,
           minHeight: 110,
-          maxHeight:
-              MediaQuery.of(context).size.height * 0.62,
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(22)),
+          maxHeight: MediaQuery.of(context).size.height * 0.62,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
           panelBuilder: (sc) => _buildPanel(sc),
         ),
       ],
@@ -327,8 +332,7 @@ class _HospitalPageState extends State<HospitalPage> {
         const SizedBox(height: 12),
 
         Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
             controller: _searchCtrl,
             decoration: const InputDecoration(
@@ -348,13 +352,10 @@ class _HospitalPageState extends State<HospitalPage> {
 
               return ListTile(
                 title: Text(h.name),
-                subtitle: Text(
-                    "${km.toStringAsFixed(1)} km away"),
+                subtitle: Text("${km.toStringAsFixed(1)} km away"),
                 trailing: IconButton(
-                  icon: const Icon(Icons.navigation,
-                      color: Colors.teal),
-                  onPressed: () =>
-                      _openInGoogleMaps(h),
+                  icon: const Icon(Icons.navigation, color: Colors.teal),
+                  onPressed: () => _openInGoogleMaps(h),
                 ),
                 onTap: () async {
                   await _moveTo(h.latLng);
