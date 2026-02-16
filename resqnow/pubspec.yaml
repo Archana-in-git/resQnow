@@ -62,7 +62,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.14.4
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon.png"
+
   flutter_native_splash: ^2.4.0
 
 flutter:
@@ -82,7 +88,7 @@ flutter:
     - assets/animation/Doctor, Medical, Surgeon, Healthcare Animation.json
     - lib/assets/animation/success_check.json
     - assets/sounds/beep.wav
-    - lib/assets/images/logo.png
+    - assets/images/app_icon.png
     - lib/assets/images/icons/
     - lib/assets/images/firstaid_images/
     - lib/assets/images/kits/
