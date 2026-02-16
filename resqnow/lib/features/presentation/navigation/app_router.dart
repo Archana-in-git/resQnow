@@ -52,6 +52,9 @@ import 'package:resqnow/features/blood_donor/presentation/pages/donor/donor_deta
 // 💬 Chat
 import 'package:resqnow/features/chat/presentation/pages/chat_screen.dart';
 
+// 👤 Profile
+import 'package:resqnow/features/profile/presentation/profile_page.dart';
+
 class AppRouter {
   static late GoRouter _router;
   static GoRouter? _routerInstance;
@@ -189,6 +192,12 @@ class AppRouter {
         GoRoute(
           path: '/settings',
           builder: (context, state) => const SettingsPage(),
+        ),
+
+        /// PROFILE
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => const ProfilePage(),
         ),
 
         /// DONORS

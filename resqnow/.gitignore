@@ -5,6 +5,8 @@
 .DS_Store
 .idea/
 .vscode/
+*.iml
+*.vsix
 
 # ───────────── Flutter / Dart ─────────────
 .dart_tool/
@@ -21,9 +23,12 @@ android/local.properties
 **/*.keystore
 *.jks
 
-# ───────────── iOS Build Files ─────────────
-ios/Pods/
-ios/Runner/GoogleService-Info.plist
+# ───────────── REMOVE UNUSED PLATFORMS (Android Only Project) ─────────────
+ios/
+macos/
+linux/
+windows/
+web/
 
 # ───────────── Firebase Functions ─────────────
 functions/node_modules/

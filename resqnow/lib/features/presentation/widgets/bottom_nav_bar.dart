@@ -31,7 +31,7 @@ class CustomBottomNavBar extends StatelessWidget {
             context.push('/saved-topics');
             break;
           case 4:
-            context.push('/user-profile');
+            context.push('/profile');
             break;
         }
       },
