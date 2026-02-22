@@ -56,6 +56,10 @@ class CategoryController extends ChangeNotifier {
           (alias) => alias.toLowerCase().contains(lowercaseQuery),
         );
       }).toList();
+
+      // ✅ LOG SEARCH TO FIRESTORE FOR DASHBOARD ANALYTICS
+      // This enables the "Most Searched Condition" card to show real data
+      _logSearchToFirestore(query);
     }
     notifyListeners();
   }
@@ -64,5 +68,23 @@ class CategoryController extends ChangeNotifier {
     _isSearching = false;
     _filteredCategories = _allCategories;
     notifyListeners();
+  }
+
+  /// Private method to log search queries asynchronously
+  /// Doesn't block the UI or search functionality
+  void _logSearchToFirestore(String query) async {
+    try {
+      // Log the search query
+      await _categoryService.logSearchQuery(query);
+
+      // Update with result count
+      await _categoryService.updateSearchResultCount(
+        query,
+        _filteredCategories.length,
+      );
+    } catch (e) {
+      // Silently fail - logging errors shouldn't affect the user experience
+      debugPrint('Error in search logging: $e');
+    }
   }
 }

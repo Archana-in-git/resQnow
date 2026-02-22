@@ -220,7 +220,8 @@ class AppRouter {
           path: '/donor/details/:id',
           builder: (context, state) {
             final id = state.pathParameters['id']!;
-            return DonorDetailsPage(donorId: id);
+            final extra = state.extra as Map<String, dynamic>?;
+            return DonorDetailsPage(donorId: id, extra: extra);
           },
         ),
 

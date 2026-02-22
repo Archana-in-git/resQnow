@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the **Admin Dashboard capabilities** for managing medical conditions in the ResQnow Medical Conditions Module. Medical conditions content provides comprehensive information about health emergencies including first aid guidance, severity assessment, required medical kits, FAQs, and professional medical resources. Since this is an academic project with a small user base, the admin features focus on **practical, essential operations** for managing medical condition content.
+This document outlines the **Admin Dashboard capabilities** for managing medical conditions in the ResQnow Medical Conditions Module. Medical conditions content provides comprehensive information about health emergencies including first aid guidance, severity assessment, FAQs, and professional medical resources. Since this is an academic project with a small user base, the admin features focus on **practical, essential operations** for managing medical condition content.
 
 **Current Status**: Read-only user implementation; Admin functionalities documented for future implementation.
 
@@ -41,7 +41,6 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Condition name
 - Severity level (low, medium, high, critical)
 - Image count
-- Required kits count
 - FAQ count
 - Doctor specializations needed
 - Hospital locator availability
@@ -67,9 +66,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Condition name
 - Severity level (low, medium, high, critical)
 - First aid description (multiple steps)
-- Do's and don'ts (list items)
 - Video URL (educational resource)
-- Required medical kits (name + icon)
 - FAQs (questions and answers)
 - Doctor types (specializations needed)
 - Hospital locator link
@@ -80,7 +77,6 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Review complete medical condition information
 - Verify accuracy of first aid guidance
 - Check severity classification
-- Audit required medical kits
 - Review FAQ completeness
 - Validate doctor specializations
 - Verify external links (hospital locator)
@@ -99,9 +95,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Define comprehensive condition information
 - Classify severity level
 - Provide first aid guidance
-- List important do's and don'ts
 - Add educational video
-- Define required medical kits
 - Create FAQ content
 - Specify doctor specializations
 - Link to hospital locator
@@ -112,9 +106,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - `severity`: Level classification (low/medium/high/critical)
 - `imageUrls`: Educational images (one or multiple)
 - `firstAidDescription`: Step-by-step first aid guidance (array of steps)
-- `doNotDo`: Important precautions (array of don'ts)
 - `videoUrl`: Educational video URL
-- `requiredKits`: Medical kits needed (array with name + iconUrl)
 - `faqs`: Frequently asked questions (array with question + answer)
 - `doctorType`: Specializations (e.g., ["Cardiologist", "Emergency Medicine"])
 - `hospitalLocatorLink`: URL to find nearby hospitals/clinics
@@ -126,9 +118,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Name: Non-empty, 3+ characters
 - Severity: One of (low/medium/high/critical)
 - First aid description: At least one step
-- Do's and don'ts: Recommended but optional
-- Video URL: Valid HTTP/HTTPS URL
-- Required kits: At least one kit recommended
+- Video URL: Valid HTTP/HTTPS URL (optional)
 - FAQs: Recommended for completeness
 - Doctor types: At least one specialization
 - Hospital link: Valid URL for medical resource location
@@ -156,9 +146,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Severity classification
 - Image URLs
 - First aid description (add/remove/reorder steps)
-- Do's and don'ts (add/remove items)
 - Video URL
-- Required medical kits (add/remove/update)
 - FAQ entries (add/remove/update)
 - Doctor specializations
 - Hospital locator link
@@ -181,7 +169,6 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 - Update severity based on new medical guidelines
 - Add new first aid steps based on latest protocols
 - Improve description clarity
-- Add/remove medical kits
 - Expand FAQ based on user questions
 - Update doctor specialization recommendations
 - Fix incorrect information
@@ -193,7 +180,7 @@ This document outlines the **Admin Dashboard capabilities** for managing medical
 2. **Enhanced Images**: Add better quality instructional images
 3. **Expanded FAQ**: Add new FAQs based on common user questions
 4. **Severity Update**: Reclassify condition based on medical review
-5. **Kit Updates**: Update required medical kits list
+5. **Video Updates**: Replace with newer educational videos
 
 **Future Implementation**: Will create updateConditionData() method
 
@@ -324,103 +311,7 @@ Steps:
 
 ---
 
-### 2. Do's and Don'ts Management
-
-**Purpose**: Highlight critical precautions and recommendations
-
-**Structure**:
-
-- Array of recommended actions (Do's)
-- Array of actions to avoid (Don'ts)
-
-**Admin Responsibilities**:
-
-- Identify critical safety considerations
-- Emphasize life-saving actions
-- Highlight dangerous practices to avoid
-- Base on medical guidelines
-- Prevent harm from improper treatment
-
-**Example Do's and Don'ts**:
-
-```
-Condition: "Choking"
-
-Do's:
-- "Stand behind the choking person"
-- "Place fist above the navel, below rib cage"
-- "Use quick, upward thrusts"
-- "Call 911 if object cannot be dislodged"
-- "Be prepared for person to vomit"
-
-Don'ts:
-- "Do NOT apply back blows in conscious choking person"
-- "Do NOT reach into throat if you cannot see object"
-- "Do NOT give water or food while choking"
-- "Do NOT delay in calling emergency services"
-- "Do NOT perform Heimlich if person can cough/speak"
-```
-
-**Current User View**:
-
-- "Do's" shown in First Aid tab
-- "Don'ts" shown in Do Not Do tab
-
----
-
-### 3. Medical Kit Management
-
-**Purpose**: List required emergency/medical supplies
-
-**Structure**: Array of required kits
-
-- Each kit has name and icon URL
-- Icon provides visual reference
-- List shows all supplies needed
-
-**Admin Responsibilities**:
-
-- Identify critical medical supplies
-- Include all recommended materials
-- Provide icon URLs for visual reference
-- Update based on medical protocols
-- Ensure practical recommendations
-
-**Example Kits**:
-
-```
-Condition: "Severe Bleeding Control"
-
-Required Kits:
-- "Tourniquets" (icon: compression band)
-- "Sterile Gauze Pads" (icon: bandage pad)
-- "Elastic Bandages" (icon: wrapped bandage)
-- "Antiseptic Wipes" (icon: cleaning wipe)
-- "Gloves" (icon: medical glove)
-- "Tape" (icon: medical tape)
-```
-
-**Widget Display**: RequiredKitsList shows kit names with icons
-
-**Admin Implementation**:
-
-```dart
-final requiredKits = [
-  RequiredKit(
-    name: "Tourniquets",
-    iconUrl: "https://cdn.example.com/tourniquet-icon.png"
-  ),
-  RequiredKit(
-    name: "Sterile Gauze",
-    iconUrl: "https://cdn.example.com/gauze-icon.png"
-  ),
-  // ... more kits
-];
-```
-
----
-
-### 4. Video Resource Management
+### 2. Video Resource Management
 
 **Purpose**: Provide visual learning aids
 
@@ -462,7 +353,7 @@ await conditionService.updateCondition(id, {
 
 ---
 
-### 5. FAQ Management
+### 3. FAQ Management
 
 **Purpose**: Address common user questions
 
@@ -517,7 +408,7 @@ final faqs = [
 
 ---
 
-### 6. Doctor Specialization Management
+### 4. Doctor Specialization Management
 
 **Purpose**: Recommend appropriate medical professionals
 
@@ -554,7 +445,7 @@ Doctor Types: ["Allergist", "Immunologist", "Emergency Medicine"]
 
 ---
 
-### 7. Hospital Locator Integration
+### 5. Hospital Locator Integration
 
 **Purpose**: Connect users to nearby medical facilities
 
@@ -589,7 +480,7 @@ Link: "https://www.google.com/maps/search/orthopedist+hospital+near+me"
 
 ## Search & Discovery
 
-### 1. Search by Condition Name
+### Search by Condition Name
 
 **Purpose**: Find conditions by medical name
 
@@ -614,7 +505,7 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
 
 ---
 
-### 2. Filter by Severity Level
+### Filter by Severity Level
 
 **Purpose**: Find conditions by urgency
 
@@ -634,7 +525,7 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
 
 ---
 
-### 3. Browse by Medical Topic
+### Browse by Medical Topic
 
 **Purpose**: Organize conditions by category (if implemented)
 
@@ -779,28 +670,20 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
 4. **Click Delete**:
    - Confirmation dialog appears
 5. **Confirm**:
-   - Permanently removed from Firestore
-
-**Caution**: Users who saved this condition lose access
-
-**Alternative**: Deactivate instead of delete (when implemented)
-
----
-
-### Workflow 4: Classify by Severity
-
-**Scenario**: Review and validate condition severity levels
+   - PermVideo URL\*\*:
+   - URL: "https://youtube.com/anaphylaxis_video"
+     6\*Scenario\*\*: Review and validate condition severity levels
 
 **Steps**:
 
 1. **Review Severity Distribution**:
-   - Count conditions by severity
-   - Identify imbalances
-2. **Validate Each Condition**:
-   - Is severity classification accurate?
-   - Does it match medical standards?
-3. **Update Misclassified Conditions**:
-   - Change severity if needed
+2. **Set Doctor Specializations**:
+   - Allergist
+   - Immunologist
+   - Emergency Medicine
+3. **Add Hospital Locator Link**:
+   - "https://www.google.com/maps/search/hospital+near+me"
+     9 - Change severity if needed
    - Test UI display (color changes)
 4. **Verify Result**:
    - Severity indicators display correctly
@@ -819,21 +702,11 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
    - Name: Present and clear? ✓
    - Severity: Correctly classified? ✓
    - First Aid Steps: Clear and complete? ✓
-   - Do's and Don'ts: Comprehensive? ✓
-   - Video: Working and relevant? ✓
-   - Medical Kits: All necessary items listed? ✓
-   - FAQs: Address common questions? ✓
-   - Doctor Types: Appropriate specializations? ✓
-   - Hospital Link: Functional and relevant? ✓
-
-2. **Update Incomplete Content**:
-
-   - Add missing information
-   - Expand sparse FAQs
+     videoUrl": "https://youtube.com/anaphylaxis_video"- Expand sparse FAQs
    - Improve unclear descriptions
    - Update outdated video links
 
-3. **Quality Check**:
+2. **Quality Check**:
    - Test all links (video, hospital locator)
    - Verify medical accuracy
    - Check clarity of language
@@ -863,9 +736,7 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
   - Edit button (pencil icon)
   - Delete button (trash icon)
 - Summary stats:
-  - Total conditions count
-  - Count by severity (Low/Medium/High/Critical)
-- Refresh indicator (pull-to-refresh)
+  - Tresh indicator (pull-to-refresh)
 
 **Actions**:
 
@@ -926,9 +797,7 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
 - Valid URLs for video and hospital link
 - At least one medical kit
 
----
-
-#### 3. **Condition Stats/Dashboard**
+---Video: Working and relevant
 
 (condition_stats_widget.dart - optional)
 
@@ -951,7 +820,7 @@ Results: Allergic Reaction, Severe Allergy, Anaphylaxis
 
 **Document Structure**:
 
-```
+````
 conditions/
 ├── doc_1/
 │   ├── id: "doc_1"
@@ -1003,16 +872,7 @@ conditions/
 │   │   "Remove tight items",
 │   │   "Cover with clean cloth",
 │   │   "Call ambulance for large burns"
-│   │ ]
-│   ├── ... (rest of fields)
-│
-└── ... (more conditions)
-```
-
-### Field Descriptions
-
-| Field               | Type      | Required | Mutable | Notes                                           |
-| ------------------- | --------- | -------- | ------- | ----------------------------------------------- |
+│   │ ]videoUrl: "https://youtube.com/cardiac_arrest_video"-------------- | --------- | -------- | ------- | ----------------------------------------------- |
 | id                  | String    | Yes      | No      | Auto-generated by Firestore                     |
 | name                | String    | Yes      | Yes     | Medical condition name                          |
 | severity            | String    | Yes      | Yes     | One of: low/medium/high/critical                |
@@ -1032,14 +892,7 @@ conditions/
 **Single Field Indexes**:
 
 1. `severity` (Ascending)
-
-   - Query: Filter by severity level
-   - Used by: Admin filtering, user severity-based browsing
-
-2. `createdAt` (Descending)
-
-   - Query: Recently added conditions
-   - Used by: Admin dashboard, "new content" display
+"..."]d, "new content" display
 
 3. `updatedAt` (Descending)
    - Query: Recently modified conditions
@@ -1111,7 +964,7 @@ service cloud.firestore {
     }
   }
 }
-```
+````
 
 **UI-Level Access Control**:
 
@@ -1176,9 +1029,7 @@ if (userRole == 'admin') {
 - Form fields for all condition data
 - Severity dropdown selector
 - Dynamic lists for:
-  - First aid steps
-  - Do's and don'ts
-  - Medical kits (with icon URLs)
+  - First a kits (with icon URLs)
   - FAQs (question + answer pairs)
   - Doctor specializations
 - Image URL input

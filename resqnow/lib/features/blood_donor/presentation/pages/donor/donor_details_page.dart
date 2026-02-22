@@ -9,17 +9,31 @@ import 'package:resqnow/domain/entities/blood_donor.dart';
 
 class DonorDetailsPage extends StatefulWidget {
   final String donorId;
+  final Map<String, dynamic>? extra;
 
-  const DonorDetailsPage({super.key, required this.donorId});
+  const DonorDetailsPage({super.key, required this.donorId, this.extra});
 
   @override
   State<DonorDetailsPage> createState() => _DonorDetailsPageState();
 }
 
 class _DonorDetailsPageState extends State<DonorDetailsPage> {
+  bool _isApproved = false;
+  String? _callRequestId;
+  String? _approvedDonorName;
+  String? _approvedDonorPhone;
+
   @override
   void initState() {
     super.initState();
+
+    // Extract extra parameters if provided (from approved notification)
+    if (widget.extra != null) {
+      _isApproved = widget.extra!['isApproved'] ?? false;
+      _callRequestId = widget.extra!['callRequestId'];
+      _approvedDonorName = widget.extra!['donorName'];
+      _approvedDonorPhone = widget.extra!['donorPhone'];
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DonorDetailsController>().loadDonor(widget.donorId);
@@ -447,11 +461,15 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
         Expanded(
           child: _actionButton(
             icon: Icons.phone_rounded,
-            label: 'Call',
+            label: _isApproved ? 'Call Now' : 'Call',
             color: AppColors.primary,
             isDarkMode: isDarkMode,
             onTap: () {
-              _showCallRequestDialog(donor);
+              if (_isApproved) {
+                _launchPhone(donor);
+              } else {
+                _showCallRequestDialog(donor);
+              }
             },
           ),
         ),
@@ -654,7 +672,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Address',
+                'Address & Contact',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -664,6 +682,18 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
             ],
           ),
           const SizedBox(height: 16),
+          // Show phone number if approved
+          if (_isApproved && _approvedDonorPhone != null) ...[
+            _contactRow(
+              icon: Icons.phone_rounded,
+              label: 'Phone',
+              value: _approvedDonorPhone!,
+              isDarkMode: isDarkMode,
+              isCallable: true,
+              onTap: () => _launchPhone(donor),
+            ),
+            const SizedBox(height: 12),
+          ],
           if (donor.town != null) ...[
             _contactRow(
               icon: Icons.location_city_rounded,
@@ -708,42 +738,48 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
     required String label,
     required String value,
     required bool isDarkMode,
+    bool isCallable = false,
+    VoidCallback? onTap,
   }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: AppColors.primary),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isDarkMode
-                      ? Colors.grey.shade400
-                      : AppColors.textSecondary,
-                  letterSpacing: 0.3,
+    return GestureDetector(
+      onTap: isCallable ? onTap : null,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: AppColors.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isDarkMode
+                        ? Colors.grey.shade400
+                        : AppColors.textSecondary,
+                    letterSpacing: 0.3,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                    decoration: isCallable ? TextDecoration.underline : null,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -886,6 +922,28 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
     );
   }
 
+  // ========== CALL DONOR DIRECTLY ==========
+  Future<void> _launchPhone(BloodDonor donor) async {
+    if (donor.phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number not available')),
+      );
+      return;
+    }
+
+    try {
+      final Uri launchUri = Uri(scheme: 'tel', path: donor.phone);
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: Could not launch phone. $e')),
+      );
+    }
+  }
+
   // ========== CALL REQUEST DIALOG ==========
   void _showCallRequestDialog(BloodDonor donor) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -894,8 +952,7 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor:
-              isDarkMode ? Colors.grey.shade800 : Colors.white,
+          backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -917,7 +974,9 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isDarkMode ? Colors.amber.shade300 : Colors.amber.shade700,
+                    color: isDarkMode
+                        ? Colors.amber.shade300
+                        : Colors.amber.shade700,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -987,127 +1046,124 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
   // ========== SUBMIT CALL REQUEST ==========
   Future<void> _requestCallFromDonor(BloodDonor donor) async {
     try {
-      // TODO: Implement API call to submit call request to admin
-      // Example: await context.read<DonorDetailsController>().submitCallRequest(donor.id);
+      final requestId = await context
+          .read<DonorDetailsController>()
+          .submitCallRequest();
 
       if (!mounted) return;
 
-      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+      if (requestId != null) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor:
-                isDarkMode ? Colors.grey.shade800 : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green,
-                  size: 24,
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.green,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Request Submitted',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              content: Text(
+                'Your call request has been submitted successfully. An admin will review it and notify you shortly.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isDarkMode
+                      ? Colors.grey.shade300
+                      : Colors.grey.shade700,
+                  height: 1.6,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Request Submitted',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color:
-                        isDarkMode ? Colors.white : AppColors.textPrimary,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
-            ),
-            content: Text(
-              'Your call request has been submitted successfully. Our admin will review your request and notify ${donor.name} about your contact request.',
-              style: TextStyle(
-                fontSize: 13,
-                color: isDarkMode
-                    ? Colors.grey.shade300
-                    : Colors.grey.shade700,
-                height: 1.6,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'OK',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
+            );
+          },
+        );
+      } else {
+        _handleRequestError(context);
+      }
     } catch (e) {
       if (!mounted) return;
+      _handleRequestError(context, error: e.toString());
+    }
+  }
 
-      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  void _handleRequestError(BuildContext context, {String? error}) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor:
-                isDarkMode ? Colors.grey.shade800 : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.error_rounded,
-                  color: Colors.red,
-                  size: 24,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Request Failed',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color:
-                        isDarkMode ? Colors.white : AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-            content: Text(
-              'Sorry, we could not process your request. Please try again later.',
-              style: TextStyle(
-                fontSize: 13,
-                color: isDarkMode
-                    ? Colors.grey.shade300
-                    : Colors.grey.shade700,
-                height: 1.6,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'OK',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.error_rounded, color: Colors.red, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'Request Failed',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isDarkMode ? Colors.white : AppColors.textPrimary,
                 ),
               ),
             ],
-          );
-        },
-      );
-    }
+          ),
+          content: Text(
+            error ??
+                'Sorry, we could not process your request. Please try again later.',
+            style: TextStyle(
+              fontSize: 13,
+              color: isDarkMode ? Colors.grey.shade300 : Colors.grey.shade700,
+              height: 1.6,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // ========== NAVIGATE TO CHAT ==========
@@ -1122,10 +1178,9 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
 
     // Get current user info from database or use email as fallback
     // For now, using email name as a placeholder - you should fetch actual user data
-    final currentUserName = currentUser.displayName ?? 
-        currentUser.email?.split('@').first ?? 
-        'You';
-    
+    final currentUserName =
+        currentUser.displayName ?? currentUser.email?.split('@').first ?? 'You';
+
     // TODO: Fetch current user's blood group and image from Firestore
     const currentUserBloodGroup = 'O+'; // Placeholder
     final currentUserImageUrl = currentUser.photoURL;

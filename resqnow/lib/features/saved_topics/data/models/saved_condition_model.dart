@@ -7,9 +7,7 @@ class SavedConditionModel {
   final List<String> imageUrls;
   final String severity;
   final List<String> firstAidDescription;
-  final List<String> doNotDo;
   final String videoUrl;
-  final List<RequiredKit> requiredKits;
   final List<FaqItem> faqs;
   final List<String> doctorType;
   final String hospitalLocatorLink;
@@ -21,9 +19,7 @@ class SavedConditionModel {
     required this.imageUrls,
     required this.severity,
     required this.firstAidDescription,
-    required this.doNotDo,
     required this.videoUrl,
-    required this.requiredKits,
     required this.faqs,
     required this.doctorType,
     required this.hospitalLocatorLink,
@@ -38,9 +34,7 @@ class SavedConditionModel {
       imageUrls: condition.imageUrls,
       severity: condition.severity,
       firstAidDescription: condition.firstAidDescription,
-      doNotDo: condition.doNotDo,
       videoUrl: condition.videoUrl,
-      requiredKits: condition.requiredKits,
       faqs: condition.faqs,
       doctorType: condition.doctorType,
       hospitalLocatorLink: condition.hospitalLocatorLink,
@@ -56,9 +50,7 @@ class SavedConditionModel {
       imageUrls: imageUrls,
       severity: severity,
       firstAidDescription: firstAidDescription,
-      doNotDo: doNotDo,
       videoUrl: videoUrl,
-      requiredKits: requiredKits,
       faqs: faqs,
       doctorType: doctorType,
       hospitalLocatorLink: hospitalLocatorLink,
@@ -73,11 +65,7 @@ class SavedConditionModel {
       'imageUrls': jsonEncode(imageUrls),
       'severity': severity,
       'firstAidDescription': jsonEncode(firstAidDescription),
-      'doNotDo': jsonEncode(doNotDo),
       'videoUrl': videoUrl,
-      'requiredKits': jsonEncode(
-        requiredKits.map((kit) => kit.toMap()).toList(),
-      ),
       'faqs': jsonEncode(faqs.map((faq) => faq.toMap()).toList()),
       'doctorType': jsonEncode(doctorType),
       'hospitalLocatorLink': hospitalLocatorLink,
@@ -95,11 +83,7 @@ class SavedConditionModel {
       firstAidDescription: List<String>.from(
         jsonDecode(map['firstAidDescription'] ?? '[]'),
       ),
-      doNotDo: List<String>.from(jsonDecode(map['doNotDo'] ?? '[]')),
       videoUrl: map['videoUrl'] ?? '',
-      requiredKits: (jsonDecode(map['requiredKits'] ?? '[]') as List<dynamic>)
-          .map((kit) => RequiredKit.fromMap(kit as Map<String, dynamic>))
-          .toList(),
       faqs: (jsonDecode(map['faqs'] ?? '[]') as List<dynamic>)
           .map((faq) => FaqItem.fromMap(faq as Map<String, dynamic>))
           .toList(),

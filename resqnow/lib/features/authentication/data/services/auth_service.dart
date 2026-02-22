@@ -61,6 +61,15 @@ class AuthService {
           'email': user.email,
           'role': 'user',
         }, SetOptions(merge: true));
+
+        // ✅ Log login session
+        await _firestore.collection('user_sessions').doc(user.uid).set({
+          'userId': user.uid,
+          'email': user.email,
+          'loginTime': FieldValue.serverTimestamp(),
+          'logoutTime': null,
+          'isActive': true,
+        }, SetOptions(merge: true));
       }
 
       return user;
@@ -73,6 +82,19 @@ class AuthService {
   // 🚪 SIGN OUT
   // ---------------------------------------------------------------------------
   Future<void> signOut() async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        // ✅ Log logout session
+        await _firestore.collection('user_sessions').doc(currentUser.uid).set({
+          'userId': currentUser.uid,
+          'logoutTime': FieldValue.serverTimestamp(),
+          'isActive': false,
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print('Error logging logout: $e');
+    }
     await _auth.signOut();
   }
 

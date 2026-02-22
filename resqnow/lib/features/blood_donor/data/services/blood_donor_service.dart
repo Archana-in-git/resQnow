@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:resqnow/domain/entities/blood_donor.dart';
+import 'package:resqnow/data/models/call_request_model.dart';
 
 class BloodDonorService {
   BloodDonorService({required this.firestore, required this.auth});
@@ -12,6 +13,9 @@ class BloodDonorService {
 
   CollectionReference<Map<String, dynamic>> get _donorRef =>
       firestore.collection('donors');
+
+  CollectionReference<Map<String, dynamic>> get _callRequestsRef =>
+      firestore.collection('call_requests');
 
   // -------------------------------------------------------------------------
   // REGISTER DONOR
@@ -180,5 +184,165 @@ class BloodDonorService {
     return snapshot.docs
         .map((doc) => BloodDonor.fromMap({...doc.data(), "id": doc.id}))
         .toList();
+  }
+
+  // =========================================================================
+  // ======================== CALL REQUEST OPERATIONS ========================
+  // =========================================================================
+
+  // -------------------------------------------------------------------------
+  // SUBMIT CALL REQUEST
+  // -------------------------------------------------------------------------
+  /// Submit a call request from the current user to a donor
+  /// Returns the ID of the created call request
+  Future<String> submitCallRequest({
+    required String donorId,
+    required String donorName,
+    required String donorPhone,
+  }) async {
+    final currentUser = auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('User must be authenticated to request a call');
+    }
+
+    // Create new call request document
+    final callRequestRef = _callRequestsRef.doc();
+    final requestId = callRequestRef.id;
+
+    final callRequest = CallRequestModel(
+      id: requestId,
+      requesterId: currentUser.uid,
+      requesterName: currentUser.displayName ?? 'Anonymous',
+      requesterEmail: currentUser.email ?? 'no-email@example.com',
+      requesterPhone: null, // Can be added if user provides it
+      requesterProfileImage: currentUser.photoURL,
+      donorId: donorId,
+      donorName: donorName,
+      donorPhone: donorPhone,
+      requestedAt: DateTime.now(),
+      status: 'pending',
+    );
+
+    await callRequestRef.set(callRequest.toMap());
+
+    // Also store reference in user's call_requests subcollection for easy access
+    await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('call_requests')
+        .doc(requestId)
+        .set({
+          'donorId': donorId,
+          'donorName': donorName,
+          'requestedAt': FieldValue.serverTimestamp(),
+          'status': 'pending',
+        });
+
+    // Store reference in donor's incoming_call_requests subcollection
+    await firestore
+        .collection('donors')
+        .doc(donorId)
+        .collection('incoming_call_requests')
+        .doc(requestId)
+        .set({
+          'requesterId': currentUser.uid,
+          'requesterName': callRequest.requesterName,
+          'requesterEmail': callRequest.requesterEmail,
+          'requestedAt': FieldValue.serverTimestamp(),
+          'status': 'pending',
+        });
+
+    return requestId;
+  }
+
+  // -------------------------------------------------------------------------
+  // GET CALL REQUEST BY ID
+  // -------------------------------------------------------------------------
+  Future<CallRequestModel?> getCallRequest(String requestId) async {
+    final doc = await _callRequestsRef.doc(requestId).get();
+    if (!doc.exists) return null;
+
+    return CallRequestModel.fromMap(doc.data() ?? {}, id: doc.id);
+  }
+
+  // -------------------------------------------------------------------------
+  // GET USER'S CALL REQUESTS
+  // -------------------------------------------------------------------------
+  /// Get all call requests made by the current user
+  Future<List<CallRequestModel>> getUserCallRequests() async {
+    final currentUser = auth.currentUser;
+    if (currentUser == null) return [];
+
+    final snapshot = await _callRequestsRef
+        .where('requesterId', isEqualTo: currentUser.uid)
+        .orderBy('requestedAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => CallRequestModel.fromSnapshot(doc))
+        .toList();
+  }
+
+  // -------------------------------------------------------------------------
+  // GET DONOR'S INCOMING CALL REQUESTS
+  // -------------------------------------------------------------------------
+  /// Get all call requests for a specific donor
+  Future<List<CallRequestModel>> getDonorCallRequests(String donorId) async {
+    final snapshot = await _callRequestsRef
+        .where('donorId', isEqualTo: donorId)
+        .orderBy('requestedAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => CallRequestModel.fromSnapshot(doc))
+        .toList();
+  }
+
+  // -------------------------------------------------------------------------
+  // GET PENDING CALL REQUESTS FOR DONOR
+  // -------------------------------------------------------------------------
+  /// Get pending call requests for a specific donor (for admin/donor view)
+  Future<List<CallRequestModel>> getPendingCallRequests(String donorId) async {
+    final snapshot = await _callRequestsRef
+        .where('donorId', isEqualTo: donorId)
+        .where('status', isEqualTo: 'pending')
+        .orderBy('requestedAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => CallRequestModel.fromSnapshot(doc))
+        .toList();
+  }
+
+  // -------------------------------------------------------------------------
+  // UPDATE CALL REQUEST STATUS
+  // -------------------------------------------------------------------------
+  /// Update the status of a call request (used by admin)
+  Future<void> updateCallRequestStatus({
+    required String requestId,
+    required String newStatus, // 'approved', 'rejected', 'expired', etc.
+    String? adminNotes,
+    String? chatChannelId,
+  }) async {
+    final updateData = {
+      'status': newStatus,
+      'approvedAt': newStatus == 'approved'
+          ? FieldValue.serverTimestamp()
+          : null,
+      if (adminNotes != null) 'adminNotes': adminNotes,
+      if (chatChannelId != null) 'chatChannelId': chatChannelId,
+    };
+
+    // Remove null values
+    updateData.removeWhere((key, value) => value == null);
+
+    await _callRequestsRef.doc(requestId).update(updateData);
+  }
+
+  // -------------------------------------------------------------------------
+  // DELETE CALL REQUEST
+  // -------------------------------------------------------------------------
+  Future<void> deleteCallRequest(String requestId) async {
+    await _callRequestsRef.doc(requestId).delete();
   }
 }

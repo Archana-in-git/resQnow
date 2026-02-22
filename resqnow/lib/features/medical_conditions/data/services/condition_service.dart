@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/condition_model.dart';
 
 class ConditionService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Fetch all conditions
   Future<List<ConditionModel>> getAllConditions() async {
@@ -31,6 +33,67 @@ class ConditionService {
       return ConditionModel.fromFirestore(doc);
     } catch (e) {
       throw Exception('Failed to fetch condition: $e');
+    }
+  }
+
+  /// Track condition view count for dashboard analytics
+  /// Call this when a user views a condition's detail page
+  /// This enables the "Top Conditions" chart to show popular conditions
+  Future<void> incrementConditionViewCount(String conditionId) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        print('No authenticated user for view tracking');
+        return;
+      }
+
+      // Increment the viewCount field in the conditions collection
+      await _firestore.collection('conditions').doc(conditionId).update({
+        'viewCount': FieldValue.increment(1),
+      });
+
+      // Also log to user_activity for monthly active users tracking
+      await _firestore.collection('user_activity').doc(currentUser.uid).set({
+        'userId': currentUser.uid,
+        'lastActive': DateTime.now().toIso8601String(),
+        'lastActivity': 'viewed_condition',
+        'lastActivityItemId': conditionId,
+      }, SetOptions(merge: true));
+
+      print('✅ Condition view count incremented for: $conditionId');
+    } catch (e) {
+      print('❌ Error incrementing view count: $e');
+      // Don't throw - we don't want view tracking to break condition viewing
+    }
+  }
+
+  /// Track condition search/view by condition name
+  /// Useful for finding which conditions are most useful to users
+  Future<void> logConditionInteraction({
+    required String conditionId,
+    required String conditionName,
+    required String interactionType, // 'viewed', 'searched', 'shared'
+  }) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+
+      // Log to search_logs collection (used for "Most Searched/Viewed" dashboard metric)
+      await _firestore.collection('search_logs').add({
+        'userId': currentUser.uid,
+        'userEmail': currentUser.email,
+        'query': conditionName.toLowerCase(),
+        'conditionId': conditionId,
+        'timestamp': DateTime.now().toIso8601String(),
+        'appSection': 'condition_detail',
+        'interactionType': interactionType,
+      });
+
+      print(
+        '✅ Condition interaction logged: $conditionName ($interactionType)',
+      );
+    } catch (e) {
+      print('❌ Error logging condition interaction: $e');
     }
   }
 }

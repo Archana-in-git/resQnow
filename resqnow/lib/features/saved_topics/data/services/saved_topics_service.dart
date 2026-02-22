@@ -34,7 +34,12 @@ class SavedTopicsService {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'saved_topics.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -45,15 +50,22 @@ class SavedTopicsService {
         imageUrls TEXT NOT NULL,
         severity TEXT NOT NULL,
         firstAidDescription TEXT NOT NULL,
-        doNotDo TEXT NOT NULL,
         videoUrl TEXT NOT NULL,
-        requiredKits TEXT NOT NULL,
         faqs TEXT NOT NULL,
         doctorType TEXT NOT NULL,
         hospitalLocatorLink TEXT NOT NULL,
         savedAt INTEGER NOT NULL
       )
     ''');
+  }
+
+  /// Handle database schema upgrade from v1 to v2
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Recreate table without doNotDo and requiredKits columns
+      await db.execute('DROP TABLE IF EXISTS saved_conditions');
+      await _onCreate(db, newVersion);
+    }
   }
 
   /// Save a condition to the database
