@@ -1,5 +1,6 @@
 // lib/features/blood_donor/presentation/pages/donor/donor_profile_page.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,10 @@ import 'package:resqnow/features/blood_donor/presentation/controllers/donor_prof
 import 'package:resqnow/domain/entities/blood_donor.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:crop_your_image/crop_your_image.dart';
 
 class DonorProfilePage extends StatefulWidget {
   const DonorProfilePage({super.key});
@@ -993,6 +998,10 @@ class _EditProfileFormState extends State<_EditProfileForm> {
   Map<String, dynamic>? allCitiesData;
   bool _addressDataLoaded = false;
 
+  File? _pickedImageFile;
+  String? _uploadedImageUrl;
+  bool _isUploadingImage = false;
+
   final List<String> genderList = ["Male", "Female", "Other"];
   final List<String> bloodGroups = [
     "A+",
@@ -1029,6 +1038,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     selectedGender = widget.donor.gender;
     selectedBloodGroup = widget.donor.bloodGroup;
     selectedConditions = List.from(widget.donor.medicalConditions);
+    _uploadedImageUrl = widget.donor.profileImageUrl;
 
     // Initialize address from donor data - use the separate fields
     selectedState = widget.donor.state;
@@ -1092,6 +1102,31 @@ class _EditProfileFormState extends State<_EditProfileForm> {
 
     setState(() => isLoading = true);
 
+    var profileImageUrlToSave = _uploadedImageUrl;
+
+    if (_pickedImageFile != null && _uploadedImageUrl == null) {
+      setState(() => _isUploadingImage = true);
+      try {
+        final uploadedUrl = await _uploadImageToFirebase(_pickedImageFile!);
+        profileImageUrlToSave = uploadedUrl;
+        _uploadedImageUrl = uploadedUrl;
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Profile image upload failed. Try again."),
+            ),
+          );
+        }
+        setState(() {
+          isLoading = false;
+          _isUploadingImage = false;
+        });
+        return;
+      }
+      setState(() => _isUploadingImage = false);
+    }
+
     final success = await widget.controller.updateProfile(
       name: nameCtrl.text.trim(),
       age: int.tryParse(ageCtrl.text.trim()) ?? widget.donor.age,
@@ -1106,6 +1141,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
       addressString: _buildAddressString(),
       medicalConditions: selectedConditions,
       notes: notesCtrl.text.trim(),
+      profileImageUrl: profileImageUrlToSave,
     );
 
     setState(() => isLoading = false);
@@ -1249,6 +1285,260 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     } catch (e) {
       debugPrint('Failed to reload address data for state: $e');
     }
+  }
+
+  Future<void> _showImageSourceSheet() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Take a photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              if (_pickedImageFile != null || _uploadedImageUrl != null)
+                ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Remove photo'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _pickedImageFile = null;
+                      _uploadedImageUrl = null;
+                    });
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 85,
+      );
+
+      if (picked == null) return;
+
+      final imageBytes = await picked.readAsBytes();
+      final cropController = CropController();
+
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          final isDarkDialog = Theme.of(context).brightness == Brightness.dark;
+          return AlertDialog(
+            backgroundColor: isDarkDialog
+                ? const Color(0xFF1E1E1E)
+                : Colors.white,
+            contentPadding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 420,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Crop(
+                      controller: cropController,
+                      image: imageBytes,
+                      aspectRatio: 1,
+                      withCircleUi: false,
+                      maskColor: Colors.black38,
+                      baseColor: Colors.black,
+                      onCropped: (croppedBytes) async {
+                        final tempDir = await getTemporaryDirectory();
+                        final file = File(
+                          "${tempDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg",
+                        );
+                        await file.writeAsBytes(croppedBytes);
+
+                        setState(() {
+                          _pickedImageFile = file;
+                          _uploadedImageUrl = null;
+                        });
+
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                      onPressed: () {
+                        cropController.crop();
+                      },
+                      child: const Text(
+                        "Done",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      debugPrint("Image pick/crop failed: $e");
+    }
+  }
+
+  Future<String> _uploadImageToFirebase(File file) async {
+    final storage = FirebaseStorage.instance;
+    final fileName =
+        "${widget.donor.id}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+    final ref = storage.ref().child('donor_profile_pics').child(fileName);
+
+    final uploadTask = ref.putFile(file);
+    final snapshot = await uploadTask.whenComplete(() {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  Widget _buildProfilePhotoEditor() {
+    ImageProvider? imageProvider;
+
+    if (_pickedImageFile != null) {
+      imageProvider = FileImage(_pickedImageFile!);
+    } else if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
+      imageProvider = NetworkImage(_uploadedImageUrl!);
+    }
+
+    return Column(
+      children: [
+        Center(
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.12),
+                      AppColors.primary.withValues(alpha: 0.06),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 58,
+                  backgroundColor: Colors.white,
+                  backgroundImage: imageProvider,
+                  child: imageProvider == null
+                      ? Icon(
+                          Icons.person_outline,
+                          size: 50,
+                          color: AppColors.primary.withValues(alpha: 0.25),
+                        )
+                      : null,
+                ),
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onTap: _showImageSourceSheet,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      imageProvider == null ? Icons.add : Icons.edit,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Center(
+          child: Text(
+            "Profile Photo",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        if (_isUploadingImage) ...[
+          const SizedBox(height: 10),
+          const SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            "Uploading...",
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   void _showBeautifulSuccessAlert() {
@@ -1428,6 +1718,10 @@ class _EditProfileFormState extends State<_EditProfileForm> {
             ),
 
             const SizedBox(height: 28),
+
+            _buildProfilePhotoEditor(),
+
+            const SizedBox(height: 24),
 
             // ============ PERSONAL INFORMATION SECTION ============
             _buildSectionHeader("Personal Information", Icons.person_rounded),
@@ -1643,12 +1937,14 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: isLoading ? null : _saveChanges,
+                        onTap: (isLoading || _isUploadingImage)
+                            ? null
+                            : _saveChanges,
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           child: Center(
-                            child: isLoading
+                            child: (isLoading || _isUploadingImage)
                                 ? const SizedBox(
                                     height: 18,
                                     width: 18,
