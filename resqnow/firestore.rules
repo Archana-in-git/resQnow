@@ -10,10 +10,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
+    // Safe admin check - returns false if user doc doesn't exist yet
+    function isAdminSafe() {
       return request.auth != null &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+    
+    // Quick check without Firestore read - for new signups
+    function isAdmin() {
+      return isAdminSafe();
     }
 
     // ================================
@@ -31,6 +37,9 @@ service cloud.firestore {
                         request.auth.uid == userId &&
                         !("role" in request.resource.data.diff(resource.data).changedKeys())
                      ) || isAdmin();
+
+      // Profile updates: Users can update phone, gender, bloodGroup, medicalConditions, profileImageUrl
+      // Note: profileImageUrl (photo) is OPTIONAL - users can save profile without adding/changing photo
 
       allow delete: if isAdmin();
 

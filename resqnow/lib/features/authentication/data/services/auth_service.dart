@@ -1,11 +1,70 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:async';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  StreamSubscription<User?>? _authStateSubscription;
 
   static const String usersCollection = 'users';
+
+  AuthService() {
+    _authStateSubscription = _auth.authStateChanges().listen(
+      _onAuthStateChanged,
+    );
+  }
+
+  void _onAuthStateChanged(User? user) {
+    if (user == null) return;
+
+    _validateUserCanAccess(user).catchError((error) async {
+      if (error is FirebaseAuthException &&
+          (error.code == 'user-disabled' || error.code == 'user-not-found')) {
+        await _auth.signOut();
+      }
+    });
+  }
+
+  Future<void> _validateUserCanAccess(User user) async {
+    HttpsCallableResult<dynamic> result;
+    try {
+      result = await _functions.httpsCallable('checkUserAccessStatus').call();
+    } on FirebaseFunctionsException {
+      throw FirebaseAuthException(
+        code: 'service-unavailable',
+        message:
+            'Unable to verify account status right now. Please try again in a moment.',
+      );
+    }
+
+    final data = result.data as Map<dynamic, dynamic>? ?? {};
+    final allowed = data['allowed'] == true;
+    final reasonCode = (data['reasonCode'] ?? '').toString();
+    final message = (data['message'] ?? '').toString();
+
+    if (!allowed) {
+      await _auth.signOut();
+
+      if (reasonCode == 'account-deleted') {
+        throw FirebaseAuthException(
+          code: 'user-not-found',
+          message: message.isNotEmpty
+              ? message
+              : 'No account exists with this email. Please create a new account.',
+        );
+      }
+
+      throw FirebaseAuthException(
+        code: 'user-disabled',
+        message: message.isNotEmpty
+            ? message
+            : 'Login denied: your account is currently suspended for suspicious activities. Please contact support.',
+      );
+    }
+  }
 
   // ---------------------------------------------------------------------------
   // 🧠 EMAIL + PASSWORD SIGNUP
@@ -31,6 +90,8 @@ class AuthService {
           'name': name,
           'email': email,
           'role': 'user',
+          'accountStatus': 'active',
+          'isBlocked': false,
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
       }
@@ -55,12 +116,7 @@ class AuthService {
 
       final user = credential.user;
       if (user != null) {
-        // ✅ Ensure Firestore user doc exists
-        await _firestore.collection(usersCollection).doc(user.uid).set({
-          'uid': user.uid,
-          'email': user.email,
-          'role': 'user',
-        }, SetOptions(merge: true));
+        await _validateUserCanAccess(user);
 
         // ✅ Log login session
         await _firestore.collection('user_sessions').doc(user.uid).set({
@@ -75,6 +131,11 @@ class AuthService {
       return user;
     } on FirebaseAuthException {
       rethrow;
+    } catch (e) {
+      throw FirebaseAuthException(
+        code: 'unknown',
+        message: 'Login failed. Please try again.',
+      );
     }
   }
 
@@ -127,4 +188,8 @@ class AuthService {
   // 🧾 AUTH STATE STREAM
   // ---------------------------------------------------------------------------
   Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  void dispose() {
+    _authStateSubscription?.cancel();
+  }
 }

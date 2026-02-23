@@ -139,6 +139,12 @@ class AppRouter {
         }
 
         if (loggedIn && isAuthRoute) {
+          if (authController.isLoading) {
+            debugPrint(
+              'Decision: stay on auth route (waiting for login verification)',
+            );
+            return null;
+          }
           debugPrint('Decision: redirect to /home');
           return '/home';
         }

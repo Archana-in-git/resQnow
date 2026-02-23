@@ -28,6 +28,7 @@ dependencies:
   firebase_core: ^3.1.0
   firebase_auth: ^5.1.0
   cloud_firestore: ^5.1.0
+  cloud_functions: ^5.0.4
   firebase_storage: ^12.0.0
   google_sign_in: ^6.2.1
 
@@ -74,7 +75,6 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
 
-
   # assets:
   #   - lib/assets/animation/success_check.json
   #   - lib/assets/images/logo.png
@@ -89,6 +89,9 @@ flutter:
     - lib/assets/animation/success_check.json
     - assets/sounds/beep.wav
     - assets/images/app_icon.png
+    - assets/images/Screenshot 2026-02-23 221241.png
+    - assets/images/Screenshot 2026-02-23 221303.png
+    - assets/images/Screenshot 2026-02-23 221324.png
     - lib/assets/images/icons/
     - lib/assets/images/firstaid_images/
     - lib/assets/images/kits/

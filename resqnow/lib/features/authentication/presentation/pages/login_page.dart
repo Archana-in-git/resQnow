@@ -66,14 +66,23 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   String _getUserFriendlyErrorMessage(String backendError) {
     final errorLower = backendError.toLowerCase();
 
-    if (errorLower.contains('user-not-found') ||
-        errorLower.contains('wrong-password') ||
+    if (errorLower.contains('login denied') ||
+        errorLower.contains('currently suspended') ||
+        errorLower.contains('suspended for')) {
+      return 'Login denied: your account is currently suspended for suspicious activities. Please contact support.';
+    } else if (errorLower.contains('unable to verify account status') ||
+        errorLower.contains('service unavailable') ||
+        errorLower.contains('temporarily unavailable')) {
+      return 'Login is temporarily unavailable. Please try again in a moment.';
+    } else if (errorLower.contains('no account exists') ||
+        errorLower.contains('user-not-found')) {
+      return 'No account exists with this email and password. Please create a new account.';
+    } else if (errorLower.contains('wrong-password') ||
         errorLower.contains('invalid-credential') ||
-        errorLower.contains('user not found') ||
         errorLower.contains('wrong password')) {
       return 'Invalid email or password. Please check and try again.';
     } else if (errorLower.contains('user-disabled')) {
-      return 'This account has been disabled. Please contact support.';
+      return 'Login denied: your account is currently suspended for suspicious activities. Please contact support.';
     } else if (errorLower.contains('too-many-requests')) {
       return 'Too many login attempts. Please try again later.';
     } else if (errorLower.contains('network') ||

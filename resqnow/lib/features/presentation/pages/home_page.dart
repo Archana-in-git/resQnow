@@ -19,6 +19,33 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+final List<Map<String, dynamic>> _hospitalMockData = [
+  {
+    'name': 'Aster Medcity Hospital, Ko...',
+    'image': 'assets/images/Screenshot 2026-02-23 221241.png',
+    'rating': 4.7,
+    'reviews': '38.4k',
+    'type': 'Hospital',
+    'hours': 'Open 24 hours',
+  },
+  {
+    'name': 'Ernakulam Medical Centre',
+    'image': 'assets/images/Screenshot 2026-02-23 221303.png',
+    'rating': 4.5,
+    'reviews': '3.5k',
+    'type': 'Private hospital',
+    'hours': 'Open 24 hours',
+  },
+  {
+    'name': 'Amrita Hospital, Kochi',
+    'image': 'assets/images/Screenshot 2026-02-23 221324.png',
+    'rating': 4.0,
+    'reviews': '5.8k',
+    'type': 'Private hospital',
+    'hours': 'Open 24 hours',
+  },
+];
+
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -206,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: 3,
                     itemBuilder: (_, index) =>
-                        _HospitalCardPlaceholder(name: "Hospital ${index + 1}"),
+                        _HospitalCard(hospital: _hospitalMockData[index]),
                   ),
                 ),
 
@@ -404,10 +431,10 @@ class _CategoryCircleIcon extends StatelessWidget {
 /// -----------------------------------------------------------
 /// 🏥 Hospital Card Placeholder
 /// -----------------------------------------------------------
-class _HospitalCardPlaceholder extends StatelessWidget {
-  final String name;
+class _HospitalCard extends StatelessWidget {
+  final Map<String, dynamic> hospital;
 
-  const _HospitalCardPlaceholder({required this.name});
+  const _HospitalCard({required this.hospital});
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +444,6 @@ class _HospitalCardPlaceholder extends StatelessWidget {
       width: 220,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -429,47 +455,99 @@ class _HospitalCardPlaceholder extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 110,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDarkMode
-                    ? [Colors.grey.shade700, Colors.grey.shade800]
-                    : [
-                        AppColors.primary.withValues(alpha: 0.15),
-                        AppColors.primary.withValues(alpha: 0.08),
-                      ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.local_hospital,
-                color: AppColors.primary,
-                size: 44,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              name,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: isDarkMode ? Colors.white : AppColors.textPrimary,
-                letterSpacing: -0.2,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image container
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade300,
+                ),
+                child: Image.asset(
+                  hospital['image'],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(
+                      Icons.local_hospital,
+                      color: AppColors.primary,
+                      size: 44,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+            // Hospital info container
+            Container(
+              color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hospital['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${hospital['rating']}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDarkMode
+                              ? Colors.white70
+                              : Colors.grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '(${hospital['reviews']})',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDarkMode
+                              ? Colors.white54
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hospital['type'],
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDarkMode ? Colors.white54 : Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    hospital['hours'],
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.green.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

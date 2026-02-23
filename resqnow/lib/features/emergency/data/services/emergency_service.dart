@@ -1,24 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/emergency_model.dart';
 
 class EmergencyService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<EmergencyContact?> fetchUserEmergencyContact(String uid) async {
-    final doc = await _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('contacts')
-        .doc('primary')
-        .get();
-    if (doc.exists) {
-      return EmergencyContact.fromMap(doc.data()!);
-    }
-    return null;
-  }
 
   /// Log emergency button click to Firestore for real-time dashboard tracking
   /// This ensures the admin dashboard shows accurate emergency statistics

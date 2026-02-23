@@ -95,6 +95,9 @@ class AuthController extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       _setError(e.message ?? defaultError);
       return null;
+    } catch (_) {
+      _setError(defaultError);
+      return null;
     } finally {
       _setLoading(false);
     }
@@ -116,5 +119,11 @@ class AuthController extends ChangeNotifier {
   void _clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authService.dispose();
+    super.dispose();
   }
 }
