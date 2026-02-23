@@ -127,7 +127,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                               ),
                               padding: const EdgeInsets.all(12),
                               child: Image.asset(
-                                'assets/images/logo.png',
+                                'assets/images/app_icon.png',
                                 height: 100,
                                 width: 100,
                               ),

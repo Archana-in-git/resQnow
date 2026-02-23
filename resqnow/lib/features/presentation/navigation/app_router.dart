@@ -59,7 +59,6 @@ import 'package:resqnow/features/profile/presentation/profile_page.dart';
 import 'package:resqnow/features/hospital_locator/presentation/pages/hospital_page.dart';
 
 class AppRouter {
-  static late GoRouter _router;
   static GoRouter? _routerInstance;
 
   // Initialize router only once
@@ -67,8 +66,6 @@ class AppRouter {
     if (_routerInstance != null) return;
 
     print('🔨 AppRouter.init() called - Creating router instance');
-    final authController = context.read<AuthController>();
-    print('🔨 AuthController accessed');
     _routerInstance = _createRouter(context);
   }
 
@@ -87,7 +84,6 @@ class AppRouter {
     print('🔨 AppRouter._createRouter() called');
 
     final authController = context.read<AuthController>();
-    print('🔨 AuthController accessed');
 
     return GoRouter(
       initialLocation: '/splash',

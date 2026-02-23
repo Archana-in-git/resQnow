@@ -224,8 +224,25 @@ Future<void> main() async {
   );
 }
 
-class ResQNowApp extends StatelessWidget {
+class ResQNowApp extends StatefulWidget {
   const ResQNowApp({super.key});
+
+  @override
+  State<ResQNowApp> createState() => _ResQNowAppState();
+}
+
+class _ResQNowAppState extends State<ResQNowApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize suspension monitoring for already logged-in users
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (FirebaseAuth.instance.currentUser != null) {
+        final authController = context.read<AuthController>();
+        authController.initializeSuspensionMonitoring();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
