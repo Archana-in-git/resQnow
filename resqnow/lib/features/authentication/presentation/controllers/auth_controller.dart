@@ -25,54 +25,65 @@ class AuthController extends ChangeNotifier {
         .collection('users')
         .doc(user.uid)
         .snapshots()
-        .listen((snapshot) {
-      if (!snapshot.exists) {
-        // User Firestore document was deleted
-        // Check if email is in blocked_emails to confirm it's a proper deletion
-        if (user.email != null) {
-          _firestore
-              .collection('blocked_emails')
-              .doc(user.email!)
-              .get()
-              .then((blockedDoc) {
-            if (blockedDoc.exists) {
-              // User was properly deleted - sign out
-              print('DEBUG: User doc deleted and email in blocked_emails, signing out');
+        .listen(
+          (snapshot) {
+            if (!snapshot.exists) {
+              // User Firestore document was deleted
+              // Check if email is in blocked_emails to confirm it's a proper deletion
+              if (user.email != null) {
+                _firestore
+                    .collection('blocked_emails')
+                    .doc(user.email!)
+                    .get()
+                    .then((blockedDoc) {
+                      if (blockedDoc.exists) {
+                        // User was properly deleted - sign out
+                        print(
+                          'DEBUG: User doc deleted and email in blocked_emails, signing out',
+                        );
+                        _authService.signOut();
+                        notifyListeners();
+                      } else {
+                        // Document missing but email not blocked - could be data sync issue
+                        print(
+                          'DEBUG: User doc missing but email not blocked, staying logged in',
+                        );
+                      }
+                    })
+                    .catchError((e) {
+                      print('DEBUG: Error checking blocked_emails: $e');
+                    });
+              }
+              return;
+            }
+
+            // Use safe field access - don't use snapshot.get() as it throws if field doesn't exist
+            final data = snapshot.data() ?? {};
+            final accountStatus = data['accountStatus'] as String? ?? 'active';
+            final isBlocked = data['isBlocked'] as bool? ?? false;
+
+            print(
+              'DEBUG: Suspension check - accountStatus=$accountStatus, isBlocked=$isBlocked',
+            );
+
+            // Only respect isBlocked if accountStatus is explicitly NOT 'active'
+            // This prevents stale isBlocked flags from old test data
+            final isSuspended =
+                accountStatus == 'suspended' ||
+                (isBlocked && accountStatus != 'active');
+
+            // If user becomes suspended, sign them out
+            if (isSuspended) {
+              print('DEBUG: User is suspended/blocked, signing out');
               _authService.signOut();
               notifyListeners();
-            } else {
-              // Document missing but email not blocked - could be data sync issue
-              print('DEBUG: User doc missing but email not blocked, staying logged in');
             }
-          }).catchError((e) {
-            print('DEBUG: Error checking blocked_emails: $e');
-          });
-        }
-        return;
-      }
-
-      // Use safe field access - don't use snapshot.get() as it throws if field doesn't exist
-      final data = snapshot.data() ?? {};
-      final accountStatus = data['accountStatus'] as String? ?? 'active';
-      final isBlocked = data['isBlocked'] as bool? ?? false;
-
-      print('DEBUG: Suspension check - accountStatus=$accountStatus, isBlocked=$isBlocked');
-
-      // Only respect isBlocked if accountStatus is explicitly NOT 'active'
-      // This prevents stale isBlocked flags from old test data
-      final isSuspended =
-          accountStatus == 'suspended' || (isBlocked && accountStatus != 'active');
-
-      // If user becomes suspended, sign them out
-      if (isSuspended) {
-        print('DEBUG: User is suspended/blocked, signing out');
-        _authService.signOut();
-        notifyListeners();
-      }
-    }, onError: (error) {
-      // Silently ignore errors - if we can't read the field, assume user is active
-      print('Suspension monitoring error (non-critical): $error');
-    });
+          },
+          onError: (error) {
+            // Silently ignore errors - if we can't read the field, assume user is active
+            print('Suspension monitoring error (non-critical): $error');
+          },
+        );
   }
 
   /// Stop monitoring suspension status
@@ -168,31 +179,6 @@ class AuthController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // 🔍 SUSPENSION STATUS CHECK
-  // ---------------------------------------------------------------------------
-  Future<bool> isCurrentUserSuspended() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return false;
-      return await _authService.checkIfUserSuspended(user.uid);
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<Map<String, dynamic>> getCurrentUserStatusInfo() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        return {'exists': false, 'isSuspended': false};
-      }
-      return await _authService.getCurrentUserStatus(user.uid);
-    } catch (e) {
-      return {'exists': false, 'isSuspended': false};
-    }
-  }
-
-  // ---------------------------------------------------------------------------
   // ⚙️ SHARED AUTH HANDLER
   // ---------------------------------------------------------------------------
   Future<User?> _runAuthAction(
@@ -231,11 +217,5 @@ class AuthController extends ChangeNotifier {
   void _clearError() {
     _errorMessage = null;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _authService.dispose();
-    super.dispose();
   }
 }
