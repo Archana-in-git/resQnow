@@ -12,7 +12,7 @@ import '../data/profile_service.dart';
 import '../data/profile_model.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
     bloodGroup = bloodGroups.contains(user?.bloodGroup)
         ? user!.bloodGroup
         : "O+";
-    additionalNotes = user?.medicalConditions?.join(", ") ?? "";
+    additionalNotes = user?.medicalConditions.join(", ") ?? "";
     _imageUrl = user?.profileImageUrl;
 
     setState(() => isLoading = false);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../widgets/role_card.dart';
 import '../widgets/feature_card.dart';
 import '../widgets/benefit_item.dart';

@@ -251,7 +251,7 @@ class BloodBankCard extends StatelessWidget {
     final lat = bank.latitude;
     final lng = bank.longitude;
 
-    if (lat == null || lng == null) {
+    if (lng == null) {
       // Fallback to address if coordinates not available
       final String encodedAddress = Uri.encodeComponent(bank.address);
       final String mapsUrl =

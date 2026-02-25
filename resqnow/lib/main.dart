@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide NotificationListener;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +52,16 @@ import 'features/blood_donor/presentation/controllers/donor_list_controller.dart
 import 'features/blood_donor/presentation/controllers/donor_details_controller.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'features/chat/presentation/controllers/chat_controller.dart';
+import 'core/services/fcm_service.dart';
+import 'features/notifications/presentation/controllers/notification_controller.dart';
+import 'features/notifications/presentation/widgets/notification_listener_widget.dart';
+
+/// Firebase Messaging background handler
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('Handling a background message: ${message.messageId}');
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,6 +84,12 @@ Future<void> main() async {
       rethrow;
     }
   }
+
+  // Initialize Firebase Messaging
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initialize FCM Service
+  await FCMService().initializeFCM();
 
   final firestore = FirebaseFirestore.instance;
 
@@ -218,8 +233,13 @@ Future<void> main() async {
 
         // 💬 CHAT MODULE
         ChangeNotifierProvider(create: (_) => ChatController()),
+
+        // 🔔 NOTIFICATION MODULE
+        ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
-      child: const ResQNowApp(),
+      child: NotificationListener(
+        child: const ResQNowApp(),
+      ),
     ),
   );
 }

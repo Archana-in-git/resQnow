@@ -71,6 +71,7 @@ class CallRequestModel extends CallRequest {
   }
 
   /// Create new instance with updated fields
+  @override
   CallRequestModel copyWith({
     String? id,
     String? requesterId,

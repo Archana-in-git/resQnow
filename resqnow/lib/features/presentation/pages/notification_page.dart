@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
-import 'package:resqnow/core/constants/app_text_styles.dart';
 import 'package:resqnow/features/notifications/services/notification_service.dart';
 
 class NotificationPage extends StatefulWidget {

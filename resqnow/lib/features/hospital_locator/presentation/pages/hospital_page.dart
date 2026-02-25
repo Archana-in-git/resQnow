@@ -8,7 +8,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HospitalPage extends StatefulWidget {
-  const HospitalPage({Key? key}) : super(key: key);
+  const HospitalPage({super.key});
 
   @override
   State<HospitalPage> createState() => _HospitalPageState();
