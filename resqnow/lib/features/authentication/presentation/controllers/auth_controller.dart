@@ -191,13 +191,50 @@ class AuthController extends ChangeNotifier {
       _clearError();
       return user;
     } on FirebaseAuthException catch (e) {
-      _setError(e.message ?? defaultError);
+      final errorMessage = _getDetailedErrorMessage(e);
+      _setError(errorMessage);
+      print('AUTH ERROR [${e.code}]: ${e.message}');
       return null;
-    } catch (_) {
+    } catch (e) {
+      print('AUTH ERROR (non-Firebase): $e');
       _setError(defaultError);
       return null;
     } finally {
       _setLoading(false);
+    }
+  }
+
+  // Map Firebase error codes to user-friendly messages
+  String _getDetailedErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-deleted':
+        return e.message ?? 'This email was previously deleted. Please contact support.';
+      case 'email-suspended':
+        return e.message ?? 'This email is suspended. Please contact support.';
+      case 'user-not-found':
+        return 'No account found with this email. Please check and try again.';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'user-disabled':
+        return e.message ?? 'This account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many login attempts. Please try again later.';
+      case 'operation-not-allowed':
+        return 'This operation is not allowed. Please contact support.';
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'email-already-in-use':
+        return 'This email is already registered. Please login or use a different email.';
+      case 'weak-password':
+        return 'Password is too weak. Use at least 6 characters.';
+      case 'network-request-failed':
+        return 'Network error. Please check your connection.';
+      case 'service-unavailable':
+        return e.message ?? 'Service temporarily unavailable. Please try again.';
+      case 'firestore-error':
+        return e.message ?? 'Failed to create account. Please try again.';
+      default:
+        return e.message ?? 'Authentication failed. Please try again.';
     }
   }
 

@@ -83,8 +83,9 @@ class AuthService {
             .get();
 
         if (blockedEmailDoc.exists) {
-          final status = blockedEmailDoc.get('status') as String?;
-          final reason = blockedEmailDoc.get('reason') as String?;
+          final data = blockedEmailDoc.data() ?? {};
+          final status = data['status'] as String?;
+          final reason = data['reason'] as String?;
 
           if (status == 'deleted') {
             throw FirebaseAuthException(
@@ -100,11 +101,14 @@ class AuthService {
             );
           }
         }
-      } on FirebaseException catch (e) {
-        // If we can't check blocked emails, log but continue (don't block signup)
-        print('Warning: Could not check blocked_emails: ${e.message}');
+      } catch (e) {
+        // If it's a FirebaseAuthException, rethrow it
+        if (e is FirebaseAuthException) rethrow;
+        // For other Firestore errors, log but continue
+        print('Warning: Could not check blocked_emails: $e');
       }
 
+      // Create user in Firebase Auth
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -112,19 +116,34 @@ class AuthService {
 
       final user = credential.user;
       if (user != null) {
-        // ✅ Ensure display name exists in FirebaseAuth
-        await user.updateDisplayName(name);
+        try {
+          // ✅ Update display name in Firebase Auth
+          await user.updateDisplayName(name);
 
-        // ✅ Create user document in Firestore
-        await _firestore.collection(usersCollection).doc(user.uid).set({
-          'uid': user.uid,
-          'name': name,
-          'email': email,
-          'role': 'user',
-          'accountStatus': 'active',
-          'isBlocked': false,
-          'createdAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+          // ✅ Create user document in Firestore
+          await _firestore.collection(usersCollection).doc(user.uid).set({
+            'uid': user.uid,
+            'name': name,
+            'email': email.toLowerCase(),
+            'role': 'user',
+            'accountStatus': 'active',
+            'isBlocked': false,
+            'createdAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+
+          print('DEBUG: User document created successfully: ${user.uid}');
+        } catch (e) {
+          // If Firestore write fails, delete the auth user
+          print('ERROR: Failed to create user document: $e');
+          try {
+            await user.delete();
+          } catch (_) {}
+          throw FirebaseAuthException(
+            code: 'firestore-error',
+            message:
+                'Failed to create user profile. Please try again.',
+          );
+        }
       }
       return user;
     } on FirebaseAuthException {
@@ -152,16 +171,55 @@ class AuthService {
 
       final user = credential.user;
       if (user != null) {
-        await _validateUserCanAccess(user);
+        // ✅ Ensure user document exists in Firestore
+        try {
+          final userDoc = await _firestore
+              .collection(usersCollection)
+              .doc(user.uid)
+              .get();
+
+          if (!userDoc.exists) {
+            print(
+              'DEBUG: User document missing for ${user.uid}, creating it...',
+            );
+            // Create user document if missing
+            await _firestore
+                .collection(usersCollection)
+                .doc(user.uid)
+                .set({
+              'uid': user.uid,
+              'name': user.displayName ?? 'User',
+              'email': user.email?.toLowerCase() ?? email.toLowerCase(),
+              'role': 'user',
+              'accountStatus': 'active',
+              'isBlocked': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
+          }
+        } catch (e) {
+          print('WARNING: Could not verify user document: $e');
+        }
+
+        // ✅ Validate access status
+        try {
+          await _validateUserCanAccess(user);
+        } catch (e) {
+          print('ERROR: Access validation failed: $e');
+          rethrow;
+        }
 
         // ✅ Log login session
-        await _firestore.collection('user_sessions').doc(user.uid).set({
-          'userId': user.uid,
-          'email': user.email,
-          'loginTime': FieldValue.serverTimestamp(),
-          'logoutTime': null,
-          'isActive': true,
-        }, SetOptions(merge: true));
+        try {
+          await _firestore.collection('user_sessions').doc(user.uid).set({
+            'userId': user.uid,
+            'email': user.email,
+            'loginTime': FieldValue.serverTimestamp(),
+            'logoutTime': null,
+            'isActive': true,
+          }, SetOptions(merge: true));
+        } catch (e) {
+          print('WARNING: Could not log session: $e');
+        }
       }
 
       return user;
