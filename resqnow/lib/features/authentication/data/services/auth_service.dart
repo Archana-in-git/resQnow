@@ -75,6 +75,31 @@ class AuthService {
     required String password,
   }) async {
     try {
+      // ✅ Check if email is in blocked_emails collection (suspended or deleted)
+      final blockedEmailDoc = await _firestore
+          .collection('blocked_emails')
+          .doc(email.toLowerCase())
+          .get();
+
+      if (blockedEmailDoc.exists) {
+        final status = blockedEmailDoc.get('status') as String?;
+        final reason = blockedEmailDoc.get('reason') as String?;
+
+        if (status == 'deleted') {
+          throw FirebaseAuthException(
+            code: 'email-deleted',
+            message:
+                'This email address was previously deleted and cannot be used to create a new account. Please contact support.',
+          );
+        } else if (status == 'suspended') {
+          throw FirebaseAuthException(
+            code: 'email-suspended',
+            message:
+                'This email address is associated with a suspended account. Reason: ${reason ?? "Account suspended"}. Please contact support if you believe this is a mistake.',
+          );
+        }
+      }
+
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
