@@ -173,8 +173,8 @@ service cloud.firestore {
     // 🚫 BLOCKED EMAILS
     // ================================
     match /blocked_emails/{email} {
-      // Allow authenticated users to read blocked emails during signup validation
-      allow read: if isAuthenticated();
+      // Allow anyone to read blocked emails (needed for signup validation before auth)
+      allow read: if true;
       // Only Cloud Functions can write
       allow write: if false;
     }

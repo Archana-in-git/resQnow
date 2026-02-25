@@ -76,28 +76,33 @@ class AuthService {
   }) async {
     try {
       // ✅ Check if email is in blocked_emails collection (suspended or deleted)
-      final blockedEmailDoc = await _firestore
-          .collection('blocked_emails')
-          .doc(email.toLowerCase())
-          .get();
+      try {
+        final blockedEmailDoc = await _firestore
+            .collection('blocked_emails')
+            .doc(email.toLowerCase())
+            .get();
 
-      if (blockedEmailDoc.exists) {
-        final status = blockedEmailDoc.get('status') as String?;
-        final reason = blockedEmailDoc.get('reason') as String?;
+        if (blockedEmailDoc.exists) {
+          final status = blockedEmailDoc.get('status') as String?;
+          final reason = blockedEmailDoc.get('reason') as String?;
 
-        if (status == 'deleted') {
-          throw FirebaseAuthException(
-            code: 'email-deleted',
-            message:
-                'This email address was previously deleted and cannot be used to create a new account. Please contact support.',
-          );
-        } else if (status == 'suspended') {
-          throw FirebaseAuthException(
-            code: 'email-suspended',
-            message:
-                'This email address is associated with a suspended account. Reason: ${reason ?? "Account suspended"}. Please contact support if you believe this is a mistake.',
-          );
+          if (status == 'deleted') {
+            throw FirebaseAuthException(
+              code: 'email-deleted',
+              message:
+                  'This email address was previously deleted and cannot be used to create a new account. Please contact support.',
+            );
+          } else if (status == 'suspended') {
+            throw FirebaseAuthException(
+              code: 'email-suspended',
+              message:
+                  'This email address is associated with a suspended account. Reason: ${reason ?? "Account suspended"}. Please contact support if you believe this is a mistake.',
+            );
+          }
         }
+      } on FirebaseException catch (e) {
+        // If we can't check blocked emails, log but continue (don't block signup)
+        print('Warning: Could not check blocked_emails: ${e.message}');
       }
 
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -110,6 +115,7 @@ class AuthService {
         // ✅ Ensure display name exists in FirebaseAuth
         await user.updateDisplayName(name);
 
+        // ✅ Create user document in Firestore
         await _firestore.collection(usersCollection).doc(user.uid).set({
           'uid': user.uid,
           'name': name,
@@ -123,6 +129,11 @@ class AuthService {
       return user;
     } on FirebaseAuthException {
       rethrow;
+    } catch (e) {
+      throw FirebaseAuthException(
+        code: 'unknown',
+        message: 'Signup failed: ${e.toString()}',
+      );
     }
   }
 
