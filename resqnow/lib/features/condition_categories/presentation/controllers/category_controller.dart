@@ -12,6 +12,7 @@ class CategoryController extends ChangeNotifier {
   bool _isLoading = true;
   bool _isSearching = false;
   String? _error;
+  bool _isDisposed = false;
 
   List<Category> get categories =>
       _isSearching ? _filteredCategories : _allCategories;
@@ -22,6 +23,8 @@ class CategoryController extends ChangeNotifier {
   CategoryController(this._categoryService);
 
   Future<void> loadCategories() async {
+    if (_isDisposed) return;
+    
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -34,10 +37,14 @@ class CategoryController extends ChangeNotifier {
     }
 
     _isLoading = false;
-    notifyListeners();
+    if (!_isDisposed) {
+      notifyListeners();
+    }
   }
 
   void searchCategories(String query) {
+    if (_isDisposed) return;
+    
     if (query.isEmpty) {
       _isSearching = false;
       _filteredCategories = _allCategories;
@@ -65,6 +72,8 @@ class CategoryController extends ChangeNotifier {
   }
 
   void clearSearch() {
+    if (_isDisposed) return;
+    
     _isSearching = false;
     _filteredCategories = _allCategories;
     notifyListeners();
@@ -86,5 +95,11 @@ class CategoryController extends ChangeNotifier {
       // Silently fail - logging errors shouldn't affect the user experience
       debugPrint('Error in search logging: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

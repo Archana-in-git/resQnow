@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
 
 class EmergencyService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Log emergency button click to Firestore for real-time dashboard tracking
-  /// This ensures the admin dashboard shows accurate emergency statistics
+  /// Optimized for speed - logs minimal data for instant response
+  /// This ensures the admin dashboard shows accurate emergency statistics in real-time
   Future<void> logEmergencyClick({
     required String emergencyNumber,
     String severity = 'high',
@@ -19,33 +19,15 @@ class EmergencyService {
         return;
       }
 
-      // Get device location if available
-      Map<String, dynamic> locationData = {};
-      try {
-        final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 5),
-        );
-        locationData = {
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-          'accuracy': position.accuracy,
-        };
-      } catch (e) {
-        // If location unavailable, continue without it
-        print('Could not get location: $e');
-      }
-
-      // Add emergency log document to Firestore
+      // Add emergency log document to Firestore with minimal data for speed
       await _firestore.collection('emergency_logs').add({
         'userId': currentUser.uid,
         'userEmail': currentUser.email,
-        'timestamp': DateTime.now().toIso8601String(),
+        'timestamp': FieldValue.serverTimestamp(),
         'emergencyNumber': emergencyNumber,
         'severity': severity,
         'status':
             'initiated', // can be: initiated, in_progress, completed, failed
-        'location': locationData.isNotEmpty ? locationData : null,
         'platform': 'mobile_app', // helps distinguish from web admin actions
       });
 

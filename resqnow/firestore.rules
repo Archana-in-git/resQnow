@@ -3,72 +3,128 @@
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ================================
-    // 🔐 Helper Functions
-    // ================================
+    // =================================================
+    // 🔐 HELPER FUNCTIONS
+    // =================================================
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Safe admin check - returns false if user doc doesn't exist yet
     function isAdminSafe() {
       return request.auth != null &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
     }
-    
-    // Quick check without Firestore read - for new signups
+
     function isAdmin() {
       return isAdminSafe();
     }
 
-    // ================================
-    // 👤 USERS
-    // ================================
-    match /users/{userId} {
+    function isHospitalOwner(hospitalId) {
+      return isAuthenticated() &&
+             request.auth.uid == hospitalId;
+    }
+
+    function isAppointmentHospital() {
+      return isAuthenticated() &&
+             resource.data.hospitalId == request.auth.uid;
+    }
+
+    // =================================================
+    // 🏥 HOSPITALS
+    // =================================================
+    match /hospitals/{hospitalId} {
 
       allow read: if isAuthenticated();
 
       allow create: if isAuthenticated() &&
-                    request.auth.uid == userId;
+                    request.auth.uid == hospitalId;
 
-      allow update: if (
-                        isAuthenticated() &&
-                        request.auth.uid == userId &&
-                        !("role" in request.resource.data.diff(resource.data).changedKeys())
-                     ) || isAdmin();
-
-      // Profile updates: Users can update phone, gender, bloodGroup, medicalConditions, profileImageUrl
-      // Note: profileImageUrl (photo) is OPTIONAL - users can save profile without adding/changing photo
+      allow update: if isHospitalOwner(hospitalId) || isAdmin();
 
       allow delete: if isAdmin();
+    }
 
-      // Subcollection: user chats
+    // =================================================
+    // 👨‍⚕️ DOCTORS
+    // =================================================
+    match /doctors/{doctorId} {
+
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated() &&
+                    request.resource.data.hospitalId == request.auth.uid;
+
+      allow update: if isAuthenticated() &&
+                    resource.data.hospitalId == request.auth.uid;
+
+      allow delete: if isAuthenticated() &&
+                    resource.data.hospitalId == request.auth.uid;
+    }
+
+    // =================================================
+    // 📅 APPOINTMENTS
+    // =================================================
+    match /appointments/{appointmentId} {
+
+      // User or hospital or admin can read
+      allow read: if isAuthenticated() &&
+                  (
+                    request.auth.uid == resource.data.userId ||
+                    request.auth.uid == resource.data.hospitalId ||
+                    isAdmin()
+                  );
+
+      // Only authenticated users create for themselves
+      allow create: if isAuthenticated() &&
+                    request.auth.uid == request.resource.data.userId;
+
+      // Hospital can update status
+      allow update: if isAuthenticated() &&
+                    (
+                      request.auth.uid == resource.data.hospitalId ||
+                      isAdmin()
+                    );
+
+      allow delete: if isAdmin();
+    }
+
+    // =================================================
+    // 👤 USERS
+    // =================================================
+    match /users/{userId} {
+
+      allow read, write: if isAuthenticated();
+
       match /chats/{chatId} {
+        allow read, write: if isAuthenticated() &&
+                           request.auth.uid == userId;
+      }
+
+      match /call_requests/{requestId} {
         allow read, write: if isAuthenticated() &&
                            request.auth.uid == userId;
       }
     }
 
-    // ================================
+    // =================================================
     // 👥 DONORS
-    // ================================
+    // =================================================
     match /donors/{donorId} {
 
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() || isAdmin();
 
       allow create: if isAuthenticated() &&
                     request.auth.uid == donorId;
 
-      allow update: if isAuthenticated() &&
-                    request.auth.uid == donorId;
+      allow update: if (isAuthenticated() && request.auth.uid == donorId) || isAdmin();
 
       allow delete: if isAdmin();
     }
 
-    // ================================
+    // =================================================
     // 📞 CALL REQUESTS
-    // ================================
+    // =================================================
     match /call_requests/{requestId} {
 
       allow create: if isAuthenticated() &&
@@ -81,39 +137,19 @@ service cloud.firestore {
                     isAdmin()
                   );
 
-      allow update: if isAdmin();
-
-      allow delete: if isAdmin();
+      allow update, delete: if isAdmin();
     }
 
-    // ================================
+    // =================================================
     // 🔔 NOTIFICATIONS
-    // ================================
+    // =================================================
     match /notifications/{notificationId} {
-
-      allow read: if isAuthenticated() &&
-                  (
-                    resource.data.userId == request.auth.uid ||
-                    isAdmin()
-                  );
-
-      allow create: if isAdmin();
-
-      allow update: if isAuthenticated() &&
-                    resource.data.userId == request.auth.uid &&
-                    request.resource.data.userId == resource.data.userId &&
-                    request.resource.data.title == resource.data.title &&
-                    request.resource.data.message == resource.data.message &&
-                    request.resource.data.type == resource.data.type &&
-                    request.resource.data.createdAt == resource.data.createdAt &&
-                    request.resource.data.isRead in [true, false];
-
-      allow delete: if isAdmin();
+      allow read, write: if isAuthenticated();
     }
 
-    // ================================
+    // =================================================
     // 📚 PUBLIC READ COLLECTIONS
-    // ================================
+    // =================================================
     match /categories/{doc} {
       allow read: if true;
       allow write: if isAdmin();
@@ -139,16 +175,25 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ================================
+    match /app_config/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // =================================================
     // 💬 GLOBAL CHATS
-    // ================================
+    // =================================================
     match /chats/{doc} {
       allow read, write: if isAuthenticated();
     }
 
-    // ================================
+    // =================================================
     // 📊 LOGGING & ANALYTICS
-    // ================================
+    // =================================================
+    match /user_sessions/{doc} {
+      allow read, write: if isAuthenticated();
+    }
+
     match /emergency_logs/{doc} {
       allow write: if isAuthenticated();
       allow read: if isAdmin();
@@ -169,19 +214,17 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // ================================
+    // =================================================
     // 🚫 BLOCKED EMAILS
-    // ================================
+    // =================================================
     match /blocked_emails/{email} {
-      // Allow anyone to read blocked emails (needed for signup validation before auth)
       allow read: if true;
-      // Only Cloud Functions can write
       allow write: if false;
     }
 
-    // ================================
-    // ❌ Catch All
-    // ================================
+    // =================================================
+    // ❌ CATCH ALL
+    // =================================================
     match /{document=**} {
       allow read, write: if false;
     }

@@ -18,7 +18,7 @@ import 'features/condition_categories/presentation/controllers/category_controll
 // RESOURCES
 import 'data/datasources/remote/resource_remote_datasource.dart';
 import 'data/repositories/resource_repository_impl.dart';
-import 'domain/usecases/get_resources.dart';
+import 'domain/usecases/get_featured_resources.dart';
 import 'features/first_aid_resources/presentation/controllers/resource_controller.dart';
 
 // LOCATION + AUTH
@@ -103,7 +103,7 @@ Future<void> main() async {
     remoteDataSource: resourceRemoteDataSource,
   );
 
-  final getResourcesUseCase = GetResources(resourceRepository);
+  final getFeaturedResourcesUseCase = GetFeaturedResources(resourceRepository);
   runApp(
     MultiProvider(
       providers: [
@@ -124,7 +124,7 @@ Future<void> main() async {
         // RESOURCES
         ChangeNotifierProvider(
           create: (_) =>
-              ResourceController(getResourcesUseCase: getResourcesUseCase),
+              ResourceController(getFeaturedResourcesUseCase: getFeaturedResourcesUseCase),
         ),
 
         // ⭐ BLOOD BANK MODULE

@@ -90,9 +90,9 @@ flutter:
     - lib/assets/animation/success_check.json
     - assets/sounds/beep.wav
     - assets/images/app_icon.png
-    - assets/images/Screenshot 2026-02-23 221241.png
-    - assets/images/Screenshot 2026-02-23 221303.png
-    - assets/images/Screenshot 2026-02-23 221324.png
+    - assets/images/aster.png
+    - assets/images/ekm.png
+    - assets/images/amrita.png
     - lib/assets/images/icons/
     - lib/assets/images/firstaid_images/
     - lib/assets/images/kits/

@@ -72,7 +72,13 @@ class _NotificationListenerState extends State<NotificationListener> {
 
   void _showNotificationSnackBar(Map<String, dynamic> notification) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+    final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+    if (scaffoldMessenger == null) {
+      print('⚠️ ScaffoldMessenger not found in context, skipping snack bar');
+      return;
+    }
+    
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Column(
           mainAxisSize: MainAxisSize.min,

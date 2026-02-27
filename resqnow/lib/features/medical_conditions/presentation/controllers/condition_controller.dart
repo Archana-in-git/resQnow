@@ -18,9 +18,6 @@ class ConditionController extends ChangeNotifier {
     try {
       final fetchedCondition = await _conditionService.getConditionById(id);
       condition.value = fetchedCondition;
-
-      // 📊 Track this view for analytics (High Severity Cases Viewed)
-      await _conditionService.incrementConditionViewCount(id);
     } catch (e) {
       errorMessage.value = 'Error fetching condition: $e';
       condition.value = null;

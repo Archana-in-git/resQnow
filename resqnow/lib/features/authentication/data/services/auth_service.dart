@@ -120,7 +120,7 @@ class AuthService {
           // ✅ Update display name in Firebase Auth
           await user.updateDisplayName(name);
 
-          // ✅ Create user document in Firestore
+          // ✅ Create complete user document in Firestore
           await _firestore.collection(usersCollection).doc(user.uid).set({
             'uid': user.uid,
             'name': name,
@@ -128,25 +128,72 @@ class AuthService {
             'role': 'user',
             'accountStatus': 'active',
             'isBlocked': false,
+            'emailVerified': user.emailVerified,
+            'profileImage': null,
             'createdAt': FieldValue.serverTimestamp(),
+            'lastLogin': null,
+            'suspendedAt': null,
+            'suspensionReason': null,
           }, SetOptions(merge: true));
 
           print('DEBUG: User document created successfully: ${user.uid}');
         } catch (e) {
           // If Firestore write fails, delete the auth user
           print('ERROR: Failed to create user document: $e');
+          print('ERROR TYPE: ${e.runtimeType}');
+          if (e is FirebaseException) {
+            print('FIREBASE ERROR CODE: ${e.code}');
+            print('FIREBASE ERROR MESSAGE: ${e.message}');
+          }
           try {
             await user.delete();
           } catch (_) {}
           throw FirebaseAuthException(
             code: 'firestore-error',
             message:
-                'Failed to create user profile. Please try again.',
+                'Failed to create user profile. Please try again. Error: ${e.toString()}',
           );
         }
       }
       return user;
-    } on FirebaseAuthException {
+    } on FirebaseAuthException catch (e) {
+      // Special handling for "email-already-in-use"
+      if (e.code == 'email-already-in-use') {
+        print(
+          'INFO: Email already exists in authentication. Checking if user was reactivated...',
+        );
+
+        try {
+          // Check if user has an account that might be reactivated
+          final userquery = await _firestore
+              .collection(usersCollection)
+              .where('email', isEqualTo: email.toLowerCase())
+              .limit(1)
+              .get();
+
+          if (userquery.docs.isNotEmpty) {
+            final userData = userquery.docs.first.data();
+            final accountStatus = userData['accountStatus'] ?? 'unknown';
+
+            if (accountStatus == 'active') {
+              throw FirebaseAuthException(
+                code: 'email-already-in-use',
+                message:
+                    'This email is already registered and active. Please use the Login option instead. If you forgot your password, use "Forgot Password".',
+              );
+            } else {
+              throw FirebaseAuthException(
+                code: 'email-already-in-use',
+                message:
+                    'This email is already registered. Please use the Login option. If you forgot your password, use "Forgot Password".',
+              );
+            }
+          }
+        } catch (checkError) {
+          if (checkError is FirebaseAuthException) rethrow;
+          print('Warning: Could not check existing user: $checkError');
+        }
+      }
       rethrow;
     } catch (e) {
       throw FirebaseAuthException(
@@ -182,18 +229,20 @@ class AuthService {
             print(
               'DEBUG: User document missing for ${user.uid}, creating it...',
             );
-            // Create user document if missing
-            await _firestore
-                .collection(usersCollection)
-                .doc(user.uid)
-                .set({
+            // Create complete user document if missing
+            await _firestore.collection(usersCollection).doc(user.uid).set({
               'uid': user.uid,
               'name': user.displayName ?? 'User',
               'email': user.email?.toLowerCase() ?? email.toLowerCase(),
               'role': 'user',
               'accountStatus': 'active',
               'isBlocked': false,
+              'emailVerified': user.emailVerified,
+              'profileImage': null,
               'createdAt': FieldValue.serverTimestamp(),
+              'lastLogin': null,
+              'suspendedAt': null,
+              'suspensionReason': null,
             }, SetOptions(merge: true));
           }
         } catch (e) {
@@ -206,19 +255,6 @@ class AuthService {
         } catch (e) {
           print('ERROR: Access validation failed: $e');
           rethrow;
-        }
-
-        // ✅ Log login session
-        try {
-          await _firestore.collection('user_sessions').doc(user.uid).set({
-            'userId': user.uid,
-            'email': user.email,
-            'loginTime': FieldValue.serverTimestamp(),
-            'logoutTime': null,
-            'isActive': true,
-          }, SetOptions(merge: true));
-        } catch (e) {
-          print('WARNING: Could not log session: $e');
         }
       }
 
@@ -237,19 +273,6 @@ class AuthService {
   // 🚪 SIGN OUT
   // ---------------------------------------------------------------------------
   Future<void> signOut() async {
-    try {
-      final currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        // ✅ Log logout session
-        await _firestore.collection('user_sessions').doc(currentUser.uid).set({
-          'userId': currentUser.uid,
-          'logoutTime': FieldValue.serverTimestamp(),
-          'isActive': false,
-        }, SetOptions(merge: true));
-      }
-    } catch (e) {
-      print('Error logging logout: $e');
-    }
     await _auth.signOut();
   }
 

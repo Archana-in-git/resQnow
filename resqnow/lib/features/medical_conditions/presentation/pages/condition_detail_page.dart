@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/condition_model.dart';
@@ -200,7 +199,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                     // ═══════════════════════════════════════════════════════════
                     // VIDEO SECTION - Lazy loaded with RepaintBoundary
                     // ═══════════════════════════════════════════════════════════
-                    if (condition.videoUrl.isNotEmpty)
+                    if ((condition.videoUrl?.isNotEmpty ?? false))
                       RepaintBoundary(
                         child: _buildVideoSection(condition, isDarkMode),
                       )
@@ -246,13 +245,14 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                       onPageChanged: (index) =>
                           setState(() => _currentPage = index),
                       itemBuilder: (context, index) {
-                        final path = condition.imageUrls[index].replaceFirst(
-                          'resqnow/lib/',
-                          '',
-                        );
-                        if (path.startsWith('http')) {
+                        final imageUrl = condition.imageUrls[index];
+
+                        // Check if it's an HTTP/HTTPS URL
+                        if (imageUrl.startsWith('http://') ||
+                            imageUrl.startsWith('https://')) {
+                          // Network image
                           return CachedNetworkImage(
-                            imageUrl: path,
+                            imageUrl: imageUrl,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             placeholder: (context, url) => Container(
@@ -275,10 +275,39 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                             memCacheWidth: 500,
                           );
                         } else {
+                          // Local asset - extract just filename and construct proper path
+                          final filename = imageUrl.contains('/')
+                              ? imageUrl.split('/').last
+                              : imageUrl;
+                          final assetPath =
+                              'lib/assets/images/firstaid_images/$filename';
+
                           return Image.asset(
-                            path,
+                            assetPath,
                             fit: BoxFit.cover,
                             width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: Colors.grey.shade300,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.broken_image,
+                                        color: Colors.grey[500],
+                                        size: 40,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Asset not found',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                           );
                         }
                       },
@@ -419,7 +448,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
           style: _sectionTitleStyle(context, fontSize: 18),
         ),
         const SizedBox(height: 16),
-        VideoPlayerWidget(videoUrl: condition.videoUrl),
+        VideoPlayerWidget(videoUrl: condition.videoUrl!),
       ],
     );
   }
@@ -499,18 +528,16 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
             const SizedBox(width: 12),
 
             // Hospital Card
-            if (condition.hospitalLocatorLink.isNotEmpty)
-              Expanded(
-                child: _buildQuickAccessCard(
-                  icon: Icons.local_hospital,
-                  iconColor: Colors.red,
-                  backgroundColor: Colors.red.withValues(alpha: 0.1),
-                  label: 'Hospitals',
-                  onTap: () =>
-                      launchUrl(Uri.parse(condition.hospitalLocatorLink)),
-                  isDarkMode: isDarkMode,
-                ),
+            Expanded(
+              child: _buildQuickAccessCard(
+                icon: Icons.local_hospital,
+                iconColor: Colors.red,
+                backgroundColor: Colors.red.withValues(alpha: 0.1),
+                label: 'Hospitals',
+                onTap: () => context.push('/hospitals'),
+                isDarkMode: isDarkMode,
               ),
+            ),
           ],
         ),
       ],

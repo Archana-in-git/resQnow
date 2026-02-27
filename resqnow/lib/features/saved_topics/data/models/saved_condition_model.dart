@@ -34,16 +34,16 @@ class SavedConditionModel {
       imageUrls: condition.imageUrls,
       severity: condition.severity,
       firstAidDescription: condition.firstAidDescription,
-      videoUrl: condition.videoUrl,
+      videoUrl: condition.videoUrl ?? '',
       faqs: condition.faqs,
       doctorType: condition.doctorType,
-      hospitalLocatorLink: condition.hospitalLocatorLink,
+      hospitalLocatorLink: condition.hospitalLocatorLink ?? '',
       savedAt: DateTime.now().millisecondsSinceEpoch,
     );
   }
 
   /// Convert to ConditionModel
-  ConditionModel toConditionModel() {
+  ConditionModel toConditionModel({required String categoryId}) {
     return ConditionModel(
       id: id,
       name: name,
@@ -54,6 +54,7 @@ class SavedConditionModel {
       faqs: faqs,
       doctorType: doctorType,
       hospitalLocatorLink: hospitalLocatorLink,
+      categoryId: categoryId,
     );
   }
 

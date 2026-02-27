@@ -43,6 +43,10 @@ class BloodDonor extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// Suspension status
+  final bool isSuspended;
+  final String? suspensionReason;
+
   const BloodDonor({
     required this.id,
     required this.name,
@@ -76,6 +80,8 @@ class BloodDonor extends Equatable {
 
     required this.createdAt,
     required this.updatedAt,
+    this.isSuspended = false,
+    this.suspensionReason,
   });
 
   // -----------------------------
@@ -106,6 +112,8 @@ class BloodDonor extends Equatable {
     String? notes,
     String? profileImageUrl,
     DateTime? updatedAt,
+    bool? isSuspended,
+    String? suspensionReason,
   }) {
     return BloodDonor(
       id: id,
@@ -137,6 +145,8 @@ class BloodDonor extends Equatable {
 
       createdAt: createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
+      isSuspended: isSuspended ?? this.isSuspended,
+      suspensionReason: suspensionReason ?? this.suspensionReason,
     );
   }
 
@@ -178,6 +188,8 @@ class BloodDonor extends Equatable {
 
       "createdAt": createdAt.toIso8601String(),
       "updatedAt": updatedAt.toIso8601String(),
+      "isSuspended": isSuspended,
+      "suspensionReason": suspensionReason,
     };
   }
 
@@ -240,6 +252,8 @@ class BloodDonor extends Equatable {
 
       createdAt: createdAtParsed,
       updatedAt: updatedAtParsed,
+      isSuspended: map["isSuspended"] ?? false,
+      suspensionReason: map["suspensionReason"] as String?,
     );
   }
 
@@ -269,5 +283,7 @@ class BloodDonor extends Equatable {
     profileImageUrl,
     createdAt,
     updatedAt,
+    isSuspended,
+    suspensionReason,
   ];
 }

@@ -36,37 +36,6 @@ class ConditionService {
     }
   }
 
-  /// Track condition view count for dashboard analytics
-  /// Call this when a user views a condition's detail page
-  /// This enables the "Top Conditions" chart to show popular conditions
-  Future<void> incrementConditionViewCount(String conditionId) async {
-    try {
-      final currentUser = _auth.currentUser;
-      if (currentUser == null) {
-        print('No authenticated user for view tracking');
-        return;
-      }
-
-      // Increment the viewCount field in the conditions collection
-      await _firestore.collection('conditions').doc(conditionId).update({
-        'viewCount': FieldValue.increment(1),
-      });
-
-      // Also log to user_activity for monthly active users tracking
-      await _firestore.collection('user_activity').doc(currentUser.uid).set({
-        'userId': currentUser.uid,
-        'lastActive': DateTime.now().toIso8601String(),
-        'lastActivity': 'viewed_condition',
-        'lastActivityItemId': conditionId,
-      }, SetOptions(merge: true));
-
-      print('✅ Condition view count incremented for: $conditionId');
-    } catch (e) {
-      print('❌ Error incrementing view count: $e');
-      // Don't throw - we don't want view tracking to break condition viewing
-    }
-  }
-
   /// Track condition search/view by condition name
   /// Useful for finding which conditions are most useful to users
   Future<void> logConditionInteraction({

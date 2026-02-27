@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 final List<Map<String, dynamic>> _hospitalMockData = [
   {
     'name': 'Aster Medcity Hospital, Ko...',
-    'image': 'assets/images/Screenshot 2026-02-23 221241.png',
+    'image': 'assets/images/aster.png',
     'rating': 4.7,
     'reviews': '38.4k',
     'type': 'Hospital',
@@ -30,7 +30,7 @@ final List<Map<String, dynamic>> _hospitalMockData = [
   },
   {
     'name': 'Ernakulam Medical Centre',
-    'image': 'assets/images/Screenshot 2026-02-23 221303.png',
+    'image': 'assets/images/ekm.png',
     'rating': 4.5,
     'reviews': '3.5k',
     'type': 'Private hospital',
@@ -38,7 +38,7 @@ final List<Map<String, dynamic>> _hospitalMockData = [
   },
   {
     'name': 'Amrita Hospital, Kochi',
-    'image': 'assets/images/Screenshot 2026-02-23 221324.png',
+    'image': 'assets/images/amrita.png',
     'rating': 4.0,
     'reviews': '5.8k',
     'type': 'Private hospital',
@@ -209,6 +209,7 @@ class _HomePageState extends State<HomePage> {
                           return _CategoryCircleIcon(
                             diameter: diameter,
                             iconPath: cat.iconAsset,
+                            imageUrls: cat.imageUrls,
                             onTap: () =>
                                 context.push('/categories/condition/${cat.id}'),
                           );
@@ -376,13 +377,35 @@ class _HomePageState extends State<HomePage> {
 class _CategoryCircleIcon extends StatelessWidget {
   final double diameter;
   final String iconPath;
+  final List<String> imageUrls;
   final VoidCallback? onTap;
 
   const _CategoryCircleIcon({
     required this.diameter,
     required this.iconPath,
+    this.imageUrls = const [],
     this.onTap,
   });
+
+  /// Check if the path is a network URL
+  bool _isNetworkUrl(String path) {
+    return path.startsWith('http://') || path.startsWith('https://');
+  }
+
+  /// Transform asset path from filename to full asset path
+  /// Admin stores just filename (e.g., "lungs-organ.png")
+  /// Main app needs full path (e.g., "lib/assets/images/icons/lungs-organ.png")
+  String _transformAssetPath(String filename) {
+    if (filename.isEmpty) return '';
+    if (_isNetworkUrl(filename)) return filename; // Return URLs as-is
+    // Handle full paths - extract just the filename
+    final justFilename = filename.contains('/')
+        ? filename.split('/').last
+        : filename;
+    // Replace spaces with underscores (consistent with admin app)
+    final normalized = justFilename.replaceAll(' ', '_');
+    return 'lib/assets/images/icons/$normalized';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -413,18 +436,63 @@ class _CategoryCircleIcon extends StatelessWidget {
             ),
             child: Padding(
               padding: EdgeInsets.all(padding),
-              child: iconPath.isNotEmpty
-                  ? Image.asset(iconPath, fit: BoxFit.contain)
-                  : Icon(
-                      Icons.medical_information,
-                      color: AppColors.primary,
-                      size: innerSize * 0.5,
-                    ),
+              child: _buildCategoryImage(innerSize),
             ),
           ),
         ),
       ),
     );
+  }
+
+  /// Build category image with priority: imageUrls > iconPath
+  Widget _buildCategoryImage(double innerSize) {
+    // Priority 1: Use imageUrls if available
+    if (imageUrls.isNotEmpty) {
+      return Image.network(
+        imageUrls.first,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.medical_information,
+            color: AppColors.primary,
+            size: innerSize * 0.5,
+          );
+        },
+      );
+    }
+
+    // Priority 2: Use iconPath (could be local file or URL)
+    if (iconPath.isEmpty) {
+      return Icon(
+        Icons.medical_information,
+        color: AppColors.primary,
+        size: innerSize * 0.5,
+      );
+    }
+
+    return _isNetworkUrl(iconPath)
+        ? Image.network(
+            iconPath,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.medical_information,
+                color: AppColors.primary,
+                size: innerSize * 0.5,
+              );
+            },
+          )
+        : Image.asset(
+            _transformAssetPath(iconPath),
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.medical_information,
+                color: AppColors.primary,
+                size: innerSize * 0.5,
+              );
+            },
+          );
   }
 }
 

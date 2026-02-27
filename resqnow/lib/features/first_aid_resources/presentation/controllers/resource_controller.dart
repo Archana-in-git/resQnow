@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:resqnow/domain/entities/resource.dart';
-import 'package:resqnow/domain/usecases/get_resources.dart';
+import 'package:resqnow/domain/usecases/get_featured_resources.dart';
 
 class ResourceController extends ChangeNotifier {
-  final GetResources getResourcesUseCase;
+  final GetFeaturedResources getFeaturedResourcesUseCase;
 
-  ResourceController({required this.getResourcesUseCase});
+  ResourceController({required this.getFeaturedResourcesUseCase});
 
   // ---------------------------------------------------------
   // STATE
@@ -43,7 +43,7 @@ class ResourceController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _allResources = await getResourcesUseCase();
+      _allResources = await getFeaturedResourcesUseCase.call();
       _applyFilters();
     } catch (e) {
       _error = e.toString();

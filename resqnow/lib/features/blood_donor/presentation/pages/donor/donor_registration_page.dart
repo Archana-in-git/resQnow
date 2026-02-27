@@ -121,13 +121,63 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
       final profileController = context.read<DonorProfileController>();
       final isDonor = await profileController.isDonor();
 
-      if (isDonor && mounted && !_skipDonorCheck) {
-        // User is already a donor, show dialog and redirect
-        _showAlreadyDonorDialog();
+      if (!mounted || _skipDonorCheck) return;
+
+      if (isDonor && profileController.donor != null) {
+        final donor = profileController.donor!;
+
+        // Check if donor is suspended
+        if (donor.isSuspended) {
+          _showSuspendedDialog();
+        } else {
+          // User is already a donor and not suspended
+          _showAlreadyDonorDialog();
+        }
       }
     } catch (e) {
       debugPrint("Error checking donor status: $e");
     }
+  }
+
+  /// Dialog shown when user's donor account is suspended
+  void _showSuspendedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
+        title: Row(
+          children: [
+            Icon(Icons.block_rounded, color: Colors.red.shade600),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Account Suspended',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Your blood donor account has been suspended and you cannot register as a donor at this time. You can continue using other features of the app.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              context.go('/home');
+            },
+            child: const Text('Go Back'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Dialog shown when user is already a registered donor

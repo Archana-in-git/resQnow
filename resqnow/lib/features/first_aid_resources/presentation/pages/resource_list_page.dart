@@ -30,6 +30,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
 
     Future.microtask(() async {
       if (!mounted) return;
+      debugPrint('📥 [LOAD] Fetching resources...');
       await Provider.of<ResourceController>(
         context,
         listen: false,
@@ -45,7 +46,6 @@ class _ResourceListPageState extends State<ResourceListPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('ResourceListPage built');
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final controller = context.watch<ResourceController>();
     final hasFilters = controller.activeCategories.isNotEmpty;
@@ -63,7 +63,6 @@ class _ResourceListPageState extends State<ResourceListPage> {
             color: isDarkMode ? Colors.white : AppColors.textPrimary,
           ),
           onPressed: () {
-            // Clear filters and search before navigating back
             context.read<ResourceController>().clearCategoryFilters();
             context.read<ResourceController>().clearSearch();
             context.pop();
@@ -82,7 +81,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // Search + Filter Row (UI only, no logic yet)
+            // Search + Filter Row
             Row(
               children: [
                 Expanded(
@@ -145,7 +144,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                               ? Colors.grey.shade500
                               : AppColors.textPrimary),
                   ),
-                  onPressed: _showFilterSheet,
+                  onPressed: () {
+                    _showFilterSheet();
+                  },
                 ),
               ],
             ),
@@ -191,11 +192,9 @@ class _ResourceListPageState extends State<ResourceListPage> {
                         return ResourceCard(
                           resource: resource,
                           onTap: () {
-                            // Navigate to detail page
                             context.push('/resource-detail', extra: resource);
                           },
                           onActionTap: () {
-                            // Action button logic (Save / Info)
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text("${resource.name} clicked!"),
@@ -213,6 +212,8 @@ class _ResourceListPageState extends State<ResourceListPage> {
   }
 
   void _showFilterSheet() {
+    final controller = context.read<ResourceController>();
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -220,256 +221,329 @@ class _ResourceListPageState extends State<ResourceListPage> {
       barrierColor: Colors.black.withValues(alpha: 0.3),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation1, animation2) {
-        return const SizedBox.shrink();
+        return _FilterSheetWidget(
+          availableCategories: List.from(controller.availableCategories),
+          initialActiveCategories: List.from(controller.activeCategories),
+          onApplyFilters: (selectedCategories) {
+            controller.clearCategoryFilters();
+
+            for (final category in selectedCategories) {
+              controller.toggleCategory(category);
+            }
+          },
+          onClearFilters: () {
+            controller.clearCategoryFilters();
+          },
+        );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
         return SlideTransition(
           position: Tween<Offset>(
             begin: const Offset(1, 0),
             end: Offset.zero,
           ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
-          child: Consumer<ResourceController>(
-            builder: (context, controller, _) {
-              final categories = controller.availableCategories;
-              final active = controller.activeCategories;
+          child: child,
+        );
+      },
+    );
+  }
+}
 
-              return Align(
-                alignment: Alignment.centerRight,
-                child: Material(
-                  color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.75,
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      color: isDarkMode
-                          ? const Color(0xFF1E1E1E)
-                          : Colors.white,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        bottomLeft: Radius.circular(24),
+/// ============================================================
+/// COMPLETELY ISOLATED FILTER SHEET WIDGET
+/// NO external state, NO controller dependency during build
+/// ============================================================
+class _FilterSheetWidget extends StatefulWidget {
+  final List<String> availableCategories;
+  final List<String> initialActiveCategories;
+  final Function(List<String>) onApplyFilters;
+  final VoidCallback onClearFilters;
+
+  const _FilterSheetWidget({
+    required this.availableCategories,
+    required this.initialActiveCategories,
+    required this.onApplyFilters,
+    required this.onClearFilters,
+  });
+
+  @override
+  State<_FilterSheetWidget> createState() => _FilterSheetWidgetState();
+}
+
+class _FilterSheetWidgetState extends State<_FilterSheetWidget> {
+  late List<String> _localSelectedCategories;
+
+  @override
+  void initState() {
+    super.initState();
+    _localSelectedCategories = List.from(widget.initialActiveCategories);
+  }
+
+  void _toggleCategory(String category) {
+    setState(() {
+      if (_localSelectedCategories.contains(category)) {
+        _localSelectedCategories.remove(category);
+      } else {
+        _localSelectedCategories.add(category);
+      }
+    });
+
+    // Apply filter in real-time
+    widget.onApplyFilters(_localSelectedCategories);
+  }
+
+  void _applyAndClose() {
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  void _clearAndClose() {
+    setState(() {
+      _localSelectedCategories.clear();
+    });
+    widget.onClearFilters();
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Material(
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.75,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              bottomLeft: Radius.circular(24),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // HEADER - Minimal and Simple with Solid Teal Background
+                Container(
+                  color: AppColors.primary,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        'Filter Resources',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Active count
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white.withValues(alpha: 0.15),
+                        ),
+                        child: Text(
+                          'Active: ${_localSelectedCategories.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // FILTER CHIPS LIST
+                Expanded(
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      splashFactory: NoSplash.splashFactory,
+                      colorScheme: Theme.of(context).colorScheme.copyWith(
+                        secondary: AppColors.primary, // Teal
+                        secondaryContainer: AppColors.primary,
+                        error: AppColors.primary,
+                        errorContainer: AppColors.primary,
                       ),
                     ),
-                    child: SafeArea(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header Section
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primary,
-                                  AppColors.primary.withValues(alpha: 0.8),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 2.0,
                               ),
-                              borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(24),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Filter Categories',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Navigator.pop(context),
-                                      child: Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.close_rounded,
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Active: ${active.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          itemCount: widget.availableCategories.length,
+                          itemBuilder: (context, index) {
+                            final category = widget.availableCategories[index];
+                            final isSelected = _localSelectedCategories
+                                .contains(category);
 
-                          // Filters List
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Wrap(
-                                  spacing: 12,
-                                  runSpacing: 12,
-                                  children: categories.map((category) {
-                                    final selected = active.any(
-                                      (value) =>
-                                          value.toLowerCase() ==
-                                          category.toLowerCase(),
-                                    );
-                                    return FilterChip(
-                                      label: Text(
+                            return GestureDetector(
+                              onTap: () {
+                                _toggleCategory(category);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors
+                                            .primary // TEAL when selected
+                                      : (isDarkMode
+                                            ? AppColors.primary.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : AppColors.primary.withValues(
+                                                alpha: 0.1,
+                                              )),
+                                  border: Border.all(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 1.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
                                         category,
                                         style: TextStyle(
-                                          color: selected
+                                          color: isSelected
                                               ? Colors.white
                                               : (isDarkMode
                                                     ? Colors.white
                                                     : AppColors.textPrimary),
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 8),
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 18,
                                         ),
                                       ),
-                                      selected: selected,
-                                      selectedColor: AppColors.primary,
-                                      backgroundColor: isDarkMode
-                                          ? AppColors.primary.withValues(
-                                              alpha: 0.2,
-                                            )
-                                          : AppColors.primary.withValues(
-                                              alpha: 0.1,
-                                            ),
-                                      checkmarkColor: Colors.white,
-                                      side: BorderSide(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        width: 1.5,
-                                      ),
-                                      onSelected: (_) {
-                                        controller.toggleCategory(category);
-                                      },
-                                    );
-                                  }).toList(),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ),
-                          // Footer Section
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                top: BorderSide(
-                                  color: isDarkMode
-                                      ? Colors.grey.shade800
-                                      : Colors.grey.withValues(alpha: 0.2),
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 14,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Apply Filters',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      controller.clearCategoryFilters();
-                                      Navigator.pop(context);
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: AppColors.primary,
-                                      side: BorderSide(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.5,
-                                        ),
-                                        width: 1.5,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 14,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Clear All',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
-              );
-            },
+
+                // FOOTER - Action Buttons
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: isDarkMode
+                            ? Colors.grey.shade800
+                            : Colors.grey.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _applyAndClose,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary, // TEAL
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Apply Filters',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: _clearAndClose,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary, // TEAL
+                            side: BorderSide(
+                              color: AppColors.primary.withValues(alpha: 0.5),
+                              width: 1.5,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Clear All',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
