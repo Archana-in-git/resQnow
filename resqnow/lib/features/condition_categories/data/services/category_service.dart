@@ -14,16 +14,85 @@ class CategoryService {
 
   Future<List<Category>> getVisibleCategories() async {
     try {
-      final querySnapshot = await _categoryCollection
-          .where('isVisible', isEqualTo: true)
-          .orderBy('order')
-          .get();
+      print('🔍 Fetching categories from Firestore...');
+      
+      // Try the full query with isVisible filter and orderBy
+      try {
+        final querySnapshot = await _categoryCollection
+            .where('isVisible', isEqualTo: true)
+            .orderBy('order')
+            .get();
 
-      return querySnapshot.docs.map((doc) {
+        print('✅ Found ${querySnapshot.docs.length} visible categories');
+        
+        if (querySnapshot.docs.isNotEmpty) {
+          return querySnapshot.docs.map((doc) {
+            final model = CategoryModel.fromMap(doc.data(), doc.id);
+            return model.toEntity();
+          }).toList();
+        }
+      } on FirebaseException catch (e) {
+        // If the query fails (likely due to missing composite index),
+        // fall back to a simpler query
+        print('⚠️ Query with isVisible+orderBy failed: ${e.message}');
+        print('🔄 Trying fallback without orderBy...');
+        
+        final fallbackSnapshot = await _categoryCollection
+            .where('isVisible', isEqualTo: true)
+            .get();
+        
+        print('✅ Fallback: Found ${fallbackSnapshot.docs.length} visible categories');
+        
+        if (fallbackSnapshot.docs.isNotEmpty) {
+          final categories = fallbackSnapshot.docs.map((doc) {
+            final model = CategoryModel.fromMap(doc.data(), doc.id);
+            return model.toEntity();
+          }).toList();
+          
+          // Sort by order
+          categories.sort((a, b) => a.order.compareTo(b.order));
+          return categories;
+        }
+      }
+      
+      // If still no results, try getting ALL categories
+      print('🔄 No visible categories found, fetching ALL categories...');
+      return await _getAllCategoriesNoFilter();
+      
+    } catch (e) {
+      print('❌ Error fetching categories: $e');
+      // Final fallback: get all categories
+      return await _getAllCategoriesNoFilter();
+    }
+  }
+
+  /// Get ALL categories without any filtering - for debugging
+  Future<List<Category>> _getAllCategoriesNoFilter() async {
+    print('🔍 DEBUG: Fetching ALL categories from Firestore (no filter)...');
+    try {
+      final allSnapshot = await _categoryCollection.get();
+      print('📊 DEBUG: Total categories in DB: ${allSnapshot.docs.length}');
+      
+      // Print each category's data for debugging
+      for (var doc in allSnapshot.docs) {
+        print('   - ${doc.id}: ${doc.data()}');
+      }
+      
+      if (allSnapshot.docs.isEmpty) {
+        print('⚠️ DEBUG: No categories found in Firestore at all!');
+        return [];
+      }
+      
+      final categories = allSnapshot.docs.map((doc) {
         final model = CategoryModel.fromMap(doc.data(), doc.id);
         return model.toEntity();
       }).toList();
+      
+      // Sort by order
+      categories.sort((a, b) => a.order.compareTo(b.order));
+      return categories;
     } catch (e) {
+      print('❌ DEBUG error: $e');
       rethrow;
     }
   }
@@ -98,6 +167,46 @@ class CategoryService {
       }
     } catch (e) {
       print('Error updating search result count: $e');
+    }
+  }
+
+  /// Migrate existing categories to ensure they have required fields
+  /// This fixes categories that may be missing isVisible or order fields
+  Future<int> migrateCategories() async {
+    try {
+      final snapshot = await _categoryCollection.get();
+      int updated = 0;
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        bool needsUpdate = false;
+        Map<String, dynamic> updates = {};
+
+        // Ensure isVisible field exists
+        if (!data.containsKey('isVisible')) {
+          updates['isVisible'] = true;
+          needsUpdate = true;
+        }
+
+        // Ensure order field exists
+        if (!data.containsKey('order')) {
+          // Use document index as order if not set
+          updates['order'] = snapshot.docs.indexOf(doc) + 1;
+          needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+          await doc.reference.update(updates);
+          updated++;
+          print('Migrated category: ${doc.id}');
+        }
+      }
+
+      print('Migration complete: $updated categories updated');
+      return updated;
+    } catch (e) {
+      print('Error migrating categories: $e');
+      rethrow;
     }
   }
 }
