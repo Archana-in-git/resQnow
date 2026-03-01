@@ -36,6 +36,22 @@ class ConditionService {
     }
   }
 
+  /// Fetch conditions by category ID
+  Future<List<ConditionModel>> getConditionsByCategory(String categoryId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('medical_conditions')
+          .where('categoryId', isEqualTo: categoryId)
+          .get();
+      
+      return snapshot.docs
+          .map((doc) => ConditionModel.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch conditions by category: $e');
+    }
+  }
+
   /// Track condition search/view by condition name
   /// Useful for finding which conditions are most useful to users
   Future<void> logConditionInteraction({

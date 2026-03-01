@@ -24,7 +24,7 @@ import 'package:resqnow/features/saved_topics/presentation/pages/saved_topics_pa
 // ⚙️ Settings
 import 'package:resqnow/features/settings/presentation/pages/settings_page.dart';
 
-// �🚨 Emergency & Categories
+// 🚨 Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
