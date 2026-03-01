@@ -2,41 +2,41 @@ import 'package:flutter/material.dart' hide NotificationListener;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-
+import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
 import 'features/presentation/navigation/app_router.dart';
-
-// THEME
 import 'core/theme/theme_manager.dart';
 import 'core/theme/light_theme.dart';
 import 'core/theme/dark_theme.dart';
-
-// CATEGORY
 import 'features/condition_categories/data/services/category_service.dart';
 import 'features/condition_categories/presentation/controllers/category_controller.dart';
-
-// RESOURCES
 import 'data/datasources/remote/resource_remote_datasource.dart';
 import 'data/repositories/resource_repository_impl.dart';
 import 'domain/usecases/get_featured_resources.dart';
 import 'features/first_aid_resources/presentation/controllers/resource_controller.dart';
-
-// LOCATION + AUTH
 import 'features/presentation/controllers/location_controller.dart';
 import 'features/authentication/presentation/controllers/auth_controller.dart';
-
-// ⭐ BLOOD BANK MODULE
 import 'features/blood_donor/data/services/blood_bank_service.dart';
 import 'data/repositories/blood_bank_repository_impl.dart';
 import 'domain/usecases/get_blood_banks_nearby.dart';
-
-// ⭐ BLOOD DONOR MODULE
 import 'features/blood_donor/data/services/blood_donor_service.dart';
 import 'data/repositories/blood_donor_repository_impl.dart';
-
-// 🛒 SHOPPING CART MODULE
+import 'features/hospitals/data/datasources/hospital_remote_datasource.dart';
+import 'features/hospitals/data/repositories/hospital_repository_impl.dart';
+import 'features/hospitals/domain/repositories/hospital_repository.dart';
+import 'features/hospitals/domain/usecases/get_approved_hospitals.dart';
+import 'features/hospitals/data/datasources/doctor_remote_datasource.dart';
+import 'features/hospitals/data/repositories/doctor_repository_impl.dart';
+import 'features/hospitals/domain/repositories/doctor_repository.dart';
+import 'features/hospitals/domain/usecases/get_doctors_by_hospital.dart';
+import 'features/hospitals/data/datasources/appointment_remote_datasource.dart';
+import 'features/hospitals/data/repositories/appointment_repository_impl.dart';
+import 'features/hospitals/domain/repositories/appointment_repository.dart';
+import 'features/hospitals/domain/usecases/book_appointment.dart';
+import 'features/hospitals/domain/usecases/get_hospital_appointments.dart';
+import 'features/hospitals/domain/usecases/approve_appointment.dart';
+import 'features/hospitals/domain/usecases/reject_appointment.dart';
 import 'features/shopping_cart/presentation/controllers/cart_controller.dart';
-
 import 'domain/usecases/register_donor.dart';
 import 'domain/usecases/update_donor.dart';
 import 'domain/usecases/delete_donor.dart';
@@ -45,12 +45,10 @@ import 'domain/usecases/get_donors.dart' as get_donors;
 import 'domain/usecases/get_all_donors.dart';
 import 'domain/usecases/is_user_donor.dart';
 import 'domain/usecases/get_donor_by_id.dart';
-
 import 'features/blood_donor/presentation/controllers/donor_registration_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_profile_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_list_controller.dart';
 import 'features/blood_donor/presentation/controllers/donor_details_controller.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'features/chat/presentation/controllers/chat_controller.dart';
@@ -58,7 +56,6 @@ import 'core/services/fcm_service.dart';
 import 'features/notifications/presentation/controllers/notification_controller.dart';
 import 'features/notifications/presentation/widgets/notification_listener_widget.dart';
 
-/// Firebase Messaging background handler
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message: ${message.messageId}');
 }
@@ -66,68 +63,49 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize ThemeManager to load saved theme preference
   final themeManager = ThemeManager();
   await themeManager.initTheme();
 
   try {
-    // Try to initialize Firebase - it may already be initialized
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-    } else {}
+    }
   } catch (e) {
     if (e.toString().contains('duplicate-app')) {
-      // Firebase already initialized
     } else {
       rethrow;
     }
   }
 
-  // Initialize Firebase Messaging
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Initialize FCM Service
   await FCMService().initializeFCM();
 
   final firestore = FirebaseFirestore.instance;
-
   final categoryService = CategoryService();
-
   final resourceRemoteDataSource = ResourceRemoteDataSourceImpl(
     firestore: firestore,
   );
-
   final resourceRepository = ResourceRepositoryImpl(
     remoteDataSource: resourceRemoteDataSource,
   );
-
   final getFeaturedResourcesUseCase = GetFeaturedResources(resourceRepository);
+
   runApp(
     MultiProvider(
       providers: [
-        // THEME
         ChangeNotifierProvider.value(value: themeManager),
-
-        // LOCATION
         ChangeNotifierProvider(create: (_) => LocationController()),
-
-        // AUTH (MUST be above router)
         ChangeNotifierProvider(create: (_) => AuthController()),
-
-        // CATEGORY
         ChangeNotifierProvider(
           create: (_) => CategoryController(categoryService),
         ),
-
-        // RESOURCES
         ChangeNotifierProvider(
-          create: (_) =>
-              ResourceController(getFeaturedResourcesUseCase: getFeaturedResourcesUseCase),
+          create: (_) => ResourceController(
+            getFeaturedResourcesUseCase: getFeaturedResourcesUseCase,
+          ),
         ),
-
-        // ⭐ BLOOD BANK MODULE
         Provider(
           create: (_) => BloodBankService(
             apiKey: "AIzaSyDZxL1FwXcsvoFFTJ3aHJNNOq3r4Bk_pFs",
@@ -142,8 +120,6 @@ Future<void> main() async {
           create: (context) =>
               GetBloodBanksNearby(context.read<BloodBankRepositoryImpl>()),
         ),
-
-        // ⭐ BLOOD DONOR MODULE
         Provider(
           create: (_) => BloodDonorService(
             firestore: firestore,
@@ -155,7 +131,6 @@ Future<void> main() async {
             service: context.read<BloodDonorService>(),
           ),
         ),
-
         Provider(
           create: (context) =>
               RegisterDonor(context.read<BloodDonorRepositoryImpl>()),
@@ -172,7 +147,6 @@ Future<void> main() async {
           create: (context) =>
               DeleteDonor(context.read<BloodDonorRepositoryImpl>()),
         ),
-
         Provider(
           create: (context) => get_donors.GetDonorsByDistrict(
             context.read<BloodDonorRepositoryImpl>(),
@@ -190,7 +164,6 @@ Future<void> main() async {
             return GetAllDonors(repository);
           },
         ),
-
         Provider(
           create: (context) =>
               IsUserDonor(context.read<BloodDonorRepositoryImpl>()),
@@ -199,7 +172,6 @@ Future<void> main() async {
           create: (context) =>
               GetDonorById(context.read<BloodDonorRepositoryImpl>()),
         ),
-
         ChangeNotifierProvider(
           create: (context) => DonorRegistrationController(
             registerDonorUseCase: context.read<RegisterDonor>(),
@@ -227,19 +199,57 @@ Future<void> main() async {
             bloodDonorService: context.read<BloodDonorService>(),
           ),
         ),
-
-        // 🛒 SHOPPING CART
         ChangeNotifierProvider(create: (_) => CartController()),
-
-        // 💬 CHAT MODULE
         ChangeNotifierProvider(create: (_) => ChatController()),
-
-        // 🔔 NOTIFICATION MODULE
         ChangeNotifierProvider(create: (_) => NotificationController()),
+        Provider(create: (_) => HospitalRemoteDatasource()),
+        Provider<HospitalRepository>(
+          create: (context) => HospitalRepositoryImpl(
+            remoteDatasource: context.read<HospitalRemoteDatasource>(),
+          ),
+        ),
+        Provider(
+          create: (context) =>
+              GetApprovedHospitals(context.read<HospitalRepository>()),
+        ),
+        Provider<DoctorRemoteDatasource>(
+          create: (_) => DoctorRemoteDatasource(),
+        ),
+        Provider<DoctorRepository>(
+          create: (context) => DoctorRepositoryImpl(
+            remoteDatasource: context.read<DoctorRemoteDatasource>(),
+          ),
+        ),
+        Provider<GetDoctorsByHospital>(
+          create: (context) =>
+              GetDoctorsByHospital(context.read<DoctorRepository>()),
+        ),
+        Provider<AppointmentRemoteDatasource>(
+          create: (_) => AppointmentRemoteDatasource(),
+        ),
+        Provider<AppointmentRepository>(
+          create: (context) => AppointmentRepositoryImpl(
+            remoteDatasource: context.read<AppointmentRemoteDatasource>(),
+          ),
+        ),
+        Provider<BookAppointment>(
+          create: (context) =>
+              BookAppointment(context.read<AppointmentRepository>()),
+        ),
+        Provider<GetHospitalAppointments>(
+          create: (context) =>
+              GetHospitalAppointments(context.read<AppointmentRepository>()),
+        ),
+        Provider<ApproveAppointment>(
+          create: (context) =>
+              ApproveAppointment(context.read<AppointmentRepository>()),
+        ),
+        Provider<RejectAppointment>(
+          create: (context) =>
+              RejectAppointment(context.read<AppointmentRepository>()),
+        ),
       ],
-      child: NotificationListener(
-        child: const ResQNowApp(),
-      ),
+      child: NotificationListener(child: ResQNowApp()),
     ),
   );
 }
@@ -252,10 +262,11 @@ class ResQNowApp extends StatefulWidget {
 }
 
 class _ResQNowAppState extends State<ResQNowApp> {
+  late GoRouter router;
+
   @override
   void initState() {
     super.initState();
-    // Initialize suspension monitoring for already logged-in users
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (FirebaseAuth.instance.currentUser != null) {
         final authController = context.read<AuthController>();
@@ -266,11 +277,9 @@ class _ResQNowAppState extends State<ResQNowApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize router only once on first build
-    AppRouter.init(context);
-
-    // Watch theme changes for smooth transitions
     final themeManager = context.watch<ThemeManager>();
+
+    router = AppRouter.createRouter(context);
 
     return MaterialApp.router(
       title: 'ResQNow',
@@ -278,9 +287,7 @@ class _ResQNowAppState extends State<ResQNowApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
-
-      // ✅ USE STATIC ROUTER INSTANCE (prevents recreation on theme change)
-      routerConfig: AppRouter.getRouter(),
+      routerConfig: router,
     );
   }
 }

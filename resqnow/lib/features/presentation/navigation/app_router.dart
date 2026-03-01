@@ -1,3 +1,5 @@
+import 'package:resqnow/features/hospitals/presentation/pages/hospital_detail_page.dart';
+import 'package:resqnow/features/hospitals/presentation/pages/appointment_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +26,7 @@ import 'package:resqnow/features/saved_topics/presentation/pages/saved_topics_pa
 // ⚙️ Settings
 import 'package:resqnow/features/settings/presentation/pages/settings_page.dart';
 
-// �🚨 Emergency & Categories
+// 🚨 Emergency & Categories
 import 'package:resqnow/features/emergency/presentation/pages/emergency_page.dart';
 import 'package:resqnow/features/emergency_numbers/presentation/pages/emergency_numbers_page.dart';
 import 'package:resqnow/features/condition_categories/presentation/pages/category_list_page.dart';
@@ -55,34 +57,14 @@ import 'package:resqnow/features/chat/presentation/pages/chat_screen.dart';
 // 👤 Profile
 import 'package:resqnow/features/profile/presentation/profile_page.dart';
 
-// 🏥 Hospital Locator
+// 🏥 Hospital Locator (Old)
 import 'package:resqnow/features/hospital_locator/presentation/pages/hospital_page.dart';
 
+// 🏥 Approved Hospitals (New Clean Architecture)
+import 'package:resqnow/features/hospitals/presentation/pages/hospitals_page.dart';
+
 class AppRouter {
-  static GoRouter? _routerInstance;
-
-  // Initialize router only once
-  static void init(BuildContext context) {
-    if (_routerInstance != null) return;
-
-    print('🔨 AppRouter.init() called - Creating router instance');
-    _routerInstance = _createRouter(context);
-  }
-
-  // Get the static router instance
-  static GoRouter getRouter() {
-    if (_routerInstance == null) {
-      throw Exception(
-        'AppRouter not initialized. Call AppRouter.init() first.',
-      );
-    }
-    return _routerInstance!;
-  }
-
-  // Create router (private)
-  static GoRouter _createRouter(BuildContext context) {
-    print('🔨 AppRouter._createRouter() called');
-
+  static GoRouter createRouter(BuildContext context) {
     final authController = context.read<AuthController>();
 
     return GoRouter(
@@ -91,16 +73,8 @@ class AppRouter {
 
       redirect: (context, state) {
         final location = state.matchedLocation;
-        print('🔄 Router redirect: $location');
-
         final user = FirebaseAuth.instance.currentUser;
         final loggedIn = user != null;
-
-        // 🔍 DEBUG LOGS (DO NOT REMOVE YET)
-        debugPrint('--- ROUTER REDIRECT ---');
-        debugPrint('location      : $location');
-        debugPrint('currentUser   : ${user?.uid}');
-        debugPrint('loggedIn      : $loggedIn');
 
         final bool isAuthRoute =
             location == '/welcome' ||
@@ -111,41 +85,17 @@ class AppRouter {
         final bool isProtectedRoute =
             location == '/workshops' || location.startsWith('/workshops/');
 
-        debugPrint('isAuthRoute   : $isAuthRoute');
-        debugPrint('isProtectedRoute : $isProtectedRoute');
+        if (location == '/splash') return null;
 
-        // 🎬 ALLOW SPLASH TO SHOW FIRST
-        // The splash screen will handle navigation after animation completes
-        if (location == '/splash') {
-          debugPrint(
-            'Decision: stay on /splash (let animation complete first)',
-          );
-          return null;
-        }
+        if (isProtectedRoute && !loggedIn) return '/welcome';
 
-        // 🔐 PROTECTED ROUTES - Require login
-        if (isProtectedRoute && !loggedIn) {
-          debugPrint('Decision: redirect to /welcome (protected route)');
-          return '/welcome';
-        }
-
-        if (!loggedIn && !isAuthRoute) {
-          debugPrint('Decision: redirect to /welcome');
-          return '/welcome';
-        }
+        if (!loggedIn && !isAuthRoute) return '/welcome';
 
         if (loggedIn && isAuthRoute) {
-          if (authController.isLoading) {
-            debugPrint(
-              'Decision: stay on auth route (waiting for login verification)',
-            );
-            return null;
-          }
-          debugPrint('Decision: redirect to /home');
+          if (authController.isLoading) return null;
           return '/home';
         }
 
-        debugPrint('Decision: no redirect');
         return null;
       },
 
@@ -155,13 +105,29 @@ class AppRouter {
       ),
 
       routes: [
-        /// SPLASH
+        GoRoute(
+          path: '/hospital-details/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return HospitalDetailPage(hospitalId: id);
+          },
+        ),
+        GoRoute(
+          path: '/appointment-form/:hospitalId/:doctorId',
+          builder: (context, state) {
+            final hospitalId = state.pathParameters['hospitalId']!;
+            final doctorId = state.pathParameters['doctorId']!;
+            return AppointmentFormPage(
+              hospitalId: hospitalId,
+              doctorId: doctorId,
+            );
+          },
+        ),
         GoRoute(
           path: '/splash',
           builder: (context, state) => const SplashScreen(),
         ),
 
-        /// AUTH
         GoRoute(
           path: '/welcome',
           builder: (context, state) => const WelcomePage(),
@@ -172,52 +138,48 @@ class AppRouter {
           builder: (context, state) => const SignUpPage(),
         ),
 
-        /// HOME
         GoRoute(path: '/home', builder: (context, state) => const HomePage()),
 
-        /// NOTIFICATIONS
         GoRoute(
           path: '/notifications',
           builder: (context, state) => const NotificationPage(),
         ),
 
-        /// AI CHAT
         GoRoute(
           path: '/ai-chat-coming-soon',
           builder: (context, state) => const AiChatComingSoonPage(),
         ),
 
-        /// SAVED TOPICS
         GoRoute(
           path: '/saved-topics',
           builder: (context, state) => const SavedTopicsPage(),
         ),
 
-        /// SETTINGS
         GoRoute(
           path: '/settings',
           builder: (context, state) => const SettingsPage(),
         ),
 
-        /// PROFILE
         GoRoute(
           path: '/profile',
           builder: (context, state) => const ProfilePage(),
         ),
 
-        /// DONORS
         GoRoute(
           path: '/donors',
           builder: (context, state) => const DonorListPage(),
         ),
+
         GoRoute(
           path: '/donor/register',
           builder: (context, state) => const DonorRegistrationPage(),
         ),
+
         GoRoute(
           path: '/donor/profile',
           builder: (context, state) => const DonorProfilePage(),
         ),
+
         GoRoute(
           path: '/donor/details/:id',
           builder: (context, state) {
@@ -227,7 +189,6 @@ class AppRouter {
           },
         ),
 
-        /// CHAT
         GoRoute(
           path: '/chat/:otherUserId',
           builder: (context, state) {
@@ -245,61 +206,43 @@ class AppRouter {
           },
         ),
 
-        /// HOSPITALS
+        /// 🏥 Hospital Locator (Old)
         GoRoute(
-          path: '/hospitals',
+          path: '/hospital-locator',
           builder: (context, state) => const HospitalPage(),
         ),
 
-        /// BLOOD BANKS
+        /// 🏥 Approved Hospitals (New Clean Architecture)
+        GoRoute(
+          path: '/approved-hospitals',
+          builder: (context, state) => const HospitalsPage(),
+        ),
+
         GoRoute(
           path: '/blood-banks',
           builder: (context, state) => const BloodBankListPage(),
         ),
 
-        /// EMERGENCY
         GoRoute(
           path: '/emergency',
           builder: (context, state) => const EmergencyPage(),
         ),
+
         GoRoute(
           path: '/emergency-numbers',
           builder: (context, state) => const EmergencyNumbersPage(),
         ),
 
-        /// CATEGORIES
         GoRoute(
           path: '/categories',
           builder: (context, state) => const CategoryListPage(),
-          routes: [
-            GoRoute(
-              path: 'condition/:conditionId',
-              builder: (context, state) {
-                final id = state.pathParameters['conditionId']!;
-                return ConditionDetailPage(conditionId: id);
-              },
-              routes: [
-                GoRoute(
-                  path: 'faqs',
-                  builder: (context, state) {
-                    final id = state.pathParameters['conditionId']!;
-                    final condition = state.extra as dynamic;
-                    return ConditionFAQPage(
-                      conditionId: id,
-                      condition: condition,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
         ),
 
-        /// RESOURCES
         GoRoute(
           path: '/resources',
           builder: (context, state) => const ResourceListPage(),
         ),
+
         GoRoute(
           path: '/resource-detail',
           builder: (context, state) {
@@ -308,21 +251,13 @@ class AppRouter {
           },
         ),
 
-        /// 🛒 SHOPPING CART
         GoRoute(path: '/cart', builder: (context, state) => const CartPage()),
 
-        /// 🏥 WORKSHOPS
         GoRoute(
           path: '/workshops',
           builder: (context, state) => const WorkshopsComingSoonPage(),
         ),
       ],
     );
-  }
-
-  // Legacy method for backward compatibility
-  static GoRouter createRouter(BuildContext context) {
-    init(context);
-    return getRouter();
   }
 }

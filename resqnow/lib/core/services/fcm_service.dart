@@ -29,17 +29,33 @@ class FCMService {
       if (token != null) {
         await _saveFCMToken(token);
       }
-    
+
       // Listen for token refresh
       _messaging.onTokenRefresh.listen((token) => _saveFCMToken(token));
 
       // Handle foreground notifications
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         print('Got a message in the foreground: ${message.messageId}');
-        // Handle foreground notification here
+        print('Message data: ${message.data}');
+        if (message.notification != null) {
+          print(
+            'Notification: ${message.notification?.title} - ${message.notification?.body}',
+          );
+        }
+        // Notifications will be automatically handled by the NotificationListener
+        // and Firestore listener in NotificationListenerService
       });
 
-      print('FCM initialized successfully with token: $token');
+      // Handle notification when app is opened from terminated state
+      RemoteMessage? initialMessage = await FirebaseMessaging.instance
+          .getInitialMessage();
+      if (initialMessage != null) {
+        print('App opened from notification: ${initialMessage.messageId}');
+      }
+
+      print('✅ FCM initialized successfully');
+      print('   Token: $token');
+      print('   Permission status: ${settings.authorizationStatus}');
     } catch (e) {
       print('Error initializing FCM: $e');
     }

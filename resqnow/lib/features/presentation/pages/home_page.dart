@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                 /// 🔹 Nearby Hospitals
                 _buildSectionHeader(
                   title: "Nearby Hospitals",
-                  onSeeAll: () => context.push('/hospitals'),
+                  onSeeAll: () => context.push('/approved-hospitals'),
                 ),
                 const SizedBox(height: 12),
 

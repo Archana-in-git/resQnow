@@ -13,6 +13,7 @@ dependencies:
   equatable: ^2.0.5
   http: ^1.2.1
   sliding_up_panel: ^2.0.0+1
+  flutter_bloc: ^8.1.4 # <-- Add this line
 
   # --- Core Utilities ---
   provider: ^6.1.2
