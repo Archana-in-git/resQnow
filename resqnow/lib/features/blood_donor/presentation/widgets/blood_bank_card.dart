@@ -251,21 +251,6 @@ class BloodBankCard extends StatelessWidget {
     final lat = bank.latitude;
     final lng = bank.longitude;
 
-    if (lng == null) {
-      // Fallback to address if coordinates not available
-      final String encodedAddress = Uri.encodeComponent(bank.address);
-      final String mapsUrl =
-          'https://www.google.com/maps/search/?api=1&query=$encodedAddress';
-
-      if (await canLaunchUrl(Uri.parse(mapsUrl))) {
-        await launchUrl(
-          Uri.parse(mapsUrl),
-          mode: LaunchMode.externalApplication,
-        );
-      }
-      return;
-    }
-
     // Use coordinates for directions (most accurate)
     final String directionsUrl =
         'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';

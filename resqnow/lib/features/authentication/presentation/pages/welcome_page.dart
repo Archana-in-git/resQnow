@@ -40,7 +40,7 @@ class WelcomePage extends StatelessWidget {
                               width: 120,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.blue.withOpacity(0.08),
+                                color: Colors.blue.withValues(alpha: 0.08),
                               ),
                             ),
                           ),
@@ -53,7 +53,7 @@ class WelcomePage extends StatelessWidget {
                               width: 140,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.cyan.withOpacity(0.06),
+                                color: Colors.cyan.withValues(alpha: 0.06),
                               ),
                             ),
                           ),
@@ -66,7 +66,7 @@ class WelcomePage extends StatelessWidget {
                               width: 70,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.teal.withOpacity(0.1),
+                                color: Colors.teal.withValues(alpha: 0.1),
                               ),
                             ),
                           ),
@@ -85,7 +85,7 @@ class WelcomePage extends StatelessWidget {
                               width: 150,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.teal.withOpacity(0.07),
+                                color: Colors.teal.withValues(alpha: 0.07),
                               ),
                             ),
                           ),
@@ -98,7 +98,7 @@ class WelcomePage extends StatelessWidget {
                               width: 130,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.blue.withOpacity(0.09),
+                                color: Colors.blue.withValues(alpha: 0.09),
                               ),
                             ),
                           ),
@@ -111,7 +111,7 @@ class WelcomePage extends StatelessWidget {
                               width: 110,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.cyan.withOpacity(0.07),
+                                color: Colors.cyan.withValues(alpha: 0.07),
                               ),
                             ),
                           ),
@@ -124,7 +124,7 @@ class WelcomePage extends StatelessWidget {
                               width: 90,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.teal.withOpacity(0.05),
+                                color: Colors.teal.withValues(alpha: 0.05),
                               ),
                             ),
                           ),
@@ -204,7 +204,7 @@ class WelcomePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.teal.withOpacity(0.3),
+                                color: Colors.teal.withValues(alpha: 0.3),
                                 blurRadius: 12,
                                 offset: const Offset(0, 6),
                               ),
@@ -242,7 +242,7 @@ class WelcomePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.teal.withOpacity(0.15),
+                                color: Colors.teal.withValues(alpha: 0.15),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -261,7 +261,9 @@ class WelcomePage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              backgroundColor: Colors.white.withOpacity(0.7),
+                              backgroundColor: Colors.white.withValues(
+                                alpha: 0.7,
+                              ),
                             ),
                             child: Text(
                               'Sign Up',

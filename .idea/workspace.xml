@@ -5,7 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd494944-d5ae-4cb0-89ea-b5a768ffdff8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/data/models/user_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/data/services/admin_service.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/controllers/admin_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/admin_dashboard_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_blood_donors_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_conditions_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_discussions_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_emergency_numbers_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_hospitals_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_resources_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/pages/manage_users_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/widgets/admin_action_card.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/widgets/admin_input_field.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/admin/presentation/widgets/admin_section_title.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/condition_categories/data/services/category_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/condition_categories/data/services/category_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/condition_categories/presentation/pages/category_list_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/condition_categories/presentation/pages/category_list_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/appointment_form_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/appointment_form_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/hospital_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/hospital_detail_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/hospitals_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/pages/hospitals_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/widgets/hospital_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/widgets/hospital_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/widgets/hospital_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/hospitals/presentation/widgets/hospital_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/data/models/condition_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/data/models/condition_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/data/services/condition_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/data/services/condition_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/presentation/pages/condition_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/presentation/pages/condition_detail_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/medical_conditions/presentation/pages/conditions_by_category_page.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/resqnow/lib/features/presentation/navigation/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/presentation/navigation/app_router.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/presentation/pages/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/presentation/pages/home_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/features/saved_topics/data/models/saved_condition_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/features/saved_topics/data/models/saved_condition_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resqnow/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/resqnow/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_flowchart.drawio" beforeDir="false" afterPath="$PROJECT_DIR$/user_flowchart.drawio" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,10 +44,13 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="31F046tQmu2OcPxexgY8O296TdY" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -29,10 +61,12 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "show.migrate.to.gradle.popup": "false"
   }

@@ -10,6 +10,7 @@ import 'core/theme/light_theme.dart';
 import 'core/theme/dark_theme.dart';
 import 'features/condition_categories/data/services/category_service.dart';
 import 'features/condition_categories/presentation/controllers/category_controller.dart';
+import 'features/medical_conditions/presentation/controllers/conditions_by_category_controller.dart';
 import 'data/datasources/remote/resource_remote_datasource.dart';
 import 'data/repositories/resource_repository_impl.dart';
 import 'domain/usecases/get_featured_resources.dart';
@@ -57,7 +58,7 @@ import 'features/notifications/presentation/controllers/notification_controller.
 import 'features/notifications/presentation/widgets/notification_listener_widget.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Handling a background message: ${message.messageId}');
+  // Handle background message
 }
 
 Future<void> main() async {
@@ -101,6 +102,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => CategoryController(categoryService),
         ),
+        ChangeNotifierProvider(create: (_) => ConditionsByCategoryController()),
         ChangeNotifierProvider(
           create: (_) => ResourceController(
             getFeaturedResourcesUseCase: getFeaturedResourcesUseCase,

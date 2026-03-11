@@ -135,7 +135,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         }
       }
     } catch (e) {
-      debugPrint("Error checking donor status: $e");
+      // Donor status check failed, continue
     }
   }
 
@@ -394,7 +394,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         final url = await _uploadImageToFirebase(_pickedImageFile!);
         _uploadedImageUrl = url;
       } catch (e) {
-        debugPrint("Image upload failed: $e");
         if (!mounted) return;
         messenger.showSnackBar(
           const SnackBar(
@@ -417,20 +416,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
     // --------------------------
     // CALL register()
     // --------------------------
-    final registrationData = {
-      "name": nameCtrl.text.trim(),
-      "age": computedAge,
-      "gender": gender,
-      "bloodGroup": bloodGroup,
-      "phone": "$selectedCountryCode${phoneCtrl.text.trim()}",
-      "conditions": selectedConditions,
-      "notes": notesCtrl.text.trim(),
-      "addressInput": assembledAddress,
-      "permanentAddressComponents": components,
-      "lastSeen": lastSeenData,
-      "profileImageUrl": _uploadedImageUrl,
-    };
-
     final success = await controller.register(
       name: nameCtrl.text.trim(),
       age: computedAge,
@@ -584,7 +569,6 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         _addressDataLoaded = true;
       });
     } catch (e) {
-      debugPrint('Failed to load address JSON: $e');
       setState(() {
         _addressDataLoaded = true;
       });
@@ -721,7 +705,7 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
         },
       );
     } catch (e) {
-      debugPrint("Image pick/crop failed: $e");
+      // Image crop operation failed or cancelled by user
     }
   }
 
@@ -761,11 +745,12 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
             phoneCtrl.text.trim().isNotEmpty &&
             !_isUploadingImage; // disable submit while uploading image
 
-        return WillPopScope(
-          onWillPop: () async {
+        return PopScope(
+          canPop: true,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
             // When back is pressed, navigate to home instead of popping
             context.go('/home');
-            return false;
           },
           child: Scaffold(
             backgroundColor: scaffoldBg,

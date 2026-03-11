@@ -54,7 +54,7 @@ class SavedConditionModel {
       faqs: faqs,
       doctorType: doctorType,
       hospitalLocatorLink: hospitalLocatorLink,
-      categoryId: categoryId,
+      categories: [categoryId],
     );
   }
 

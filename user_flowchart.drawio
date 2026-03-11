@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="user-flow" name="Page-1">
-        <mxGraphModel dx="804" dy="846" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" math="0" shadow="0">
+        <mxGraphModel dx="582" dy="659" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" value="Layer 1" parent="0"/>
@@ -31,12 +31,6 @@
                 <mxCell id="P4-p351" value="2.5.1 VIEW CATEGORIES" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="680" y="540" width="260" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P4-p352" value="2.5.2 VIEW MEDICAL CONDITION" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
-                    <mxGeometry x="660" y="630" width="300" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="P4-p353" value="2.5.3 SEARCH CONDITION" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
-                    <mxGeometry x="680" y="730" width="260" height="50" as="geometry"/>
-                </mxCell>
                 <mxCell id="P4-p36" value="2.6 BLOOD DONOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="320" y="790" width="220" height="50" as="geometry"/>
                 </mxCell>
@@ -47,7 +41,7 @@
                     <mxGeometry x="670" y="1020" width="280" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="P4-p363" value="2.6.3 SEND CALL REQUEST" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
-                    <mxGeometry x="670" y="1120" width="280" height="50" as="geometry"/>
+                    <mxGeometry x="670" y="1115" width="280" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="P4-p364" value="2.6.4 VIEW NOTIFICATIONS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="1240" width="300" height="50" as="geometry"/>
@@ -120,13 +114,20 @@
                 <mxCell id="P4-e-35-351" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p35" target="P4-p351" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="P4-e-35-352" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P4-p352" edge="1">
+                <mxCell id="P4-e-35-352" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="610" y="655" as="sourcePoint"/>
+                        <mxPoint x="660" y="655" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P4-e-35-353" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p35" target="P4-p353" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="P4-e-35-353" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="P4-p35" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="544" y="549" as="sourcePoint"/>
+                        <mxPoint x="684" y="771" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="610" y="643"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="P4-e-36-361" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="P4-p361" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -134,8 +135,11 @@
                 <mxCell id="P4-e-36-362" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="P4-p362" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="P4-e-36-363" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="P4-p363" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="P4-e-36-363" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="540" y="814.5" as="sourcePoint"/>
+                        <mxPoint x="670" y="1144.4999999999998" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="P4-e-36-364" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="P4-p364" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -161,9 +165,6 @@
                 <mxCell id="P4-e-341-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p341" target="16" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="P4-e-353-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p353" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
                 <mxCell id="P4-e-361-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p361" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
@@ -174,9 +175,6 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="P4-e-364-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p364" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="P4-e-365-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="20" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="2" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="P4-p31" edge="1">
@@ -201,7 +199,7 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="10" value="USERS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="40" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="40" width="237" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="11" value="" style="endArrow=none;html=1;" parent="1" source="10" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -215,44 +213,38 @@
                         <mxPoint x="1040.0000000000002" y="40" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="13" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;USER_SESSIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="115" width="180" height="40" as="geometry"/>
+                <mxCell id="13" value="&lt;font style=&quot;font-size: 21px;&quot;&gt;USERS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
+                    <mxGeometry x="1020" y="115" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="14" value="USERS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="185" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="185" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="15" value="USERS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="265" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="265" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;EMERGENCY_LOGS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=17;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="405" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="405" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="17" value="CATEGORIES" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="590" width="180" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="18" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;MEDICAL_CONDITIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=15;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="690" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="590" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;SEARCH_LOGS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="800" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1018" y="689" width="239" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="20" value="DONORS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="1050" width="180" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="21" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;CALL_REQUESTS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="950" width="180" height="40" as="geometry"/>
+                <mxCell id="21" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;DONORS&lt;/span&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
+                    <mxGeometry x="1020" y="950" width="238" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="22" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;CALL_REQUESTS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=17;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="1185.5" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="1120" width="236" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;NOTIFICATIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="1300" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="1300" width="240" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;EMERGENCY_NUMBERS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="1395" width="180" height="40" as="geometry"/>
+                <mxCell id="24" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;EMERGENCY_NUMBERS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
+                    <mxGeometry x="1020" y="1395" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="26" value="RESOURCES" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
-                    <mxGeometry x="1020" y="1495" width="180" height="40" as="geometry"/>
+                    <mxGeometry x="1020" y="1495" width="240" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="27" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -302,16 +294,10 @@
                         <mxPoint x="1040.0000000000002" y="950" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="35" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="1040.0000000000002" y="1090" as="sourcePoint"/>
-                        <mxPoint x="1040.0000000000002" y="1050" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="36" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="1040.0000000000002" y="1225.5" as="sourcePoint"/>
-                        <mxPoint x="1040.0000000000002" y="1185.5" as="targetPoint"/>
+                        <mxPoint x="1038.0000000000002" y="1160" as="sourcePoint"/>
+                        <mxPoint x="1038.0000000000002" y="1120" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="37" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
@@ -338,22 +324,19 @@
                 <mxCell id="r51_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="17" target="P4-p351" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="r52_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="18" target="P4-p352" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="r52_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="17" target="47" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1020" y="710" as="sourcePoint"/>
+                        <mxPoint x="960" y="655" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="980" y="632"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="r6_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="20" target="P4-p36" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="r61_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="20" target="P4-p361" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="r6c_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="21" target="P4-p36" edge="1">
+                <mxCell id="r61_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="21" target="P4-p361" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="r64_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="23" target="P4-p364" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="r65_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="20" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="r7_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="24" target="P4-p37" edge="1">
@@ -371,165 +354,992 @@
                 <mxCell id="r321_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="14" target="P4-p321" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="P4-e-36-donors" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="20" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="45" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="46" target="48" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="940" y="737" as="sourcePoint"/>
+                        <mxPoint x="950" y="765" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="P4-e-36-calls" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P4-p36" target="21" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="46" value="2.5.3 VIEW MEDICAL CONDITION" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
+                    <mxGeometry x="684" y="745" width="300" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="2.5.2 SEARCH CONDITION" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
+                    <mxGeometry x="659" y="630" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;MEDICAL_CONDITIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=15;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
+                    <mxGeometry x="1018" y="800" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="19" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="791" y="680" as="sourcePoint"/>
+                        <mxPoint x="1020" y="709" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="791" y="702"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="53" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="P4-p362" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="950" y="1050" as="sourcePoint"/>
+                        <mxPoint x="1020" y="977" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="975" y="1015"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="56" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="P4-p363" target="22" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="950" y="1138.9799999999998" as="sourcePoint"/>
+                        <mxPoint x="1018" y="1141.02" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
     <diagram id="QDTr4tUeVzh1Dswch3bm" name="Page-2">
-        <mxGraphModel dx="670" dy="705" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" math="0" shadow="0">
+        <mxGraphModel dx="582" dy="659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" value="Layer 1" parent="0"/>
-                <mxCell id="P5-donor" value="&lt;b&gt;DONOR&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-donor" value="&lt;b&gt;DONOR&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="110" y="25" width="130" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p41" value="3.1 VIEW NEARBY DONORS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p41" value="3.1 VIEW NEARBY DONORS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="110" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p42" value="3.2 VIEW DONOR PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p42" value="3.2 VIEW DONOR PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="210" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p43" value="3.3 SEND CALL REQUEST" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p43" value="3.3 SEND CALL REQUEST" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="310" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p44" value="3.4 SEND MESSAGE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p44" value="3.4 SEND MESSAGE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="410" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p45" value="3.5 REGISTER AS DONOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p45" value="3.5 REGISTER AS DONOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="510" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p46" value="3.6 MANAGE DONOR PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p46" value="3.6 MANAGE DONOR PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="610" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-p47" value="3.7 RECEIVE NOTIFICATIONS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="P5-p47" value="3.7 RECEIVE NOTIFICATIONS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=13;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="670" y="710" width="280" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-j40" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" vertex="1" parent="1">
+                <mxCell id="P5-j40" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="1" vertex="1">
                     <mxGeometry x="199.5" y="54.5" width="1" height="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="P5-e-40-41" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p41">
+                <mxCell id="P5-e-40-41" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p41" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="540" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-42" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p42">
+                <mxCell id="P5-e-40-42" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p42" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="540" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-43" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p43">
+                <mxCell id="P5-e-40-43" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p43" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="540" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-44" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p44">
+                <mxCell id="P5-e-40-44" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p44" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="540" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-45" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p45">
+                <mxCell id="P5-e-40-45" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p45" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="540" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-46" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p46">
+                <mxCell id="P5-e-40-46" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p46" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="250" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-40-47" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" target="P5-p47">
+                <mxCell id="P5-e-40-47" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" target="P5-p47" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="240" y="55" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-43-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p43">
+                <mxCell id="P5-e-43-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p43" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1020" y="335" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-44-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p44">
+                <mxCell id="P5-e-44-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p44" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1020" y="435" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="P5-e-47-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p47">
+                <mxCell id="P5-e-47-d" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p47" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1020" y="735" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="D5-donors" value="DONORS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+                <mxCell id="D5-donors" value="DONORS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
                     <mxGeometry x="1020" y="40" width="180" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="D5-callreq" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;CALL_REQUESTS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+                <mxCell id="D5-callreq" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;CALL_REQUESTS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
                     <mxGeometry x="1020" y="310" width="180" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="D5-chats" value="CHATS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+                <mxCell id="D5-chats" value="CHATS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=20;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
                     <mxGeometry x="1020" y="410" width="180" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="D5-notif" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;NOTIFICATIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+                <mxCell id="D5-notif" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;NOTIFICATIONS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=18;fontStyle=1;fontFamily=Times New Roman;" parent="1" vertex="1">
                     <mxGeometry x="1020" y="710" width="180" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="V5-1" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="D5-donors">
+                <mxCell id="V5-1" value="" style="endArrow=none;html=1;" parent="1" source="D5-donors" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="1085" y="105" as="sourcePoint"/>
                         <mxPoint x="1039" y="40" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="V5-2" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1">
+                <mxCell id="V5-2" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="1040" y="80" as="sourcePoint"/>
                         <mxPoint x="1040" y="40" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="V5-5" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1">
+                <mxCell id="V5-5" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="1040" y="350" as="sourcePoint"/>
                         <mxPoint x="1040" y="310" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="V5-8" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1">
+                <mxCell id="V5-8" value="" style="endArrow=none;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="1040" y="750" as="sourcePoint"/>
                         <mxPoint x="1040" y="710" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="r41_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="D5-donors" target="P5-p41">
+                <mxCell id="r41_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="D5-donors" target="P5-p41" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="r42_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="D5-donors" target="P5-p42">
+                <mxCell id="r42_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="D5-donors" target="P5-p42" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="r46_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="D5-donors" target="P5-p46">
+                <mxCell id="r46_read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="D5-donors" target="P5-p46" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="w43_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p43" target="D5-callreq">
+                <mxCell id="w43_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p43" target="D5-callreq" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="990" y="290"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="w44_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p44" target="D5-chats">
+                <mxCell id="w44_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p44" target="D5-chats" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="w45_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p45" target="D5-donors">
+                <mxCell id="w45_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p45" target="D5-donors" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="w46_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" edge="1" parent="1" source="P5-p46" target="D5-donors">
+                <mxCell id="w46_write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="1" source="P5-p46" target="D5-donors" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="XzkbLIbTjdQQWeUBV60Q-2" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="P5-p47">
+                <mxCell id="XzkbLIbTjdQQWeUBV60Q-2" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="P5-p47" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1030" y="745" as="targetPoint"/>
                         <mxPoint x="970" y="735" as="sourcePoint"/>
                         <Array as="points">
                             <mxPoint x="1010" y="760"/>
                         </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="UuQx3W3J7S8DMnIX-jKz" name="Page-3">
+        <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1000" pageHeight="700" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="admin-dfd" name="Admin-DFD">
+        <mxGraphModel dx="776" dy="879" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2200" math="0" shadow="0">
+            <root>
+                <mxCell id="admin0"/>
+                <mxCell id="admin1" value="Layer 1" parent="admin0"/>
+                <mxCell id="admin-actor" value="&lt;b&gt;ADMIN&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="40" y="30" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-point" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="54.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine" value="" style="edgeStyle=none;html=1;dashed=0;endArrow=none;strokeColor=#000000;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="admin1" edge="1" source="admin-spine-11">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="55" as="sourcePoint"/>
+                        <mxPoint x="200" y="2100" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p11" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.1 ADMIN LOGIN&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="320" y="30" width="220" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-11" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="61" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-11" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p11" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="60" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-e-11-users" style="edgeStyle=orthogonalEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" source="admin-ds-users" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="540" y="55.5" as="targetPoint"/>
+                        <mxPoint x="1221" y="216.04" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="1218" y="56"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p12" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;1.2&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 13px; background-color: transparent;&quot;&gt;USER MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="320" y="172" width="220" height="97" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-12" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="144.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-12" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p12" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="198" y="220" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p121" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.2.1 VIEW USERS&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="680" y="100" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-12-121" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p12" target="admin-p121" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p122" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.2.2 MANAGE USERS&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="680" y="210" width="240" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-12-122" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p12" target="admin-p122" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-122-users-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p122" target="admin-ds-users" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="220" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p13" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.3&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; background-color: transparent;&quot;&gt;BLOOD DONOR MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="283" y="385.5" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-13" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="384.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-13" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p13" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="436" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p131" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.3.1 VIEW DONORS&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="678" y="335.5" width="240" height="101.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-13-131" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p13" target="admin-p131" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p132" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.3.2 SUSPEND DONOR&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="670" y="455.5" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-13-132" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p13" target="admin-p132" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="621" y="437"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p14" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.4&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 16px; background-color: transparent;&quot;&gt;CALL REQUEST MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="283" y="630" width="300" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-14" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="594.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-14" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p14" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="690" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p141" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;1.4.1 VIEW CALL REQUESTS&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="680" y="575" width="260" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-14-141" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p14" target="admin-p141" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p142" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;1.4.2 MANAGE CALL REQUEST&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="680" y="693" width="260" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-14-142" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p14" target="admin-p142" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p15" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.5&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; background-color: transparent;&quot;&gt;CATEGORY MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="293" y="874" width="280" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-15" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="864.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-15" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p15" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="931" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p151" value="1.5.1 VIEW CATEGORIES" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="680" y="827" width="240" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-15-151" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="admin1" source="admin-p15" target="admin-p151" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p152" value="1.5.2 MANAGE CATEGORIES" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="678" y="948" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-15-152" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p15" target="admin-p152" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="627" y="934"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-e-152-categories-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p152" target="admin-ds-categories" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="895" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1000" y="965"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p16" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.6&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; background-color: transparent;&quot;&gt;MEDICAL CONDITION MGMT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="273" y="1140" width="300" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-16" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="1194.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p161" value="1.6.1 VIEW CONDITIONS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="670" y="1085" width="260" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-16-161" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p16" target="admin-p161" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p162" value="1.6.2 MANAGE CONDITIONS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="670" y="1221.75" width="260" height="102.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-16-162" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p16" target="admin-p162" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-162-medcond-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="admin1" source="admin-p162" target="admin-ds-medcond" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="1260" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p17" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.7&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; background-color: transparent;&quot;&gt;EMERGENCY NUMBER MGMT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="287" y="1457" width="300" height="119" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-17" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="1474.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-17" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p17" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="201" y="1515" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p171" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;1.7.1&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 13px; background-color: transparent;&quot;&gt;VIEW EMERGENCY NUMBERS&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="670" y="1362" width="260" height="143" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-17-171" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p17" target="admin-p171" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p172" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;1.7.2&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 13px; background-color: transparent;&quot;&gt;MANAGE EMERGENCY NUMBERS&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="674" y="1530" width="260" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-17-172" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p17" target="admin-p172" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="629" y="1518"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-e-172-emergnum-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="admin1" source="admin-p172" target="admin-ds-emergnum" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="1465" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p18" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.8&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 16px; background-color: transparent;&quot;&gt;RESOURCE MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="297" y="1703" width="280" height="121" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-18" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="1744.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-18" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p18" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="1764" as="sourcePoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p181" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.8.1 VIEW RESOURCES&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="684" y="1685" width="240" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-18-181" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p18" target="admin-p181" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p182" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.8.2 MANAGE RESOURCES&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor:#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="687" y="1806" width="240" height="101.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-18-182" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p18" target="admin-p182" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-182-resources-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="admin1" source="admin-p182" target="admin-ds-resources" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="1720" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p19" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;1.9&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 16px; background-color: transparent;&quot;&gt;HOSPITAL MANAGEMENT&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor:#000000;fillColor:#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="297" y="2011" width="260" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-19" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="1934.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-19" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p19" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="2071" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p191" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.9.1 VIEW HOSPITALS&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor:#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="684" y="1940" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-19-191" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="admin1" source="admin-p19" target="admin-p191" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-p192" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.9.2 MANAGE&amp;nbsp; HOSPITAL&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor:#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="687" y="2093" width="240" height="101" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-19-192" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p19" target="admin-p192" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="622" y="2079"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p110" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;1.10&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 14px; background-color: transparent;&quot;&gt;VIEW SEARCH LOGS&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="313" y="2196.5" width="220" height="99" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-110" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="2084.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-110" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p110" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="198" y="2246" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-e-110-searchlogs" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitPerimeter=0;" parent="admin1" source="S9k_Bbe-lVDNqHRm2sSd-15" target="admin-p110" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1043" y="2252" as="targetPoint"/>
+                        <mxPoint x="571" y="2406" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="791" y="2275"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p111" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;1.11&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 14px; background-color: transparent;&quot;&gt;VIEW EMERGENCY CLICKS&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="320" y="2318" width="220" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-111" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="2164.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-e-111" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" target="admin-p111" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="2378" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="admin-p112" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;1.12&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; background-color: transparent;&quot;&gt;SEND NOTIFICATION&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="admin1" vertex="1">
+                    <mxGeometry x="323" y="2467" width="220" height="119" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-spine-112" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="admin1" vertex="1">
+                    <mxGeometry x="199.5" y="2244.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-users" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;USERS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1110" y="237.5" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-donors" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;DONORS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1106" y="366.25" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-callreq" value="CALL_REQUESTS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1110" y="732" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-categories" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CATEGORIES&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1098" y="978" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-medcond" value="MEDICAL_CONDITIONS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1097" y="1253" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-emergnum" value="EMERGENCY_NUMBERS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1115" y="1575" width="241" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-resources" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;RESOURCES&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1116" y="1836.75" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-hospitals" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;HOSPITALS&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1103" y="2123.5" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-emergclicks" value="EMERGENCY_LOGS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=14;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1098" y="2358" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="admin-ds-notifications" value="NOTIFICATIONS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1098" y="2506.5" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="kPJM9GaQ0eB6NS0Cpfhl-4" value="" style="endArrow=classic;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1218" y="149.25" as="sourcePoint"/>
+                        <mxPoint x="920" y="148.75" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FY80BnIGUMzKMrB8uIQq-1" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" source="admin-ds-categories" target="admin-p151" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1132" y="899" as="sourcePoint"/>
+                        <mxPoint x="920" y="822" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1218" y="884"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FY80BnIGUMzKMrB8uIQq-3" value="" style="endArrow=classic;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" target="admin-p131" edge="1" source="admin-ds-donors">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1097" y="325" as="sourcePoint"/>
+                        <mxPoint x="928" y="324.90999999999997" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FY80BnIGUMzKMrB8uIQq-4" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="admin1" source="admin-p132" target="FY80BnIGUMzKMrB8uIQq-5" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="981" y="360" as="sourcePoint"/>
+                        <mxPoint x="1068" y="465" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FY80BnIGUMzKMrB8uIQq-5" value="BLOCKED_EMAILS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1106" y="485.5" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="JSl8DMz_rdg_X9M6RhBY-0" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" source="admin-ds-medcond" target="admin-p161" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1142" y="1246" as="sourcePoint"/>
+                        <mxPoint x="933" y="1135" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1218" y="1092"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="JSl8DMz_rdg_X9M6RhBY-3" value="" style="endArrow=none;html=1;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="200" y="2100" as="sourcePoint"/>
+                        <mxPoint x="199" y="2531" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="JSl8DMz_rdg_X9M6RhBY-4" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200.5" y="2531.5" as="sourcePoint"/>
+                        <mxPoint x="323.5" y="2531.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-6" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" source="admin-ds-emergnum" edge="1" target="admin-p171">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1153" y="1458" as="sourcePoint"/>
+                        <mxPoint x="940" y="1383" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1218" y="1454"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-7" value="" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="admin1" source="admin-p112" target="admin-ds-notifications" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1061" y="2476" as="targetPoint"/>
+                        <mxPoint x="539" y="2477" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="586" y="2505"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-8" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" source="admin-ds-resources" edge="1" target="admin-p181">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1156" y="1795.5" as="sourcePoint"/>
+                        <mxPoint x="915" y="1688.5" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1223" y="1744"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-11" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.575;exitY=0.009;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" source="admin-ds-callreq" edge="1" target="admin-p141">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1248" y="723" as="sourcePoint"/>
+                        <mxPoint x="940" y="573" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1248" y="606"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-12" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="admin1" source="admin-ds-hospitals" edge="1" target="admin-p191">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1169" y="2076" as="sourcePoint"/>
+                        <mxPoint x="920" y="2001" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1218" y="2021"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-14" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-p192" target="admin-ds-hospitals" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="972" y="2055" as="sourcePoint"/>
+                        <mxPoint x="1022" y="2005" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-15" value="SEARCH_LOGS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="admin1" vertex="1">
+                    <mxGeometry x="1103" y="2226" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-16" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitPerimeter=0;" parent="admin1" source="admin-ds-emergclicks" target="admin-p111" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="547.5" y="2361.17" as="targetPoint"/>
+                        <mxPoint x="1052.5" y="2361.17" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="798.5" y="2383.17"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-18" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1130" y="277.5" as="sourcePoint"/>
+                        <mxPoint x="1130.2" y="238.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-19" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1130" y="406.25" as="sourcePoint"/>
+                        <mxPoint x="1130.2" y="367.25" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-22" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1130" y="525.5" as="sourcePoint"/>
+                        <mxPoint x="1130.2" y="486.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-24" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1130" y="772" as="sourcePoint"/>
+                        <mxPoint x="1130.2" y="733" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-25" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1119" y="1018" as="sourcePoint"/>
+                        <mxPoint x="1119.2" y="979" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-26" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1121" y="1293" as="sourcePoint"/>
+                        <mxPoint x="1121.2" y="1254" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-27" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1135" y="1614" as="sourcePoint"/>
+                        <mxPoint x="1135.2" y="1575" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-28" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1138" y="1876.75" as="sourcePoint"/>
+                        <mxPoint x="1138.2" y="1837.75" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-29" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1125" y="2164.5" as="sourcePoint"/>
+                        <mxPoint x="1125.2" y="2125.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-30" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1121" y="2266" as="sourcePoint"/>
+                        <mxPoint x="1121.2" y="2227" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-31" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1121" y="2397" as="sourcePoint"/>
+                        <mxPoint x="1121.2" y="2358" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-32" value="" style="endArrow=none;html=1;exitX=0.17;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="admin1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1120" y="2546.5" as="sourcePoint"/>
+                        <mxPoint x="1120.2" y="2507.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S9k_Bbe-lVDNqHRm2sSd-34" value="" style="endArrow=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="admin1" source="admin-actor" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="376" y="107" as="sourcePoint"/>
+                        <mxPoint x="200" y="60" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="DS2FxXvqfXdwIvr-zOHt-3" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="admin1" target="admin-ds-callreq">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="940" y="750" as="sourcePoint"/>
+                        <mxPoint x="990" y="700" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="DS2FxXvqfXdwIvr-zOHt-4" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="admin1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="201" y="1207" as="sourcePoint"/>
+                        <mxPoint x="273" y="1206" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="l_c80QCNO10zevggf3nx" name="Page-5">
+        <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1000" pageHeight="700" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="hospital-dfd" name="Hospital-DFD">
+        <mxGraphModel dx="970" dy="1098" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2400" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="hospital1" value="Layer 1" parent="0"/>
+                <mxCell id="hospital-actor" value="&lt;b&gt;HOSPITAL&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=14;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="40" y="30" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-main-spine" value="" style="edgeStyle=none;html=1;dashed=0;endArrow=none;strokeColor:#000000;" edge="1" parent="hospital1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="60" as="sourcePoint"/>
+                        <mxPoint x="200" y="935" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p21" value="3.1 HOSPITAL REGISTRATION" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="280" y="50" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-spine-21" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="hospital1" vertex="1">
+                    <mxGeometry x="199.5" y="74.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-21" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="hospital1" source="hospital-spine-21" target="hospital-p21" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-21-hospitals" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="hospital1" source="hospital-p21" edge="1" target="hospital-ds-hospitals">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="75" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="995" y="25"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p22" value="3.2 HOSPITAL LOGIN" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="280" y="150" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-spine-22" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="hospital1" vertex="1">
+                    <mxGeometry x="199.5" y="174.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-22" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="hospital1" source="hospital-spine-22" target="hospital-p22" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p23" value="3.3 HOSPITAL PROFILE MGMT" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="280" y="280" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-spine-23" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="hospital1" vertex="1">
+                    <mxGeometry x="199.5" y="304.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-23" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="hospital1" source="hospital-spine-23" target="hospital-p23" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p231" value="3.3.1 VIEW PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="250" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-23-231" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p23" target="hospital-p231" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p232" value="3.3.2 EDIT PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="320" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-23-232" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p23" target="hospital-p232" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p233" value="3.3.3 DELETE PROFILE" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="383" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-23-233" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p23" target="hospital-p233" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-233-hospitals-read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="hospital1" source="hospital-p233" target="hospital-ds-hospitals">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1231.9410903033088" y="236" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1211" y="299"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p24" value="3.4 DOCTOR MANAGEMENT" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor:#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="240" y="622" width="320" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-spine-24" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="hospital1" vertex="1">
+                    <mxGeometry x="199.5" y="624.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-24" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="hospital1" target="hospital-p24" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="647" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p241" value="3.4.1 VIEW DOCTORS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="504" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-24-241" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="hospital1" source="hospital-p24" target="hospital-p241" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p242" value="3.4.2 ADD DOCTOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="582" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-24-242" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p24" target="hospital-p242" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-242-appointments-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="hospital1" source="hospital-p242" edge="1" target="hospital-ds-doctors">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="680" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p243" value="3.4.3 EDIT DOCTOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="666" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-24-243" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p24" target="hospital-p243" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-243-appointments-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="hospital1" source="hospital-p243" edge="1" target="hospital-ds-doctors">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="750" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p244" value="3.4.4 DELETE DOCTOR" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor:#000000;fillColor:#ffffff;" vertex="1" parent="hospital1">
+                    <mxGeometry x="680" y="739" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-24-244" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" edge="1" parent="hospital1" source="hospital-p24" target="hospital-p244">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-244-doctors-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="hospital1" source="hospital-p244" target="hospital-ds-doctors">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="805" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p25" value="3.5 APPOINTMENT MANAGEMENT" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=12;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="280" y="910" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-spine-25" value="" style="ellipse;whiteSpace=wrap;html=1;fillOpacity=0;strokeOpacity=0;" parent="hospital1" vertex="1">
+                    <mxGeometry x="199.5" y="894.5" width="1" height="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-25" style="edgeStyle=none;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="hospital1" target="hospital-p25" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="935" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p251" value="3.5.1 VIEW APPOINTMENTS" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="840" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-25-251" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;" parent="hospital1" source="hospital-p25" target="hospital-p251" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-p252" value="3.5.2 APPROVE APPOINTMENT" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="910" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-25-252" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p25" target="hospital-p252" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-252-hospitals-write" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="hospital1" source="hospital-p252" edge="1" target="hospital-ds-appointments">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="950" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-p253" value="3.5.3 REJECT APPOINTMENT" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=11;fontStyle=1;strokeColor=#000000;fillColor=#ffffff;" parent="hospital1" vertex="1">
+                    <mxGeometry x="680" y="980" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-25-253" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;" parent="hospital1" source="hospital-p25" target="hospital-p253" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-e-253-hospitals-read" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor:#000000;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="hospital1" source="hospital-p253" edge="1" target="hospital-ds-appointments">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1050" y="990" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="hospital-ds-hospitals" value="HOSPITALS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="hospital1" vertex="1">
+                    <mxGeometry x="1093" y="155" width="235" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-ds-doctors" value="DOCTORS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="hospital1" vertex="1">
+                    <mxGeometry x="1091" y="671" width="235" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="hospital-ds-appointments" value="APPOINTMENTS" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_1;align=center;pointerEvents=1;fontSize=16;fontStyle=1;fontFamily=Times New Roman;" parent="hospital1" vertex="1">
+                    <mxGeometry x="1091" y="915" width="235" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dtBHRgSAweSPrADThm_V-0" value="" style="endArrow=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="hospital1" target="hospital-actor">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="200" y="60" as="sourcePoint"/>
+                        <mxPoint x="250" y="21" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="CqgTfyOv7-ACh9IhHs1J-0" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1" source="hospital-ds-hospitals" target="hospital-p22">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1086" y="240" as="sourcePoint"/>
+                        <mxPoint x="646" y="74.5" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="807" y="151"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-0" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1" source="hospital-ds-hospitals">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1084" y="178" as="sourcePoint"/>
+                        <mxPoint x="918" y="280" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="976" y="237"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-2" value="" style="endArrow=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="hospital1" source="hospital-p232">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="946" y="235" as="sourcePoint"/>
+                        <mxPoint x="1211" y="345" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-3" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1" source="hospital-ds-doctors">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1191" y="558" as="sourcePoint"/>
+                        <mxPoint x="940" y="529" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1207" y="529"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-4" style="edgeStyle=elbowEdgeStyle;elbow=horizontal;rounded=0;orthogonal=1;html=1;dashed=0;endArrow=classic;strokeColor=#000000;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="hospital1" target="hospital-p251">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1216" y="915" as="sourcePoint"/>
+                        <mxPoint x="947" y="773" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1214" y="773"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-5" value="" style="endArrow=none;html=1;entryX=0.134;entryY=0.004;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.133;exitY=0.997;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1" source="hospital-ds-hospitals" target="hospital-ds-hospitals">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1123" y="192" as="sourcePoint"/>
+                        <mxPoint x="1125" y="155" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-6" value="" style="endArrow=none;html=1;entryX=0.134;entryY=0.004;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.133;exitY=0.997;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1120" y="712" as="sourcePoint"/>
+                        <mxPoint x="1120" y="672" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="S2inc4SBgIH_GmzTPDP2-7" value="" style="endArrow=none;html=1;entryX=0.134;entryY=0.004;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.133;exitY=0.997;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="hospital1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="1120" y="955" as="sourcePoint"/>
+                        <mxPoint x="1120" y="915" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
             </root>

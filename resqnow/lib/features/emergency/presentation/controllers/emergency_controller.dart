@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../data/services/emergency_service.dart';
@@ -15,7 +14,6 @@ class EmergencyController {
       if (!status.isGranted) {
         final result = await Permission.phone.request();
         if (!result.isGranted) {
-          debugPrint('Phone call permission denied.');
           return;
         }
       }
@@ -29,9 +27,8 @@ class EmergencyController {
 
       // Make the phone call
       await FlutterPhoneDirectCaller.callNumber(emergencyNumber);
-      debugPrint('Emergency call initiated to $emergencyNumber');
     } catch (e) {
-      debugPrint("Error during emergency call: $e");
+      // Error during emergency call
     }
   }
 }

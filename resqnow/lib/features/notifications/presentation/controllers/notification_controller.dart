@@ -13,40 +13,38 @@ class NotificationController with ChangeNotifier {
 
   /// Initialize notification listener
   void initializeNotifications() {
-    print('🚀 NotificationController.initializeNotifications() started');
-    
     // Listen to notifications stream
-    _notificationService.listenToNotifications().listen((notifications) {
-      print('📦 Notifications stream updated: ${notifications.length} notifications');
-      _notifications = notifications;
-      _updateUnreadCount();
-      notifyListeners();
-    }, onError: (error) {
-      print('❌ Error in notifications stream: $error');
-    });
+    _notificationService.listenToNotifications().listen(
+      (notifications) {
+        _notifications = notifications;
+        _updateUnreadCount();
+        notifyListeners();
+      },
+      onError: (error) {
+        // Handle error silently
+      },
+    );
 
     // Listen to unread count
-    _notificationService.getUnreadCount().listen((count) {
-      print('🔔 Unread count updated: $count');
-      _unreadCount = count;
-      notifyListeners();
-    }, onError: (error) {
-      print('❌ Error in unread count stream: $error');
-    });
-    
-    print('✅ Notification listener initialized');
+    _notificationService.getUnreadCount().listen(
+      (count) {
+        _unreadCount = count;
+        notifyListeners();
+      },
+      onError: (error) {
+        // Handle error silently
+      },
+    );
   }
 
   /// Mark notification as read
   Future<void> markAsRead(String notificationId) async {
-    print('Marking notification $notificationId as read');
     await _notificationService.markAsRead(notificationId);
     notifyListeners();
   }
 
   /// Delete notification
   Future<void> deleteNotification(String notificationId) async {
-    print('Deleting notification $notificationId');
     await _notificationService.deleteNotification(notificationId);
     notifyListeners();
   }
@@ -59,11 +57,8 @@ class NotificationController with ChangeNotifier {
   /// Get latest unread notification
   Map<String, dynamic>? getLatestUnread() {
     try {
-      final latest = _notifications.firstWhere((n) => !n['isRead']);
-      print('📬 Latest unread notification: ${latest['title']}');
-      return latest;
+      return _notifications.firstWhere((n) => !n['isRead']);
     } catch (e) {
-      print('No unread notifications found');
       return null;
     }
   }

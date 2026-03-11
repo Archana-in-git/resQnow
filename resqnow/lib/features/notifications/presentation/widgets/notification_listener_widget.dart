@@ -6,10 +6,7 @@ import '../controllers/notification_controller.dart';
 class NotificationListener extends StatefulWidget {
   final Widget child;
 
-  const NotificationListener({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const NotificationListener({Key? key, required this.child}) : super(key: key);
 
   @override
   State<NotificationListener> createState() => _NotificationListenerState();
@@ -24,49 +21,35 @@ class _NotificationListenerState extends State<NotificationListener> {
   @override
   void initState() {
     super.initState();
-    print('🎯 NotificationListener initState called');
     _auth = FirebaseAuth.instance;
     _notificationController = context.read<NotificationController>();
 
     // Listen for auth state changes
     _auth.authStateChanges().listen((user) {
-      print('🔐 Auth state changed: user = ${user?.email}');
       if (user != null && !_initialized) {
         // User logged in, initialize notifications
-        print('✅ User logged in, initializing notifications');
         _initialized = true;
         _notificationController.initializeNotifications();
         _notificationController.addListener(_checkForNewNotifications);
-        print('✅ Notification listener added');
       } else if (user == null) {
         // User logged out
-        print('❌ User logged out');
         _initialized = false;
       }
     });
 
     // If user is already logged in (app restart)
     if (_auth.currentUser != null && !_initialized) {
-      print('✅ App restart: user already logged in as ${_auth.currentUser?.email}');
       _initialized = true;
       _notificationController.initializeNotifications();
       _notificationController.addListener(_checkForNewNotifications);
-      print('✅ Notification listener added (app restart)');
-    } else if (_auth.currentUser == null) {
-      print('⏳ Waiting for user to log in...');
     }
   }
 
   void _checkForNewNotifications() {
-    print('🔍 Checking for new notifications...');
     final latest = _notificationController.getLatestUnread();
-    print('🔍 Latest unread: ${latest?['id']}');
     if (latest != null && !_shownNotifications.contains(latest['id'])) {
-      print('📢 Showing notification: ${latest['title']}');
       _shownNotifications.add(latest['id']);
       _showNotificationSnackBar(latest);
-    } else if (latest == null) {
-      print('🔍 No unread notifications');
     }
   }
 
@@ -74,10 +57,9 @@ class _NotificationListenerState extends State<NotificationListener> {
     if (!mounted) return;
     final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
     if (scaffoldMessenger == null) {
-      print('⚠️ ScaffoldMessenger not found in context, skipping snack bar');
       return;
     }
-    
+
     scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Column(
@@ -86,10 +68,7 @@ class _NotificationListenerState extends State<NotificationListener> {
           children: [
             Text(
               notification['title'] ?? 'New Notification',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 4),
             Text(

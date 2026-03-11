@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:resqnow/core/constants/app_colors.dart';
 import '../../domain/entities/appointment_entity.dart';
 import '../../domain/usecases/book_appointment.dart';
 
@@ -84,7 +85,7 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
       );
 
       final bookAppointment = context.read<BookAppointment>();
-      final appointmentId = await bookAppointment(appointment);
+      await bookAppointment(appointment);
 
       if (mounted) {
         _showSuccessDialog();
@@ -108,30 +109,77 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
   }
 
   void _showSuccessDialog() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Success!'),
-        content: const Column(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 48),
-            SizedBox(height: 16),
-            Text(
-              'Appointment has been successfully requested.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green.shade600,
+                size: 56,
+              ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 20),
             Text(
-              'You will be notified if it is approved.',
+              'Appointment Requested!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Your appointment request has been successfully submitted.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey,
+                color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_rounded, color: AppColors.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'You\'ll be notified once it\'s approved',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -144,8 +192,21 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                 Navigator.of(context).pop(); // Close dialog
                 Navigator.of(context).pop(); // Go back to hospital detail
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: const Text('Done', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Done',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
             ),
           ),
         ],
@@ -153,10 +214,77 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
     );
   }
 
+  InputDecoration _buildInputDecoration({
+    required String labelText,
+    required String hintText,
+    required IconData icon,
+    bool isDarkMode = false,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      filled: true,
+      fillColor: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+      ),
+      prefixIcon: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.all(10),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      labelStyle: TextStyle(
+        color: AppColors.primary,
+        fontWeight: FontWeight.w500,
+      ),
+      hintStyle: TextStyle(
+        color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Book Appointment')),
+      backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade50,
+      appBar: AppBar(
+        title: const Text(
+          'Book Appointment',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+          ),
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -164,16 +292,76 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.calendar_today_rounded,
+                        color: AppColors.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Fill Your Details',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: isDarkMode
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Complete the form to request an appointment',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDarkMode
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // Patient Name Field
               TextFormField(
                 controller: _patientNameController,
-                decoration: InputDecoration(
+                decoration: _buildInputDecoration(
                   labelText: 'Patient Name',
                   hintText: 'Enter your full name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.person),
+                  icon: Icons.person_rounded,
+                  isDarkMode: isDarkMode,
+                ),
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -187,14 +375,16 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
               // Phone Field
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(
+                decoration: _buildInputDecoration(
                   labelText: 'Phone Number',
                   hintText: 'Enter your phone number',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.phone),
+                  icon: Icons.phone_rounded,
+                  isDarkMode: isDarkMode,
                 ),
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter phone number';
@@ -210,13 +400,14 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
               // Description/Reason Field
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(
+                decoration: _buildInputDecoration(
                   labelText: 'Appointment Reason',
                   hintText: 'Describe your symptoms or reason for appointment',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.description),
+                  icon: Icons.description_rounded,
+                  isDarkMode: isDarkMode,
+                ),
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
                 maxLines: 4,
                 validator: (value) {
@@ -231,26 +422,86 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
               // Date Picker Field
               GestureDetector(
                 onTap: () => _selectDate(context),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Preferred Date',
-                    hintText: 'Select preferred date',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDarkMode
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade50,
+                    border: Border.all(
+                      color: isDarkMode
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade200,
+                      width: 1,
                     ),
-                    prefixIcon: const Icon(Icons.calendar_today),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    _selectedDate != null
-                        ? '${_selectedDate!.toLocal().toString().split(' ')[0]}'
-                        : 'No date selected',
-                    style: TextStyle(
-                      color: _selectedDate != null ? Colors.black : Colors.grey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.calendar_today_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Preferred Date',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _selectedDate != null
+                                    ? _selectedDate!.toLocal().toString().split(
+                                        ' ',
+                                      )[0]
+                                    : 'Select a date',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: _selectedDate != null
+                                      ? (isDarkMode
+                                            ? Colors.white
+                                            : Colors.black)
+                                      : (isDarkMode
+                                            ? Colors.grey.shade500
+                                            : Colors.grey.shade500),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                          color: isDarkMode
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade400,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Submit Button
               SizedBox(
@@ -258,9 +509,12 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: Colors.grey.shade400,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.blue,
-                    disabledBackgroundColor: Colors.grey,
                   ),
                   child: _isLoading
                       ? const SizedBox(
@@ -273,14 +527,60 @@ class _AppointmentFormPageState extends State<AppointmentFormPage> {
                             ),
                           ),
                         )
-                      : const Text(
-                          'Book Appointment',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Book Appointment',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Info message
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.blue.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_rounded,
+                      color: Colors.blue.shade600,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Your appointment will be reviewed and confirmed shortly',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDarkMode
+                              ? Colors.blue.shade300
+                              : Colors.blue.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

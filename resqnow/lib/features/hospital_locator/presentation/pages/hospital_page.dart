@@ -25,7 +25,6 @@ class _HospitalPageState extends State<HospitalPage> {
 
   LatLng? _userLatLng;
   final Set<Marker> _markers = {};
-  String? _selectedPlaceId;
 
   bool _loading = true;
   String? _error;
@@ -149,17 +148,14 @@ class _HospitalPageState extends State<HospitalPage> {
         throw "Places API status: $status";
       }
 
-      final results =
-          List<Map<String, dynamic>>.from(data["results"] ?? []);
+      final results = List<Map<String, dynamic>>.from(data["results"] ?? []);
 
       _hospitals.clear();
       _markers.removeWhere((m) => m.markerId.value != "me");
 
       for (final place in results) {
-        final lat =
-            (place["geometry"]["location"]["lat"] as num).toDouble();
-        final lng =
-            (place["geometry"]["location"]["lng"] as num).toDouble();
+        final lat = (place["geometry"]["location"]["lat"] as num).toDouble();
+        final lng = (place["geometry"]["location"]["lng"] as num).toDouble();
 
         final name = (place["name"] ?? "") as String;
         final rating = (place["rating"] is num)
@@ -195,7 +191,7 @@ class _HospitalPageState extends State<HospitalPage> {
       if (!mounted) return;
       setState(() {});
     } catch (e) {
-      debugPrint("Error fetching hospitals: $e");
+      // Error fetching hospitals
       if (!mounted) return;
       setState(() {});
     }
@@ -211,7 +207,6 @@ class _HospitalPageState extends State<HospitalPage> {
         selected ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
       ),
       onTap: () {
-        setState(() => _selectedPlaceId = h.placeId);
         _openPanelIfNeeded();
       },
     );

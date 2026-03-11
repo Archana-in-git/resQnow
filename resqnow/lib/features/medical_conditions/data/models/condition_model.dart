@@ -21,8 +21,8 @@ class FaqItem {
 class ConditionModel {
   final String id;
   final String name;
-  final String categoryId;
-  final String severity; // low | medium | high | critical
+  final List<String> categories; // Array of category IDs
+  final String severity; // low | medium | high | critical | serious
   final List<String> imageUrls;
   final List<String> firstAidDescription;
   final String? videoUrl;
@@ -35,7 +35,7 @@ class ConditionModel {
   ConditionModel({
     required this.id,
     required this.name,
-    required this.categoryId,
+    required this.categories,
     required this.severity,
     required this.imageUrls,
     required this.firstAidDescription,
@@ -58,7 +58,7 @@ class ConditionModel {
     return ConditionModel(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
-      categoryId: json['categoryId'] as String? ?? '',
+      categories: _toStringList(json['categories'] ?? json['categoryId']),
       severity: json['severity'] as String? ?? 'low',
       imageUrls: _toStringList(json['imageUrls']),
       // Support both old field name 'firstAidSteps' and current 'firstAidDescription'
@@ -80,7 +80,7 @@ class ConditionModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'categoryId': categoryId,
+      'categories': categories,
       'severity': severity,
       'imageUrls': imageUrls,
       'firstAidDescription': firstAidDescription,

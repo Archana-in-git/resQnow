@@ -337,7 +337,7 @@ class _DonorListPageState extends State<DonorListPage> {
       }
 
       // Filter by availability
-      if (controller.isAvailable == true && !(donor.isAvailable ?? false)) {
+      if (controller.isAvailable == true && !donor.isAvailable) {
         return false;
       }
 
@@ -488,7 +488,6 @@ class _DonorListPageState extends State<DonorListPage> {
       final List<dynamic> districts = data['districts'] ?? [];
       return districts.map((d) => d.toString()).toList();
     } catch (e) {
-      debugPrint('ERROR loading districts: $e');
       return ['Palakkad']; // Fallback
     }
   }
@@ -1109,8 +1108,6 @@ class _DonorListPageState extends State<DonorListPage> {
                                                     controller
                                                             .selectedBloodGroup =
                                                         isSelected ? null : bg;
-                                                    controller
-                                                        .notifyListeners();
                                                   });
                                                 },
                                                 child: Container(
@@ -1268,8 +1265,6 @@ class _DonorListPageState extends State<DonorListPage> {
                                                   setState(() {
                                                     controller.isAvailable =
                                                         val;
-                                                    controller
-                                                        .notifyListeners();
                                                   });
                                                 },
                                                 activeColor: AppColors.success,
@@ -1306,7 +1301,6 @@ class _DonorListPageState extends State<DonorListPage> {
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      controller.notifyListeners();
                                       Navigator.pop(context);
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -1337,7 +1331,6 @@ class _DonorListPageState extends State<DonorListPage> {
                                       setState(() {
                                         controller.selectedBloodGroup = null;
                                         controller.isAvailable = null;
-                                        controller.notifyListeners();
                                       });
                                     },
                                     style: OutlinedButton.styleFrom(

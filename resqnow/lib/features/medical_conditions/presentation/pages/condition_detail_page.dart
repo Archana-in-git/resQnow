@@ -57,7 +57,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
         });
       }
     } catch (e) {
-      print('⚠️ Error checking if condition is saved: $e');
       // If there's an error, assume not saved
       if (mounted) {
         setState(() {
@@ -179,42 +178,41 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
               SliverPadding(
                 padding: const EdgeInsets.all(16.0),
                 sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    // ═══════════════════════════════════════════════════════════
-                    // HEADER SECTION - Wrapped in RepaintBoundary
-                    // ═══════════════════════════════════════════════════════════
-                    RepaintBoundary(
-                      child: _buildHeaderSection(condition, isDarkMode),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // ═══════════════════════════════════════════════════════════
-                    // FIRST AID SECTION - Wrapped in RepaintBoundary
-                    // ═══════════════════════════════════════════════════════════
-                    RepaintBoundary(child: _buildFirstAidSection(condition)),
-
-                    const SizedBox(height: 24),
-
-                    // ═══════════════════════════════════════════════════════════
-                    // VIDEO SECTION - Lazy loaded with RepaintBoundary
-                    // ═══════════════════════════════════════════════════════════
-                    if ((condition.videoUrl?.isNotEmpty ?? false))
-                      RepaintBoundary(
-                        child: _buildVideoSection(condition, isDarkMode),
-                      )
-                    else
-                      RepaintBoundary(child: _buildNoVideoSection(isDarkMode)),
-
-                    const SizedBox(height: 24),
-
-                    // ═══════════════════════════════════════════════════════════
-                    // QUICK ACCESS CARDS - Wrapped in RepaintBoundary
-                    // ═══════════════════════════════════════════════════════════
-                    RepaintBoundary(
-                      child: _buildExploreMoreSection(condition, isDarkMode),
-                    ),
-                  ]),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    // Lazy build sections to avoid unnecessary widget creation
+                    switch (index) {
+                      case 0:
+                        return RepaintBoundary(
+                          child: _buildHeaderSection(condition, isDarkMode),
+                        );
+                      case 1:
+                        return const SizedBox(height: 24);
+                      case 2:
+                        return RepaintBoundary(
+                          child: _buildFirstAidSection(condition),
+                        );
+                      case 3:
+                        return const SizedBox(height: 24);
+                      case 4:
+                        // Lazy load video widget - only build when scrolled into view
+                        return RepaintBoundary(
+                          child: (condition.videoUrl?.isNotEmpty ?? false)
+                              ? _buildVideoSection(condition, isDarkMode)
+                              : _buildNoVideoSection(isDarkMode),
+                        );
+                      case 5:
+                        return const SizedBox(height: 24);
+                      case 6:
+                        return RepaintBoundary(
+                          child: _buildExploreMoreSection(
+                            condition,
+                            isDarkMode,
+                          ),
+                        );
+                      default:
+                        return const SizedBox.shrink();
+                    }
+                  }, childCount: 7),
                 ),
               ),
             ],
@@ -244,17 +242,22 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                       itemCount: condition.imageUrls.length,
                       onPageChanged: (index) =>
                           setState(() => _currentPage = index),
+                      scrollBehavior: const ScrollBehavior(),
                       itemBuilder: (context, index) {
                         final imageUrl = condition.imageUrls[index];
 
                         // Check if it's an HTTP/HTTPS URL
                         if (imageUrl.startsWith('http://') ||
                             imageUrl.startsWith('https://')) {
-                          // Network image
+                          // Network image - with aggressive caching
                           return CachedNetworkImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.cover,
                             width: double.infinity,
+                            cacheKey: 'condition_${condition.id}_$index',
+                            memCacheHeight: 250,
+                            memCacheWidth: 500,
+                            fadeInDuration: const Duration(milliseconds: 200),
                             placeholder: (context, url) => Container(
                               color: Colors.grey.shade200,
                               child: const Center(
@@ -271,8 +274,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                               color: Colors.grey.shade300,
                               child: const Icon(Icons.broken_image),
                             ),
-                            memCacheHeight: 250,
-                            memCacheWidth: 500,
                           );
                         } else {
                           // Local asset - extract just filename and construct proper path
@@ -286,6 +287,8 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                             assetPath,
                             fit: BoxFit.cover,
                             width: double.infinity,
+                            cacheHeight: 250,
+                            cacheWidth: 500,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                                   color: Colors.grey.shade300,
@@ -517,7 +520,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                   label: 'FAQs',
                   onTap: () {
                     context.push(
-                      '/categories/condition/${widget.conditionId}/faqs',
+                      '/condition/${widget.conditionId}/faqs',
                       extra: condition,
                     );
                   },
@@ -534,7 +537,7 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
                 iconColor: Colors.red,
                 backgroundColor: Colors.red.withValues(alpha: 0.1),
                 label: 'Hospitals',
-                onTap: () => context.push('/hospitals'),
+                onTap: () => context.push('/approved-hospitals'),
                 isDarkMode: isDarkMode,
               ),
             ),

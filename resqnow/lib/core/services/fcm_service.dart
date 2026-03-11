@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class FCMService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -20,7 +19,6 @@ class FCMService {
       );
 
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-        print('User denied notification permission');
         return;
       }
 
@@ -35,29 +33,13 @@ class FCMService {
 
       // Handle foreground notifications
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message in the foreground: ${message.messageId}');
-        print('Message data: ${message.data}');
-        if (message.notification != null) {
-          print(
-            'Notification: ${message.notification?.title} - ${message.notification?.body}',
-          );
-        }
         // Notifications will be automatically handled by the NotificationListener
         // and Firestore listener in NotificationListenerService
       });
 
-      // Handle notification when app is opened from terminated state
-      RemoteMessage? initialMessage = await FirebaseMessaging.instance
-          .getInitialMessage();
-      if (initialMessage != null) {
-        print('App opened from notification: ${initialMessage.messageId}');
-      }
-
-      print('✅ FCM initialized successfully');
-      print('   Token: $token');
-      print('   Permission status: ${settings.authorizationStatus}');
+      // FCM setup complete
     } catch (e) {
-      print('Error initializing FCM: $e');
+      // Error initializing FCM
     }
   }
 
@@ -83,10 +65,9 @@ class FCMService {
             rethrow;
           }
         }
-        print('FCM token saved to Firestore');
       }
     } catch (e) {
-      print('Error saving FCM token: $e');
+      // Error saving FCM token
     }
   }
 }

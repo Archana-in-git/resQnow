@@ -30,7 +30,7 @@ class SettingsController with ChangeNotifier {
       _emergencyAlertsEnabled = _prefs.getBool(_emergencyAlertsKey) ?? true;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading settings: $e');
+      // Settings initialization failed, use defaults
     }
   }
 
@@ -41,7 +41,7 @@ class SettingsController with ChangeNotifier {
       await _prefs.setString(_textSizeKey, size);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error saving text size preference: $e');
+      // Text size save failed, ignore
     }
   }
 
@@ -52,7 +52,7 @@ class SettingsController with ChangeNotifier {
       await _prefs.setBool(_notificationsKey, enabled);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error saving notifications preference: $e');
+      // Notifications preference save failed, ignore
     }
   }
 
@@ -63,7 +63,7 @@ class SettingsController with ChangeNotifier {
       await _prefs.setBool(_emergencyAlertsKey, enabled);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error saving emergency alerts preference: $e');
+      // Emergency alerts preference save failed, ignore
     }
   }
 
@@ -77,7 +77,7 @@ class SettingsController with ChangeNotifier {
       await _prefs.clear();
       notifyListeners();
     } catch (e) {
-      debugPrint('Error resetting settings: $e');
+      // Reset failed, keep current values
     }
   }
 }

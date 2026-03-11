@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:resqnow/features/condition_categories/presentation/widgets/category_card.dart';
 import '../controllers/category_controller.dart';
 import 'package:resqnow/features/condition_categories/data/services/category_service.dart';
+import 'package:resqnow/features/medical_conditions/data/services/condition_service.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +21,7 @@ class _CategoryListPageState extends State<CategoryListPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final CategoryController _controller;
   final CategoryService _categoryService = CategoryService();
+  final ConditionService _conditionService = ConditionService();
   final TextEditingController _searchController = TextEditingController();
 
   bool _isSearchExpanded = false;
@@ -35,6 +37,10 @@ class _CategoryListPageState extends State<CategoryListPage>
     _controller = CategoryController(_categoryService);
     _controller.loadCategories();
 
+    // Warm up Firestore client on app initialization to prevent cold-start lag
+    // This prevents the 1-2 second delay on the first category click
+    _warmupFirestore();
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -43,6 +49,14 @@ class _CategoryListPageState extends State<CategoryListPage>
     _expandAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+  }
+
+  /// Warm up Firestore by triggering a lightweight query
+  /// This establishes the connection early so first category click is instant
+  void _warmupFirestore() {
+    final firestore = FirebaseFirestore.instance;
+    // Silent background query - no await, let it complete on its own
+    firestore.collection('medical_conditions').limit(1).get().then((_) {});
   }
 
   @override
@@ -89,12 +103,6 @@ class _CategoryListPageState extends State<CategoryListPage>
     );
 
     final labels = await labeler.processImage(inputImage);
-    // 👇 Add this
-    for (final l in labels) {
-      debugPrint(
-        '🧠 Detected label: ${l.label} (conf: ${l.confidence.toStringAsFixed(2)})',
-      );
-    }
     labeler.close();
 
     if (labels.isEmpty) {
@@ -120,11 +128,14 @@ class _CategoryListPageState extends State<CategoryListPage>
       if (query.docs.isNotEmpty) {
         final category = query.docs.first.data();
         final categoryId = query.docs.first.id;
-        _showSnack('Detected: ${category['name']}');
+        final categoryName = category['name'] ?? 'Unknown';
+        _showSnack('Detected: $categoryName');
 
         // ✅ Navigate to that category
         if (mounted) {
-          context.push('/categories/condition/$categoryId');
+          context.push(
+            '/categories/$categoryId/${Uri.encodeComponent(categoryName)}',
+          );
         }
       } else {
         _showSnack('No matching category found.');
@@ -406,8 +417,39 @@ class _CategoryListPageState extends State<CategoryListPage>
                   return CategoryCard(
                     key: ValueKey(category.id),
                     category: category,
-                    onTap: () {
-                      context.push('/categories/condition/${category.id}');
+                    onTap: () async {
+                      try {
+                        // Fetch conditions for this category
+                        final conditions = await _conditionService
+                            .getConditionsByCategory(category.id);
+
+                        if (conditions.isEmpty) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'No condition found for this category',
+                                ),
+                              ),
+                            );
+                          }
+                          return;
+                        }
+
+                        // Navigate directly to condition detail page
+                        if (mounted) {
+                          context.push('/condition/${conditions.first.id}');
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error loading condition: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
                   );
                 },

@@ -15,7 +15,6 @@ class EmergencyService {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        print('No authenticated user for emergency logging');
         return;
       }
 
@@ -30,11 +29,8 @@ class EmergencyService {
             'initiated', // can be: initiated, in_progress, completed, failed
         'platform': 'mobile_app', // helps distinguish from web admin actions
       });
-
-      print('✅ Emergency click logged successfully to Firestore');
     } catch (e) {
-      print('❌ Error logging emergency click to Firestore: $e');
-      // Don't throw - we don't want logging failures to block the emergency call
+      // Error logging silently - don't block emergency calls
     }
   }
 }

@@ -58,34 +58,20 @@ class LocationController extends ChangeNotifier {
         (district, towns) => MapEntry(district, List<String>.from(towns)),
       );
     } catch (e) {
-      debugPrint("ERROR loading Kerala towns JSON: $e");
+      // Error loading towns JSON
     }
   }
 
   // LOAD PINCODE → TOWN JSON
   Future<void> _loadPincodeJson() async {
     try {
-      debugPrint(
-        "🔄 Loading pincode JSON from assets/data/pin_palakkad.json...",
-      );
-
       final jsonString = await rootBundle.loadString(
         'assets/data/pin_palakkad.json',
       );
 
-      debugPrint(
-        "✅ JSON file loaded successfully. Size: ${jsonString.length} bytes",
-      );
-
       final List<dynamic> data = json.decode(jsonString);
       _pincodeAreaList = data.map((e) => Map<String, dynamic>.from(e)).toList();
-
-      debugPrint(
-        "✅ Pincode JSON parsed successfully. Total entries: ${_pincodeAreaList.length}",
-      );
     } catch (e) {
-      debugPrint("❌ ERROR loading pincode JSON: $e");
-      debugPrint("❌ Stack trace: ${StackTrace.current}");
       _pincodeAreaList = [];
     }
   }
@@ -171,22 +157,14 @@ class LocationController extends ChangeNotifier {
         if (postalCode != null && postalCode.isNotEmpty) {
           final normalizedPostalCode = postalCode.trim();
 
-          debugPrint(
-            "🔍 Looking for pincode: '$normalizedPostalCode' (type: ${normalizedPostalCode.runtimeType})",
-          );
-          debugPrint("📊 Total pincodes loaded: ${_pincodeAreaList.length}");
-
           final matches = _pincodeAreaList.where((e) {
             final pin = e['pincode']?.toString().trim();
             return pin == normalizedPostalCode;
           }).toList();
 
-          debugPrint("🎯 Total matches found: ${matches.length}");
-
           if (matches.isNotEmpty) {
             // ✅ STEP 1: Get district from first match (all should have same)
             detectedDistrict = matches.first['district'];
-            debugPrint("✅ District detected: $detectedDistrict");
 
             // ✅ STEP 2: Derive unique towns from the pincode matches
             // (NOT from the master district town list)
@@ -200,16 +178,8 @@ class LocationController extends ChangeNotifier {
             availableTowns = townSet.toList();
             availableTowns.sort(); // For consistent ordering
 
-            debugPrint("✅ Towns derived from pincode: $availableTowns");
-
             // Town is NOT auto-selected - user must manually choose from available towns
-          } else {
-            debugPrint(
-              "⚠️ Pincode $normalizedPostalCode not found in local dataset",
-            );
           }
-        } else {
-          debugPrint("⚠️ No postal code in reverse geocoding result");
         }
 
         // UI label with city/locality (for display only)
@@ -223,10 +193,8 @@ class LocationController extends ChangeNotifier {
       } else {
         // No placemark available
         _locationText = '${pos.latitude}, ${pos.longitude}';
-        debugPrint("⚠️ No placemarks found for coordinates");
       }
     } catch (e) {
-      debugPrint("❌ District resolution error: $e");
       detectedDistrict = null;
       availableTowns = [];
       _locationText = '${pos.latitude}, ${pos.longitude}';
@@ -266,14 +234,7 @@ class LocationController extends ChangeNotifier {
             if (detectedDistrict != previousDistrict ||
                 detectedPincode != previousPincode ||
                 (selectedTown != previousTown && !_userManuallySelectedTown)) {
-              debugPrint(
-                "📍 Location changed: District=$detectedDistrict, Pincode=$detectedPincode",
-              );
               notifyListeners();
-            } else {
-              debugPrint(
-                "⏭️ Location update received but no district/pincode/town change - skipping notify",
-              );
             }
           },
           onError: (_) {

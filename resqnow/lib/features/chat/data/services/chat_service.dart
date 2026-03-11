@@ -18,7 +18,6 @@ class ChatService {
 
   static const String _chatsCollection = 'chats';
   static const String _messagesCollection = 'messages';
-  static const String _metadataDoc = 'metadata';
 
   /// Get current user ID
   String get _currentUserId => _auth.currentUser?.uid ?? '';

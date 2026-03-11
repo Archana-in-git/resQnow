@@ -58,15 +58,8 @@ class DonorListController extends ChangeNotifier {
       if (newDistrict != null &&
           newDistrict.isNotEmpty &&
           newDistrict != _lastFetchedDistrict) {
-        debugPrint(
-          "🔄 District changed from $_lastFetchedDistrict to $newDistrict - fetching donors",
-        );
         _fetchDonorsForDistrict(newDistrict);
         _lastFetchedDistrict = newDistrict;
-      } else if (newDistrict == _lastFetchedDistrict) {
-        debugPrint(
-          "⏭️ District unchanged ($_lastFetchedDistrict) - skipping fetch",
-        );
       }
     }
     notifyListeners();
@@ -109,7 +102,6 @@ class DonorListController extends ChangeNotifier {
       notifyListeners();
       return availableTownsForDistrict;
     } catch (e) {
-      debugPrint('ERROR loading towns for $district: $e');
       availableTownsForDistrict = [];
       notifyListeners();
       return [];
@@ -279,43 +271,17 @@ class DonorListController extends ChangeNotifier {
       notifyListeners();
 
       // Fetch ALL donors from all districts
-      debugPrint('🔥 clearAllFilters: calling getAllDonorsUseCase()');
       final result = await getAllDonorsUseCase();
-      debugPrint(
-        '🔥 clearAllFilters: getAllDonorsUseCase returned ${result.length} donors',
-      );
 
       donors =
           result; // ✅ Explicitly assign result (already safe from use case)
 
       isLoading = false;
       notifyListeners();
-      debugPrint('🔥 clearAllFilters: UI updated with ${donors.length} donors');
     } catch (e) {
-      debugPrint('🔥 clearAllFilters ERROR: $e');
       errorMessage = e.toString();
       isLoading = false;
       notifyListeners();
     }
-  }
-
-  // ---------------------------------------------------------------------------
-  // APPLY FILTERS (Blood Group + Availability)
-  // ---------------------------------------------------------------------------
-  List<BloodDonor> _applyFilters(List<BloodDonor> donorList) {
-    return donorList.where((donor) {
-      // Filter by blood group
-      if (selectedBloodGroup != null &&
-          donor.bloodGroup != selectedBloodGroup) {
-        return false;
-      }
-
-      // Filter by availability
-      if (isAvailable == true && !(donor.isAvailable ?? false)) {
-        return false;
-      }
-
-      return true;
-    }).toList();
   }
 }

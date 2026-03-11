@@ -204,7 +204,9 @@ class BloodDonor extends Equatable {
 
     try {
       if (value.toDate is Function) return value.toDate();
-    } catch (_) {}
+    } catch (_) {
+      // toDate() conversion not supported for this type
+    }
 
     return null;
   }

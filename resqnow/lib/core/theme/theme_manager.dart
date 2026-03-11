@@ -17,17 +17,12 @@ class ThemeManager with ChangeNotifier {
       final savedTheme = _prefs.getString(_themeKey);
       if (savedTheme != null) {
         _themeMode = savedTheme == 'dark' ? ThemeMode.dark : ThemeMode.light;
-        debugPrint(
-          '🎨 ThemeManager.initTheme(): Loaded saved theme = $savedTheme ($_themeMode)',
-        );
       } else {
-        debugPrint(
-          '🎨 ThemeManager.initTheme(): No saved theme found, using default = $_themeMode',
-        );
+        _themeMode = ThemeMode.light;
       }
       notifyListeners();
     } catch (e) {
-      debugPrint('❌ Error initializing theme: $e');
+      // Error initializing theme
     }
   }
 
@@ -35,11 +30,8 @@ class ThemeManager with ChangeNotifier {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     try {
       await _prefs.setString(_themeKey, isDark ? 'dark' : 'light');
-      debugPrint(
-        '💾 ThemeManager.toggleTheme(): Saved theme = ${isDark ? 'dark' : 'light'} to SharedPreferences',
-      );
     } catch (e) {
-      debugPrint('❌ Error saving theme preference: $e');
+      // Error saving theme preference
     }
     notifyListeners();
   }

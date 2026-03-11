@@ -709,7 +709,7 @@ class _WorkshopsComingSoonPageState extends State<WorkshopsComingSoonPage> {
                     setState(() {
                       _isEmailNotified = value;
                     });
-                    // TODO: Implement email notification subscription
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Row(

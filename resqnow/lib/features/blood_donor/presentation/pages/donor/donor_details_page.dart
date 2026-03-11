@@ -19,8 +19,6 @@ class DonorDetailsPage extends StatefulWidget {
 
 class _DonorDetailsPageState extends State<DonorDetailsPage> {
   bool _isApproved = false;
-  String? _callRequestId;
-  String? _approvedDonorName;
   String? _approvedDonorPhone;
 
   @override
@@ -30,8 +28,6 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
     // Extract extra parameters if provided (from approved notification)
     if (widget.extra != null) {
       _isApproved = widget.extra!['isApproved'] ?? false;
-      _callRequestId = widget.extra!['callRequestId'];
-      _approvedDonorName = widget.extra!['donorName'];
       _approvedDonorPhone = widget.extra!['donorPhone'];
     }
 

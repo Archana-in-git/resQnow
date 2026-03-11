@@ -239,6 +239,23 @@ class AppRouter {
         ),
 
         GoRoute(
+          path: '/condition/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return ConditionDetailPage(conditionId: id);
+          },
+        ),
+
+        GoRoute(
+          path: '/condition/:id/faqs',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final extra = state.extra as dynamic;
+            return ConditionFAQPage(conditionId: id, condition: extra);
+          },
+        ),
+
+        GoRoute(
           path: '/resources',
           builder: (context, state) => const ResourceListPage(),
         ),

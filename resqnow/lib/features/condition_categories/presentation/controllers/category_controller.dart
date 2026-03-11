@@ -24,7 +24,7 @@ class CategoryController extends ChangeNotifier {
 
   Future<void> loadCategories() async {
     if (_isDisposed) return;
-    
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -44,7 +44,7 @@ class CategoryController extends ChangeNotifier {
 
   void searchCategories(String query) {
     if (_isDisposed) return;
-    
+
     if (query.isEmpty) {
       _isSearching = false;
       _filteredCategories = _allCategories;
@@ -73,7 +73,7 @@ class CategoryController extends ChangeNotifier {
 
   void clearSearch() {
     if (_isDisposed) return;
-    
+
     _isSearching = false;
     _filteredCategories = _allCategories;
     notifyListeners();
@@ -93,7 +93,6 @@ class CategoryController extends ChangeNotifier {
       );
     } catch (e) {
       // Silently fail - logging errors shouldn't affect the user experience
-      debugPrint('Error in search logging: $e');
     }
   }
 

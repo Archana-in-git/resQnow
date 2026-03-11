@@ -4,9 +4,11 @@ import 'package:resqnow/core/constants/ui_constants.dart';
 import 'package:resqnow/features/presentation/widgets/bottom_nav_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:resqnow/features/presentation/widgets/top_bar.dart';
 import 'package:resqnow/features/condition_categories/presentation/controllers/category_controller.dart';
+import 'package:resqnow/features/medical_conditions/data/services/condition_service.dart';
 import 'package:resqnow/features/first_aid_resources/presentation/controllers/resource_controller.dart';
 import 'package:resqnow/features/first_aid_resources/presentation/widgets/resource_card.dart';
 import 'package:resqnow/features/presentation/widgets/nav_bar.dart';
@@ -64,6 +66,22 @@ class _HomePageState extends State<HomePage> {
         await resourceController.fetchResources();
       }
     });
+
+    // Warm up Firestore on app startup
+    _warmupFirestore();
+  }
+
+  /// Warm up Firestore by triggering lightweight background queries
+  /// This prevents cold-start lag when displaying categories
+  void _warmupFirestore() {
+    final firestore = FirebaseFirestore.instance;
+    // Silent parallel queries - let them complete in the background
+    firestore.collection('categories').limit(1).get().catchError((_) {});
+    firestore
+        .collection('medical_conditions')
+        .limit(1)
+        .get()
+        .catchError((_) {});
   }
 
   @override
@@ -210,8 +228,39 @@ class _HomePageState extends State<HomePage> {
                             diameter: diameter,
                             iconPath: cat.iconAsset,
                             imageUrls: cat.imageUrls,
-                            onTap: () =>
-                                context.push('/categories/condition/${cat.id}'),
+                            onTap: () async {
+                              // Navigate directly to first condition of this category
+                              try {
+                                final conditionService = ConditionService();
+                                final conditions = await conditionService
+                                    .getConditionsByCategory(cat.id);
+
+                                if (conditions.isEmpty) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'No conditions found for this category',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+
+                                if (mounted) {
+                                  context.push(
+                                    '/condition/${conditions.first.id}',
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                }
+                              }
+                            },
                           );
                         },
                       ),
@@ -770,7 +819,7 @@ class _BloodTile extends StatelessWidget {
             }
           });
         } catch (e) {
-          debugPrint("Error: $e");
+          // Error handled silently
         }
       } else if (title == 'My Profile') {
         // Always navigate to donor profile page
@@ -985,9 +1034,9 @@ class _EmergencyIconButtonState extends State<_EmergencyIconButton>
 
   Future<void> _makePhoneCall(String number) async {
     try {
-      debugPrint('Calling: $number');
+      // Make phone call
     } catch (e) {
-      debugPrint("Error calling: $e");
+      // Error making call
     }
   }
 

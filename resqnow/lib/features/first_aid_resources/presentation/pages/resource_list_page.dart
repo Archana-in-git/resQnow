@@ -30,7 +30,7 @@ class _ResourceListPageState extends State<ResourceListPage> {
 
     Future.microtask(() async {
       if (!mounted) return;
-      debugPrint('📥 [LOAD] Fetching resources...');
+
       await Provider.of<ResourceController>(
         context,
         listen: false,

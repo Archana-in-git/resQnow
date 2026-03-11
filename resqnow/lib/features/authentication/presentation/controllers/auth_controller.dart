@@ -38,20 +38,12 @@ class AuthController extends ChangeNotifier {
                     .then((blockedDoc) {
                       if (blockedDoc.exists) {
                         // User was properly deleted - sign out
-                        print(
-                          'DEBUG: User doc deleted and email in blocked_emails, signing out',
-                        );
                         _authService.signOut();
                         notifyListeners();
-                      } else {
-                        // Document missing but email not blocked - could be data sync issue
-                        print(
-                          'DEBUG: User doc missing but email not blocked, staying logged in',
-                        );
                       }
                     })
                     .catchError((e) {
-                      print('DEBUG: Error checking blocked_emails: $e');
+                      // Error checking blocked_emails
                     });
               }
               return;
@@ -62,10 +54,6 @@ class AuthController extends ChangeNotifier {
             final accountStatus = data['accountStatus'] as String? ?? 'active';
             final isBlocked = data['isBlocked'] as bool? ?? false;
 
-            print(
-              'DEBUG: Suspension check - accountStatus=$accountStatus, isBlocked=$isBlocked',
-            );
-
             // Only respect isBlocked if accountStatus is explicitly NOT 'active'
             // This prevents stale isBlocked flags from old test data
             final isSuspended =
@@ -74,14 +62,12 @@ class AuthController extends ChangeNotifier {
 
             // If user becomes suspended, sign them out
             if (isSuspended) {
-              print('DEBUG: User is suspended/blocked, signing out');
               _authService.signOut();
               notifyListeners();
             }
           },
           onError: (error) {
             // Silently ignore errors - if we can't read the field, assume user is active
-            print('Suspension monitoring error (non-critical): $error');
           },
         );
   }
@@ -193,10 +179,8 @@ class AuthController extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       final errorMessage = _getDetailedErrorMessage(e);
       _setError(errorMessage);
-      print('AUTH ERROR [${e.code}]: ${e.message}');
       return null;
     } catch (e) {
-      print('AUTH ERROR (non-Firebase): $e');
       _setError(defaultError);
       return null;
     } finally {
@@ -208,7 +192,8 @@ class AuthController extends ChangeNotifier {
   String _getDetailedErrorMessage(FirebaseAuthException e) {
     switch (e.code) {
       case 'email-deleted':
-        return e.message ?? 'This email was previously deleted. Please contact support.';
+        return e.message ??
+            'This email was previously deleted. Please contact support.';
       case 'email-suspended':
         return e.message ?? 'This email is suspended. Please contact support.';
       case 'user-not-found':
@@ -230,7 +215,8 @@ class AuthController extends ChangeNotifier {
       case 'network-request-failed':
         return 'Network error. Please check your connection.';
       case 'service-unavailable':
-        return e.message ?? 'Service temporarily unavailable. Please try again.';
+        return e.message ??
+            'Service temporarily unavailable. Please try again.';
       case 'firestore-error':
         return e.message ?? 'Failed to create account. Please try again.';
       default:

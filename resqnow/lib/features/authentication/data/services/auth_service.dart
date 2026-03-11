@@ -105,7 +105,6 @@ class AuthService {
         // If it's a FirebaseAuthException, rethrow it
         if (e is FirebaseAuthException) rethrow;
         // For other Firestore errors, log but continue
-        print('Warning: Could not check blocked_emails: $e');
       }
 
       // Create user in Firebase Auth
@@ -135,19 +134,13 @@ class AuthService {
             'suspendedAt': null,
             'suspensionReason': null,
           }, SetOptions(merge: true));
-
-          print('DEBUG: User document created successfully: ${user.uid}');
         } catch (e) {
           // If Firestore write fails, delete the auth user
-          print('ERROR: Failed to create user document: $e');
-          print('ERROR TYPE: ${e.runtimeType}');
-          if (e is FirebaseException) {
-            print('FIREBASE ERROR CODE: ${e.code}');
-            print('FIREBASE ERROR MESSAGE: ${e.message}');
-          }
           try {
             await user.delete();
-          } catch (_) {}
+          } catch (_) {
+            // Silently ignore if user deletion fails
+          }
           throw FirebaseAuthException(
             code: 'firestore-error',
             message:
@@ -159,10 +152,6 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       // Special handling for "email-already-in-use"
       if (e.code == 'email-already-in-use') {
-        print(
-          'INFO: Email already exists in authentication. Checking if user was reactivated...',
-        );
-
         try {
           // Check if user has an account that might be reactivated
           final userquery = await _firestore
@@ -191,7 +180,6 @@ class AuthService {
           }
         } catch (checkError) {
           if (checkError is FirebaseAuthException) rethrow;
-          print('Warning: Could not check existing user: $checkError');
         }
       }
       rethrow;
@@ -226,9 +214,6 @@ class AuthService {
               .get();
 
           if (!userDoc.exists) {
-            print(
-              'DEBUG: User document missing for ${user.uid}, creating it...',
-            );
             // Create complete user document if missing
             await _firestore.collection(usersCollection).doc(user.uid).set({
               'uid': user.uid,
@@ -246,14 +231,13 @@ class AuthService {
             }, SetOptions(merge: true));
           }
         } catch (e) {
-          print('WARNING: Could not verify user document: $e');
+          // Could not verify user document
         }
 
         // ✅ Validate access status
         try {
           await _validateUserCanAccess(user);
         } catch (e) {
-          print('ERROR: Access validation failed: $e');
           rethrow;
         }
       }

@@ -8,7 +8,7 @@ class CategoryModel {
   final String iconAsset;
   final List<String> aliases; // Add aliases for search
   final List<String> imageUrls;
-  final int order;       // Added for sorting categories
+  final int order; // Added for sorting categories
   final bool isVisible; // Added for showing/hiding categories
 
   CategoryModel({
@@ -23,11 +23,12 @@ class CategoryModel {
 
   factory CategoryModel.fromMap(Map<String, dynamic> map, String docId) {
     return CategoryModel(
-      id: docId ?? 'unknown',
+      id: docId,
       name: (map['name'] as String?) ?? '',
       iconAsset: (map['iconAsset'] as String?) ?? '',
       aliases: (map['aliases'] as List?)?.whereType<String>().toList() ?? [],
-      imageUrls: (map['imageUrls'] as List?)?.whereType<String>().toList() ?? [],
+      imageUrls:
+          (map['imageUrls'] as List?)?.whereType<String>().toList() ?? [],
       order: (map['order'] as int?) ?? 999,
       isVisible: (map['isVisible'] as bool?) ?? true,
     );

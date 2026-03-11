@@ -52,7 +52,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
           _justCompletedRegistration = extra['justRegistered'] ?? false;
         }
       } catch (e) {
-        debugPrint('Error accessing GoRouterState: $e');
+        // Error accessing GoRouterState
       }
     }
   }
@@ -130,7 +130,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -163,7 +163,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.05),
+                          color: Colors.red.withValues(alpha: 0.05),
                           border: Border.all(color: Colors.red.shade200),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -1349,7 +1349,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         _addressDataLoaded = true;
       });
     } catch (e) {
-      debugPrint('Failed to load address data: $e');
+      // Failed to load address data
       setState(() {
         _addressDataLoaded = true;
       });
@@ -1410,7 +1410,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         });
       }
     } catch (e) {
-      debugPrint('Failed to reload address data for state: $e');
+      // Failed to reload address data for state
     }
   }
 
@@ -1542,7 +1542,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         },
       );
     } catch (e) {
-      debugPrint("Image pick/crop failed: $e");
+      // Image pick/crop failed
     }
   }
 
