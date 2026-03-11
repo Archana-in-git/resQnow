@@ -272,7 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 40),
+              padding: const EdgeInsets.symmetric(vertical: 24),
               child: Column(
                 children: [
                   /// Profile Image
@@ -291,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                         child: CircleAvatar(
-                          radius: 70,
+                          radius: 60,
                           backgroundColor: Colors.white,
                           backgroundImage: _imageFile != null
                               ? FileImage(_imageFile!)
@@ -302,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: (_imageFile == null && _imageUrl == null)
                               ? const Icon(
                                   Icons.person,
-                                  size: 70,
+                                  size: 60,
                                   color: AppColors.primary,
                                 )
                               : null,
@@ -371,7 +371,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   /// Name
                   Text(
@@ -443,7 +443,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontSize: 14,
                         color: isDarkMode
                             ? Colors.grey.shade300
-                            : Colors.grey.shade700,
+                            : Colors.black87,
                       ),
                     ),
                   ),
@@ -466,12 +466,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     initialCountryCode: 'IN',
                     enabled: isEditing,
                     initialValue: phoneNumber,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDarkMode ? Colors.white : Colors.black87,
+                    ),
                     decoration: InputDecoration(
                       hintText: "Enter phone number",
                       filled: true,
                       fillColor: isDarkMode
                           ? Colors.grey.shade700
-                          : Colors.grey.shade100,
+                          : Colors.grey.shade50,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 14,
@@ -526,7 +530,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           decoration: BoxDecoration(
                             color: isDarkMode
                                 ? Colors.grey.shade700
-                                : Colors.grey.shade100,
+                                : Colors.grey.shade50,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isDarkMode
@@ -550,7 +554,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                       value: e,
                                       child: Text(
                                         e,
-                                        style: const TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black87,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -575,7 +584,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           decoration: BoxDecoration(
                             color: isDarkMode
                                 ? Colors.grey.shade700
-                                : Colors.grey.shade100,
+                                : Colors.grey.shade50,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isDarkMode
@@ -601,7 +610,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                       value: e,
                                       child: Text(
                                         e,
-                                        style: const TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black87,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -658,12 +672,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         hintStyle: TextStyle(
                           color: isDarkMode
                               ? Colors.grey.shade500
-                              : Colors.grey.shade500,
+                              : Colors.grey.shade400,
                         ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(14),
                       ),
-                      style: const TextStyle(fontSize: 14, height: 1.5),
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        color: isDarkMode ? Colors.white : Colors.black87,
+                      ),
                     ),
                   ),
                 ],
