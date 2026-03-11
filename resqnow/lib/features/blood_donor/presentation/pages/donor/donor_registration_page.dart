@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 
 // New imports for image & firebase
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:crop_your_image/crop_your_image.dart';
@@ -711,12 +712,17 @@ class _DonorRegistrationPageState extends State<DonorRegistrationPage> {
 
   Future<String> _uploadImageToFirebase(File file) async {
     final storage = FirebaseStorage.instance;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     final phoneForName = phoneCtrl.text.trim().isNotEmpty
         ? phoneCtrl.text.trim()
         : 'unknown';
     final fileName =
         "${selectedCountryCode.replaceAll('+', '')}_${phoneForName}_${DateTime.now().millisecondsSinceEpoch}.jpg";
-    final ref = storage.ref().child('donor_profile_pics').child(fileName);
+    final ref = storage
+        .ref()
+        .child('donor_profile_pics')
+        .child(uid)
+        .child(fileName);
 
     final uploadTask = ref.putFile(file);
     final snapshot = await uploadTask.whenComplete(() {});

@@ -164,9 +164,11 @@ class _ProfilePageState extends State<ProfilePage> {
       // Upload image if selected (only if user picked a new image)
       if (_imageFile != null) {
         final uid = FirebaseAuth.instance.currentUser!.uid;
-        final ref = FirebaseStorage.instance.ref().child(
-          "profile_images/$uid.jpg",
-        );
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('profile_images')
+            .child(uid)
+            .child('profile.jpg');
         await ref.putFile(_imageFile!);
         imageUrl = await ref.getDownloadURL();
       }
