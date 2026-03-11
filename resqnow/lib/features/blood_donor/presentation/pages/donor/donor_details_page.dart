@@ -1177,7 +1177,6 @@ class _DonorDetailsPageState extends State<DonorDetailsPage> {
     final currentUserName =
         currentUser.displayName ?? currentUser.email?.split('@').first ?? 'You';
 
-    // TODO: Fetch current user's blood group and image from Firestore
     const currentUserBloodGroup = 'O+'; // Placeholder
     final currentUserImageUrl = currentUser.photoURL;
 

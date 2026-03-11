@@ -81,8 +81,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Row(
@@ -125,11 +123,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 value: isDarkMode,
                 activeColor: AppColors.primary,
                 onChanged: (value) async {
+                  // Capture ScaffoldMessenger before async operation
+                  final scaffold = ScaffoldMessenger.of(context);
+
                   // Update theme via ThemeManager (handles both state and SharedPreferences persistence)
                   await themeManager.toggleTheme(value);
 
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffold.showSnackBar(
                     SnackBar(
                       content: Text(
                         value

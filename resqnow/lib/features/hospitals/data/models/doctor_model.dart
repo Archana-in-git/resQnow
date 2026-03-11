@@ -3,28 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DoctorModel extends DoctorEntity {
   const DoctorModel({
-    required String id,
-    required String name,
-    required String hospitalId,
-    required String departmentName,
-    required int experienceYears,
-    required String consultationStart,
-    required String consultationEnd,
-    required bool isAvailable,
-    required DateTime createdAt,
-    DateTime? updatedAt,
-  }) : super(
-         id: id,
-         name: name,
-         hospitalId: hospitalId,
-         departmentName: departmentName,
-         experienceYears: experienceYears,
-         consultationStart: consultationStart,
-         consultationEnd: consultationEnd,
-         isAvailable: isAvailable,
-         createdAt: createdAt,
-         updatedAt: updatedAt,
-       );
+    required super.id,
+    required super.name,
+    required super.hospitalId,
+    required super.departmentName,
+    required super.experienceYears,
+    required super.consultationStart,
+    required super.consultationEnd,
+    required super.isAvailable,
+    required super.createdAt,
+    super.updatedAt,
+  });
 
   factory DoctorModel.fromJson(Map<String, dynamic> json, String docId) {
     return DoctorModel(

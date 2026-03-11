@@ -3,15 +3,12 @@ import 'package:provider/provider.dart';
 import '../controllers/notification_controller.dart';
 
 class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({Key? key}) : super(key: key);
+  const NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Notifications'), elevation: 0),
       body: Consumer<NotificationController>(
         builder: (context, notificationController, _) {
           final notifications = notificationController.notifications;
@@ -48,13 +45,8 @@ class NotificationsPage extends StatelessWidget {
               final isRead = notification['isRead'] ?? false;
 
               return Card(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                color: isRead
-                    ? Colors.grey[50]
-                    : Colors.blue.shade50,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                color: isRead ? Colors.grey[50] : Colors.blue.shade50,
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: isRead
@@ -80,18 +72,12 @@ class NotificationsPage extends StatelessWidget {
                         notification['message'] ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatTime(notification['createdAt']),
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),
@@ -101,14 +87,17 @@ class NotificationsPage extends StatelessWidget {
                         PopupMenuItem(
                           child: const Text('Mark as Read'),
                           onTap: () {
-                            notificationController.markAsRead(notification['id']);
+                            notificationController.markAsRead(
+                              notification['id'],
+                            );
                           },
                         ),
                       PopupMenuItem(
                         child: const Text('Delete'),
                         onTap: () {
-                          notificationController
-                              .deleteNotification(notification['id']);
+                          notificationController.deleteNotification(
+                            notification['id'],
+                          );
                         },
                       ),
                     ],

@@ -28,8 +28,6 @@ class _ConditionDetailPageState extends State<ConditionDetailPage>
   int _currentPage = 0;
   Timer? _carouselTimer;
   bool _isConditionSaved = false;
-  final bool _isVideoLoaded = false; // Lazy load video
-  final bool _showVideo = false; // Toggle video visibility
 
   @override
   bool get wantKeepAlive => true;

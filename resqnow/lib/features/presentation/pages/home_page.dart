@@ -76,12 +76,8 @@ class _HomePageState extends State<HomePage> {
   void _warmupFirestore() {
     final firestore = FirebaseFirestore.instance;
     // Silent parallel queries - let them complete in the background
-    firestore.collection('categories').limit(1).get().catchError((_) {});
-    firestore
-        .collection('medical_conditions')
-        .limit(1)
-        .get()
-        .catchError((_) {});
+    firestore.collection('categories').limit(1).get().then((_) {});
+    firestore.collection('medical_conditions').limit(1).get().then((_) {});
   }
 
   @override
@@ -229,6 +225,10 @@ class _HomePageState extends State<HomePage> {
                             iconPath: cat.iconAsset,
                             imageUrls: cat.imageUrls,
                             onTap: () async {
+                              // Capture router and scaffold before async operation
+                              final router = GoRouter.of(context);
+                              final scaffold = ScaffoldMessenger.of(context);
+
                               // Navigate directly to first condition of this category
                               try {
                                 final conditionService = ConditionService();
@@ -237,7 +237,7 @@ class _HomePageState extends State<HomePage> {
 
                                 if (conditions.isEmpty) {
                                   if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    scaffold.showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'No conditions found for this category',
@@ -249,13 +249,13 @@ class _HomePageState extends State<HomePage> {
                                 }
 
                                 if (mounted) {
-                                  context.push(
+                                  router.push(
                                     '/condition/${conditions.first.id}',
                                   );
                                 }
                               } catch (e) {
                                 if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  scaffold.showSnackBar(
                                     SnackBar(content: Text('Error: $e')),
                                   );
                                 }
@@ -787,7 +787,7 @@ class _BloodBankHomeSection extends StatelessWidget {
 /// -----------------------------------------------------------
 /// 🩸 BLOOD TILE WIDGET
 /// -----------------------------------------------------------
-class _BloodTile extends StatelessWidget {
+class _BloodTile extends StatefulWidget {
   final String title;
   final IconData icon;
   final Color color;
@@ -802,26 +802,35 @@ class _BloodTile extends StatelessWidget {
     required this.isDarkMode,
   });
 
+  @override
+  State<_BloodTile> createState() => _BloodTileState();
+}
+
+class _BloodTileState extends State<_BloodTile> {
   void _handleTap(BuildContext context) {
-    if (route != null) {
-      context.push(route!);
+    if (widget.route != null) {
+      context.push(widget.route!);
     } else {
       // For non-clickable tiles or smart navigation
-      if (title == 'Become Donor') {
+      if (widget.title == 'Become Donor') {
         try {
           final profileController = context.read<DonorProfileController>();
+          final router = GoRouter.of(context);
+
           profileController.isDonor().then((isDonor) {
+            if (!mounted) return;
+
             if (isDonor) {
               // Show alert if already a donor
-              _showAlreadyDonorAlert(context);
+              _showAlreadyDonorAlert();
             } else {
-              context.push('/donor/register');
+              router.push('/donor/register');
             }
           });
         } catch (e) {
           // Error handled silently
         }
-      } else if (title == 'My Profile') {
+      } else if (widget.title == 'My Profile') {
         // Always navigate to donor profile page
         // The page will handle showing dialog if user is not a donor
         context.push('/donor/profile');
@@ -829,12 +838,16 @@ class _BloodTile extends StatelessWidget {
     }
   }
 
-  void _showAlreadyDonorAlert(BuildContext context) {
+  void _showAlreadyDonorAlert() {
+    final router = GoRouter.of(context);
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+        backgroundColor: widget.isDarkMode
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         title: Row(
           children: [
             Icon(
@@ -854,7 +867,9 @@ class _BloodTile extends StatelessWidget {
         content: Text(
           'You are already registered as a blood donor. Visit your profile to manage your details and availability.',
           style: TextStyle(
-            color: isDarkMode ? Colors.grey.shade300 : Colors.grey.shade700,
+            color: widget.isDarkMode
+                ? Colors.grey.shade300
+                : Colors.grey.shade700,
             fontSize: 14,
             height: 1.5,
           ),
@@ -873,7 +888,7 @@ class _BloodTile extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.pop(dialogContext);
-              context.push('/donor/profile');
+              router.push('/donor/profile');
             },
             child: const Text(
               'View Profile',
@@ -892,15 +907,17 @@ class _BloodTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         decoration: BoxDecoration(
-          color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+          color: widget.isDarkMode ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+            color: widget.isDarkMode
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: isDarkMode
+              color: widget.isDarkMode
                   ? Colors.black26
                   : AppColors.cardShadow.withValues(alpha: 0.08),
               blurRadius: 8,
@@ -915,10 +932,10 @@ class _BloodTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
+                color: widget.color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 32),
+              child: Icon(widget.icon, color: widget.color, size: 32),
             ),
             const SizedBox(height: 12),
 
@@ -926,12 +943,14 @@ class _BloodTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                title,
+                widget.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: isDarkMode ? Colors.white : AppColors.textPrimary,
+                  color: widget.isDarkMode
+                      ? Colors.white
+                      : AppColors.textPrimary,
                   letterSpacing: -0.2,
                   height: 1.2,
                 ),
@@ -974,7 +993,7 @@ class _EmergencyNumbersSection extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: services.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (_, index) {
           final service = services[index];
           return _EmergencyIconButton(

@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DepartmentModel extends DepartmentEntity {
   const DepartmentModel({
-    required String id,
-    required String name,
-    required DateTime createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, name: name, createdAt: createdAt, updatedAt: updatedAt);
+    required super.id,
+    required super.name,
+    required super.createdAt,
+    super.updatedAt,
+  });
 
   factory DepartmentModel.fromJson(Map<String, dynamic> json, String docId) {
     return DepartmentModel(

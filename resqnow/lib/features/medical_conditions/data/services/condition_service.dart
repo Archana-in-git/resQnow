@@ -66,23 +66,19 @@ class ConditionService {
       final allDocs = <String, DocumentSnapshot>{};
 
       // Add results from query 1 (categories array)
-      if (futures[0] != null) {
-        for (var doc in (futures[0] as QuerySnapshot).docs) {
-          allDocs[doc.id] = doc;
-        }
+      for (var doc in (futures[0] as QuerySnapshot).docs) {
+        allDocs[doc.id] = doc;
       }
 
       // Add results from query 2 (categoryId field)
-      if (futures[1] != null) {
-        for (var doc in (futures[1] as QuerySnapshot).docs) {
-          allDocs[doc.id] = doc;
-        }
+      for (var doc in (futures[1] as QuerySnapshot).docs) {
+        allDocs[doc.id] = doc;
       }
 
       // Add result from query 3 (1-to-1 ID match)
-      if (futures[2] != null && (futures[2] as DocumentSnapshot).exists) {
-        allDocs[(futures[2] as DocumentSnapshot).id] =
-            futures[2] as DocumentSnapshot;
+      final doc3 = futures[2] as DocumentSnapshot?;
+      if (doc3?.exists ?? false) {
+        allDocs[doc3!.id] = doc3;
       }
 
       final results = allDocs.values

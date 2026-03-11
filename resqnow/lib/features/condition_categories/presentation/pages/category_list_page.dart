@@ -418,6 +418,10 @@ class _CategoryListPageState extends State<CategoryListPage>
                     key: ValueKey(category.id),
                     category: category,
                     onTap: () async {
+                      // Capture router and scaffold messenger before async operation
+                      final router = GoRouter.of(context);
+                      final scaffold = ScaffoldMessenger.of(context);
+
                       try {
                         // Fetch conditions for this category
                         final conditions = await _conditionService
@@ -425,7 +429,7 @@ class _CategoryListPageState extends State<CategoryListPage>
 
                         if (conditions.isEmpty) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            scaffold.showSnackBar(
                               const SnackBar(
                                 content: Text(
                                   'No condition found for this category',
@@ -438,11 +442,11 @@ class _CategoryListPageState extends State<CategoryListPage>
 
                         // Navigate directly to condition detail page
                         if (mounted) {
-                          context.push('/condition/${conditions.first.id}');
+                          router.push('/condition/${conditions.first.id}');
                         }
                       } catch (e) {
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffold.showSnackBar(
                             SnackBar(
                               content: Text('Error loading condition: $e'),
                               backgroundColor: Colors.red,

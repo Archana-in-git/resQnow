@@ -1009,23 +1009,35 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
             onPressed: () async {
               Navigator.pop(dialogContext);
               setState(() => _isDeleting = true);
-              final success = await context
-                  .read<DonorProfileController>()
-                  .deleteProfile();
-              if (success && mounted) {
-                context.go('/home');
-              } else if (mounted) {
-                setState(() => _isDeleting = false);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.read<DonorProfileController>().errorMessage ??
-                          'Failed to delete profile',
+
+              try {
+                // Capture dependencies before async operation
+                final controller = context.read<DonorProfileController>();
+                final router = GoRouter.of(context);
+                final scaffold = ScaffoldMessenger.of(context);
+
+                final success = await controller.deleteProfile();
+
+                if (!mounted) return;
+
+                if (success) {
+                  router.go('/home');
+                } else {
+                  setState(() => _isDeleting = false);
+                  final errorMessage =
+                      controller.errorMessage ?? 'Failed to delete profile';
+                  scaffold.showSnackBar(
+                    SnackBar(
+                      content: Text(errorMessage),
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: Colors.red,
                     ),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  setState(() => _isDeleting = false);
+                }
               }
             },
             child: const Text('Delete'),
@@ -1036,10 +1048,13 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
   }
 
   void _showNotDonorDialog(BuildContext context) {
+    // Capture router before async operation
+    final router = GoRouter.of(context);
+
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: AppColors.white,
         title: Row(
@@ -1061,7 +1076,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context, 'home');
+              Navigator.pop(dialogContext, 'home');
             },
             child: const Text('Go Home'),
           ),
@@ -1071,21 +1086,20 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
               foregroundColor: Colors.white,
             ),
             onPressed: () {
-              Navigator.pop(context, 'register');
+              Navigator.pop(dialogContext, 'register');
             },
             child: const Text('Register as Donor'),
           ),
         ],
       ),
     ).then((result) {
-      if (mounted) {
-        if (result == 'home' || result == null) {
-          // Go to home if "Go Home" clicked or dialog dismissed by back button
-          context.go('/home');
-        } else if (result == 'register') {
-          // Go to registration page (replaces profile in stack)
-          context.go('/donor/register');
-        }
+      if (!mounted) return;
+      if (result == 'home' || result == null) {
+        // Go to home if "Go Home" clicked or dialog dismissed by back button
+        router.go('/home');
+      } else if (result == 'register') {
+        // Go to registration page (replaces profile in stack)
+        router.go('/donor/register');
       }
     });
   }
@@ -1672,14 +1686,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        // Auto-close after 2.5 seconds
-        Future.delayed(const Duration(milliseconds: 2500), () {
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
-        });
-
+      builder: (dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -1758,7 +1765,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                       ),
                       elevation: 0,
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(dialogContext).pop(),
                     child: const Text(
                       'Done',
                       style: TextStyle(

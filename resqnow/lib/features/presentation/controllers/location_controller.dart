@@ -30,7 +30,6 @@ class LocationController extends ChangeNotifier {
   bool _userManuallySelectedTown = false; // track user manual selection
 
   // JSON DATA
-  Map<String, List<String>> _districtTownMap = {};
   List<Map<String, dynamic>> _pincodeAreaList = [];
 
   String get locationText => _locationText;
@@ -53,10 +52,7 @@ class LocationController extends ChangeNotifier {
       final jsonString = await rootBundle.loadString(
         'assets/kerala_towns.json',
       );
-      final Map<String, dynamic> data = json.decode(jsonString);
-      _districtTownMap = data.map(
-        (district, towns) => MapEntry(district, List<String>.from(towns)),
-      );
+      json.decode(jsonString);
     } catch (e) {
       // Error loading towns JSON
     }

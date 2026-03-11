@@ -10,10 +10,10 @@ class AppointmentFormPage extends StatefulWidget {
   final String doctorId;
 
   const AppointmentFormPage({
-    Key? key,
+    super.key,
     required this.hospitalId,
     required this.doctorId,
-  }) : super(key: key);
+  });
 
   @override
   State<AppointmentFormPage> createState() => _AppointmentFormPageState();

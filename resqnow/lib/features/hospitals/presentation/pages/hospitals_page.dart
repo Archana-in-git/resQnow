@@ -8,7 +8,7 @@ import '../../domain/usecases/get_approved_hospitals.dart';
 import '../widgets/hospital_list.dart';
 
 class HospitalsPage extends StatelessWidget {
-  const HospitalsPage({Key? key}) : super(key: key);
+  const HospitalsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

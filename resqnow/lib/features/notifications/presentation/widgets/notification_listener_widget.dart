@@ -6,7 +6,7 @@ import '../controllers/notification_controller.dart';
 class NotificationListener extends StatefulWidget {
   final Widget child;
 
-  const NotificationListener({Key? key, required this.child}) : super(key: key);
+  const NotificationListener({super.key, required this.child});
 
   @override
   State<NotificationListener> createState() => _NotificationListenerState();

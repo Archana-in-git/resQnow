@@ -6,7 +6,7 @@ import 'hospital_tile.dart';
 class HospitalList extends StatelessWidget {
   final List<HospitalEntity> hospitals;
 
-  const HospitalList({Key? key, required this.hospitals}) : super(key: key);
+  const HospitalList({super.key, required this.hospitals});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqnow/core/constants/app_colors.dart';
 import '../bloc/doctor_bloc.dart';
@@ -11,8 +10,7 @@ import '../../domain/usecases/get_doctors_by_hospital.dart';
 class HospitalDetailPage extends StatelessWidget {
   final String hospitalId;
 
-  const HospitalDetailPage({Key? key, required this.hospitalId})
-    : super(key: key);
+  const HospitalDetailPage({super.key, required this.hospitalId});
 
   void _showBookingDialog(BuildContext context, doctor) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -203,7 +201,7 @@ class HospitalDetailPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.push('/appointment-form/${hospitalId}/${doctor.id}');
+              context.push('/appointment-form/$hospitalId/${doctor.id}');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,

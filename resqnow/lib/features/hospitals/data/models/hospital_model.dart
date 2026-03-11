@@ -4,24 +4,15 @@ import '../../domain/entities/hospital_entity.dart';
 
 class HospitalModel extends HospitalEntity {
   const HospitalModel({
-    required String id,
-    required String name,
-    required String address,
-    required String phone,
-    required String email,
-    required String status,
-    required DateTime createdAt,
-    DateTime? updatedAt,
-  }) : super(
-         id: id,
-         name: name,
-         address: address,
-         phone: phone,
-         email: email,
-         status: status,
-         createdAt: createdAt,
-         updatedAt: updatedAt,
-       );
+    required super.id,
+    required super.name,
+    required super.address,
+    required super.phone,
+    required super.email,
+    required super.status,
+    required super.createdAt,
+    super.updatedAt,
+  });
 
   factory HospitalModel.fromJson(Map<String, dynamic> json, String docId) {
     return HospitalModel(

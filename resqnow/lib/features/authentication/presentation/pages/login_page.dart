@@ -596,18 +596,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 return;
               }
 
+              // Capture context-dependent objects before async operation
+              final scaffold = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(dialogContext);
+
               final auth = context.read<AuthController>();
               final success = await auth.sendPasswordResetEmail(email);
 
               if (!mounted) return;
 
               // Close dialog and show snackbar in next frame
-              Navigator.pop(dialogContext);
+              navigator.pop();
 
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
                   if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffold.showSnackBar(
                       const SnackBar(
                         content: Text(
                           'Password reset email sent! Check your inbox.',
@@ -616,7 +620,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       ),
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffold.showSnackBar(
                       SnackBar(
                         content: Text(
                           'Error: ${auth.errorMessage ?? "Failed to send reset email"}',

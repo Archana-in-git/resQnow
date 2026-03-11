@@ -6,11 +6,7 @@ class NotificationBadge extends StatelessWidget {
   final VoidCallback onTap;
   final double iconSize;
 
-  const NotificationBadge({
-    Key? key,
-    required this.onTap,
-    this.iconSize = 24,
-  }) : super(key: key);
+  const NotificationBadge({super.key, required this.onTap, this.iconSize = 24});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +17,7 @@ class NotificationBadge extends StatelessWidget {
         return Stack(
           children: [
             IconButton(
-              icon: Icon(
-                Icons.notifications,
-                size: iconSize,
-              ),
+              icon: Icon(Icons.notifications, size: iconSize),
               onPressed: onTap,
             ),
             if (unreadCount > 0)

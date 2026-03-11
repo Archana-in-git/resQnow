@@ -3,30 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppointmentModel extends AppointmentEntity {
   const AppointmentModel({
-    required String id,
-    required String userId,
-    required String hospitalId,
-    required String doctorId,
-    required String patientName,
-    required String phone,
-    required String description,
-    required String preferredDate,
-    required String status,
-    required DateTime createdAt,
-    DateTime? updatedAt,
-  }) : super(
-         id: id,
-         userId: userId,
-         hospitalId: hospitalId,
-         doctorId: doctorId,
-         patientName: patientName,
-         phone: phone,
-         description: description,
-         preferredDate: preferredDate,
-         status: status,
-         createdAt: createdAt,
-         updatedAt: updatedAt,
-       );
+    required super.id,
+    required super.userId,
+    required super.hospitalId,
+    required super.doctorId,
+    required super.patientName,
+    required super.phone,
+    required super.description,
+    required super.preferredDate,
+    required super.status,
+    required super.createdAt,
+    super.updatedAt,
+  });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json, String docId) {
     return AppointmentModel(
